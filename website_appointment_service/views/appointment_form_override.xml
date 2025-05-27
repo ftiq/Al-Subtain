@@ -1,0 +1,28 @@
+
+<odoo>
+    <template id="appointment.appointment_form" inherit_id="appointment.appointment_form" name="Enhanced Appointment Form">
+        <xpath expr="//form//div[last()]" position="before">
+            <div class="form-group">
+                <label for="service_product_id">اختيار الخدمة</label>
+                <select name="service_product_id" class="form-control" required="1">
+                    <option value="">اختر خدمة</option>
+                    <t t-foreach="website_sale_products" t-as="product">
+                        <option t-att-value="product.id">
+                            <t t-esc="product.display_name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+            <div class="form-group mt-2">
+                <label>ارفاق ملف</label>
+                <input type="file" name="attachment_file" class="form-control"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="appointment.layout" inherit_id="appointment.layout">
+        <xpath expr="//t[@t-call='website.layout']" position="before">
+            <t t-set="website_sale_products" t-value="request.env['product.product'].sudo().search([('sale_ok','=',True),('type','=','service')])"/>
+        </xpath>
+    </template>
+</odoo>
