@@ -1,11 +1,11 @@
 {
-    "name": "Website Appointment: Services and Attachments",
-    "version": "1.1",
+    "name": "Website Appointment Enhanced (Override Default)",
+    "version": "1.2",
     "category": "Website",
-    "summary": "Add service selection and file upload to website appointment and show attachments",
+    "summary": "Extends Odoo default appointment form to support service selection and file upload",
     "depends": ["website", "calendar", "sale_management", "appointment"],
     "data": [
-        "views/website_appointment_form.xml",
+        "views/appointment_form_override.xml",
         "views/calendar_event_form.xml"
     ],
     "installable": True,
