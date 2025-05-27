@@ -1,24 +1,7 @@
 <odoo>
   <template id="appointment.appointment_form" inherit_id="appointment.appointment_form">
     <xpath expr="//form//div[last()]" position="before">
-      <t t-set="services" t-value="request.env['product.product'].sudo().search([('sale_ok','=',True), ('type','=','service')])"/>
-      
-      <div class="form-group">
-        <label>اختيار الخدمة</label>
-        <select name="x_service_id" class="form-control" required="1">
-          <option value="">-- اختر خدمة --</option>
-          <t t-foreach="services" t-as="service">
-            <option t-att-value="service.id">
-              <t t-esc="service.display_name"/>
-            </option>
-          </t>
-        </select>
-      </div>
-
-      <div class="form-group mt-2">
-        <label>ارفاق ملف</label>
-        <input type="file" name="attachment_file" class="form-control"/>
-      </div>
+      <t t-call="custom_appointment_form_complete.appointment_extra_fields"/>
     </xpath>
   </template>
 </odoo>
