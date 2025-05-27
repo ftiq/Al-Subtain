@@ -1,4 +1,3 @@
-
 from odoo import models, fields
 
 class CalendarEvent(models.Model):
@@ -8,9 +7,7 @@ class CalendarEvent(models.Model):
     attachment_ids = fields.Many2many(
         'ir.attachment',
         'calendar_event_attachment_rel',
-        'event_id',
-        'attachment_id',
+        'event_id', 'attachment_id',
         string='Attachments',
-        domain=[('res_model', '=', 'calendar.event')],
-        auto_join=True
+        domain=[('res_model', '=', 'calendar.event')]
     )
