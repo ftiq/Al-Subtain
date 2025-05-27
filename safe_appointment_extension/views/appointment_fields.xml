@@ -1,0 +1,21 @@
+
+<odoo>
+  <template id="safe_appointment_extra_fields">
+    <t t-set="services" t-value="request.env['product.product'].sudo().search([('sale_ok','=',True),('type','=','service')])"/>
+    <div class="form-group">
+      <label>اختيار الخدمة</label>
+      <select name="x_service_id" class="form-control" required="1">
+        <option value="">-- اختر خدمة --</option>
+        <t t-foreach="services" t-as="service">
+          <option t-att-value="service.id">
+            <t t-esc="service.display_name"/>
+          </option>
+        </t>
+      </select>
+    </div>
+    <div class="form-group mt-2">
+      <label>ارفاق ملف</label>
+      <input type="file" name="attachment_file" class="form-control"/>
+    </div>
+  </template>
+</odoo>
