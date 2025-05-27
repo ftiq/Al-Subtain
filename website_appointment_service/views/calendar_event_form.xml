@@ -1,0 +1,14 @@
+<odoo>
+    <record id="view_calendar_event_form_inherit_attachment" model="ir.ui.view">
+        <field name="name">calendar.event.form.inherit.attachment</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group>
+                    <field name="attachment_ids" widget="many2many_binary" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
