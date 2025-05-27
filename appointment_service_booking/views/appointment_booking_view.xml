@@ -1,0 +1,16 @@
+
+<odoo>
+  <record id="view_appointment_booking_form_inherit" model="ir.ui.view">
+    <field name="name">appointment.booking.form.service.attachment</field>
+    <field name="model">appointment.booking</field>
+    <field name="inherit_id" ref="appointment.view_appointment_booking_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//sheet" position="inside">
+        <group>
+          <field name="x_service_id"/>
+          <field name="attachment_ids" widget="many2many_binary" readonly="0"/>
+        </group>
+      </xpath>
+    </field>
+  </record>
+</odoo>
