@@ -3,28 +3,29 @@ from odoo import http
 from odoo.http import request
 from odoo.addons.appointment.controllers.appointment import AppointmentController
 
+
 class WebsiteAppointmentEnhanced(AppointmentController):
 
     @http.route()
     def appointment_form_submit(self, appointment_type_id, datetime_str, duration_str, staff_user_id, name, phone, email, **kwargs):
+        # إصلاح مشكلة staff_user_id لو كانت بريد إلكتروني
+        try:
+            staff_user_id = int(staff_user_id)
+        except ValueError:
+            staff_user = request.env['res.users'].sudo().search([('login', '=', staff_user_id)], limit=1)
+            if not staff_user:
+                return request.redirect(f'/appointment/{appointment_type_id}?error=staff_not_found')
+            staff_user_id = staff_user.id
+
         service_id = int(kwargs.get('service_id') or 0)
         uploaded_file = request.httprequest.files.get('attachment')
 
-        # تحقق ذكي: هل staff_user_id رقم أو بريد؟
-        if not staff_user_id.isdigit():
-            staff_user = request.env['res.users'].sudo().search([('login', '=', staff_user_id)], limit=1)
-            if not staff_user:
-                return request.redirect('/appointment/%s?error=staff_not_found' % appointment_type_id)
-            staff_user_id = staff_user.id
-        else:
-            staff_user_id = int(staff_user_id)
-
-        # تنفيذ الدالة الأصلية
+        # استدعاء الدالة الأصلية
         response = super().appointment_form_submit(
             appointment_type_id, datetime_str, duration_str, staff_user_id, name, phone, email, **kwargs
         )
 
-        # ربط الموعد بأمر بيع وخدمة ومرفق
+        # البحث عن الحدث الذي تم إنشاؤه
         appointment = request.env['calendar.event'].sudo().search([
             ('name', '=', name),
             ('start', '=', datetime_str),
