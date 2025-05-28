@@ -1,13 +1,9 @@
 {
-    'name': 'Appointment Product Selection',
+    'name': 'Appointment Service Selection',
     'version': '1.0',
-    'depends': [
-        'calendar',    # Base calendar functionality
-        'website',     # Website features
-        'product',     # Product management
-    ],
+    'depends': ['website', 'calendar', 'product'],
     'data': [
-        'views/calendar_event_views.xml',
+        'views/calendar_views.xml',
         'views/website_templates.xml',
     ],
     'installable': True,
