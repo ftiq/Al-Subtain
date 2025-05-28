@@ -1,1 +1,1 @@
-from . import main_py
+from . import main
