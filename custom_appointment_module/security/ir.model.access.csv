@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_appointment_type_user,appointment.type.user,model_appointment_type,base.group_user,1,1,1,0
+access_calendar_event_user,calendar.event.user,model_calendar_event,base.group_user,1,1,1,0
+access_ir_attachment_user,ir.attachment.user,model_ir_attachment,base.group_user,1,1,1,0
+access_product_product_user,product.product.user,model_product_product,base.group_user,1,0,0,0
