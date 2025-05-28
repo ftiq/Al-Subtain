@@ -9,7 +9,7 @@
         <label for="service_id">اختر الخدمة المطلوبة</label>
         <select name="service_id" id="service_id" class="form-control" required="1">
           <option value="">-- اختر الخدمة --</option>
-          <t t-foreach="request.env['product.product'].sudo().search([('detailed_type','=','service')])" t-as="prod">
+          <t t-foreach="request.env['product.product'].sudo().search([('type','=','service')])" t-as="prod">
             <option t-att-value="prod.id">
               <t t-esc="prod.display_name"/>
             </option>
