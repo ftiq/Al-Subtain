@@ -3,7 +3,7 @@
     "summary": "Add service product selection to appointment booking",
     "version": "1.0",
     "category": "Website",
-    "depends": ["website", "calendar", "product"],
+    "depends": ["website", "calendar","appointment", "product"],
     "data": [
         "views/appointment_info_inherit.xml",
     ],
