@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="appointment_form_custom_fields" inherit_id="appointment.appointment_customer_form">
+    <template id="appointment_form_custom_fields" inherit_id="website_appointment.s_online_appointment">
         <xpath expr="//form" position="inside">
             <!-- رفع المرفق -->
             <t t-if="appointment_type.allow_attachment">
@@ -9,7 +8,7 @@
                     <input type="file" class="form-control" id="attachment" name="attachment"/>
                 </div>
             </t>
-            
+
             <!-- الخدمة (منتج مرتبط) -->
             <t t-if="appointment_type.product_id">
                 <input type="hidden" name="product_id" t-att-value="appointment_type.product_id.id"/>
