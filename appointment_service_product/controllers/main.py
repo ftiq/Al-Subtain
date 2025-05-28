@@ -1,12 +1,26 @@
 from odoo import http
-from odoo.addons.website_calendar.controllers.main import WebsiteCalendarController
+from odoo.http import request
 
-class ProductCalendarController(WebsiteCalendarController):
-
-    def _prepare_calendar_appointment_values(self, **kwargs):
-        values = super()._prepare_calendar_appointment_values(**kwargs)
-        values['products'] = http.request.env['product.product'].search([
+class AppointmentController(http.Controller):
+    
+    @http.route('/appointment', type='http', auth="public", website=True)
+    def appointment_form(self, **post):
+        services = request.env['product.product'].search([
             ('type', '=', 'service'),
             ('sale_ok', '=', True)
         ])
-        return values
+        return request.render("appointment_service_product.appointment_page", {
+            'services': services,
+        })
+    
+    @http.route('/appointment/submit', type='http', auth="public", website=True, csrf=True)
+    def appointment_submit(self, **post):
+        # Create calendar event
+        event = request.env['calendar.event'].create({
+            'name': post.get('name'),
+            'start': post.get('start_datetime'),
+            'stop': post.get('end_datetime'),
+            'product_id': post.get('service_id'),
+            # Add other necessary fields
+        })
+        return request.redirect('/appointment/confirmation')
