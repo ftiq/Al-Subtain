@@ -1,49 +1,40 @@
+from odoo.addons.appointment.controllers.main import AppointmentWebsite
 from odoo import http, fields
 from odoo.http import request
 import base64
 
-class WebsiteAppointmentExtended(http.Controller):
+class AppointmentWebsiteExtended(AppointmentWebsite):
 
-    @http.route('/website/appointment', type='http', auth='public', website=True)
-    def render_appointment_form(self, **kwargs):
-        services = request.env['product.product'].sudo().search([('sale_ok', '=', True), ('type', '=', 'service')])
-        return request.render('website_appointment_service.website_appointment_custom_form', {
-            'services': services
-        })
-
-    @http.route('/website/appointment/submit', type='http', auth='public', website=True, csrf=True)
-    def appointment_submit(self, **post):
+    @http.route(['/appointment/<model("appointment.type"):appointment_type>/submit'], type='http', auth="public", website=True, csrf=True)
+    def appointment_submit(self, appointment_type, **post):
         uploaded_file = request.httprequest.files.get('attachment_file')
-        product_id = int(post.get('service_product_id'))
-        product = request.env['product.product'].sudo().browse(product_id)
+        product_id = post.get('service_product_id')
+        product = None
+        if product_id:
+            product = request.env['product.product'].sudo().browse(int(product_id))
 
-        partner = request.env['res.partner'].sudo().create({
-            'name': post.get('name'),
-            'email': post.get('email'),
-            'phone': post.get('phone'),
-        })
+        # Continue with the original logic to create the event
+        response = super().appointment_submit(appointment_type, **post)
 
-        appointment = request.env['calendar.event'].sudo().create({
-            'name': f"Appointment for {partner.name}",
-            'partner_ids': [(4, partner.id)],
-            'start': fields.Datetime.now(),
-        })
+        # Attempt to find the last created appointment
+        appointment = request.env['calendar.event'].sudo().search([], order='id desc', limit=1)
 
-        if uploaded_file:
-            request.env['ir.attachment'].sudo().create({
-                'name': uploaded_file.filename,
-                'datas': base64.b64encode(uploaded_file.read()),
-                'res_model': 'calendar.event',
-                'res_id': appointment.id,
-                'type': 'binary',
-            })
+        # Save product_id and attachment to the event
+        if appointment:
+            vals = {}
+            if product:
+                vals['x_product_id'] = product.id
+            if uploaded_file:
+                attachment = request.env['ir.attachment'].sudo().create({
+                    'name': uploaded_file.filename,
+                    'datas': base64.b64encode(uploaded_file.read()),
+                    'res_model': 'calendar.event',
+                    'res_id': appointment.id,
+                    'type': 'binary',
+                })
+                vals['x_attachment_id'] = attachment.id
 
-        request.env['sale.order'].sudo().create({
-            'partner_id': partner.id,
-            'order_line': [(0, 0, {
-                'product_id': product.id,
-                'product_uom_qty': 1,
-            })]
-        })
+            if vals:
+                appointment.write(vals)
 
-        return request.redirect('/website/appointment/thank-you')
+        return response
