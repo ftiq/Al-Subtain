@@ -1,0 +1,10 @@
+<odoo>
+    <template id="website_appointment_custom_form" inherit_id="appointment.appointment_form">
+        <xpath expr="//form" position="inside">
+            <div class="form-group">
+                <label for="attachment_file">Upload File (optional)</label>
+                <input type="file" name="attachment_file" class="form-control"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
