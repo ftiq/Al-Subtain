@@ -2,45 +2,29 @@
     <template id="appointment_page" name="Appointment Page">
         <t t-call="website.layout">
             <div class="container mt-5">
-                <h2>حجز موعد</h2>
                 <form method="post" action="/appointment/submit" class="mt-4">
                     
                     <!-- Service Selection -->
                     <div class="form-group">
-                        <label for="service_id">اختر الخدمة</label>
-                        <select name="service_id" class="form-control" required>
-                            <option value="">-- الرجاء اختيار الخدمة --</option>
+                        <label for="service_id">Select Service</label>
+                        <select name="service_id" class="form-control" required="required">
+                            <option value="">-- Select Service --</option>
                             <t t-foreach="services" t-as="service">
-                                <option value="<t t-esc='service.id'/>">
-                                    <t t-esc="service.name"/> - <t t-esc="service.list_price"/> ر.س
+                                <option t-att-value="service.id">
+                                    <t t-esc="service.name"/> - <t t-esc="service.list_price"/>
                                 </option>
                             </t>
                         </select>
                     </div>
                     
-                    <!-- Date/Time Selection -->
+                    <!-- Basic Fields -->
                     <div class="form-group">
-                        <label for="start_datetime">تاريخ ووقت البدء</label>
-                        <input type="datetime-local" name="start_datetime" class="form-control" required/>
+                        <label for="name">Your Name</label>
+                        <input type="text" name="name" class="form-control" required="required"/>
                     </div>
                     
-                    <!-- Other Fields -->
-                    <div class="form-group">
-                        <label for="name">الاسم الكامل</label>
-                        <input type="text" name="name" class="form-control" required/>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary mt-3">تأكيد الحجز</button>
+                    <button type="submit" class="btn btn-primary">Book Appointment</button>
                 </form>
-            </div>
-        </t>
-    </template>
-    
-    <template id="confirmation_page" name="Confirmation Page">
-        <t t-call="website.layout">
-            <div class="container mt-5 text-center">
-                <h2>تم حجز الموعد بنجاح!</h2>
-                <p>شكراً لك، سنتواصل معك قريباً لتأكيد التفاصيل.</p>
             </div>
         </t>
     </template>
