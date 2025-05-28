@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<odoo>
-    <record id="view_appointment_type_form_inherit" model="ir.ui.view">
-        <field name="name">appointment.type.form.inherit</field>
-        <field name="model">appointment.type</field>
-        <field name="inherit_id" ref="appointment.view_appointment_type_form_enterprise"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='category']" position="after">
-                <field name="product_id"/>
-                <field name="allow_attachment"/>
-            </xpath>
-        </field>
-    </record>
-</odoo>
+<record id="view_appointment_type_form_inherit" model="ir.ui.view">
+    <field name="name">appointment.type.form.inherit</field>
+    <field name="model">appointment.type</field>
+    <!-- Change this line -->
+    <field name="inherit_id" ref="appointment.view_appointment_type_form"/>
+    <!-- End of change -->
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='category']" position="after">
+            <field name="product_id"/>
+            <field name="allow_attachment"/>
+        </xpath>
+    </field>
+</record>
