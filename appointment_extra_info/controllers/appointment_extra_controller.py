@@ -19,8 +19,6 @@ class AppointmentExtraController(http.Controller):
         event = request.env['calendar.event'].sudo().browse(event_id)
 
         file = request.httprequest.files.get('attachment_file')
-        attachment_id = None
-
         if file:
             attachment = request.env['ir.attachment'].sudo().create({
                 'name': file.filename,
