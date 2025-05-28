@@ -10,17 +10,21 @@ class WebsiteAppointmentEnhanced(AppointmentController):
         service_id = int(kwargs.get('service_id') or 0)
         uploaded_file = request.httprequest.files.get('attachment')
 
-        # معالجة staff_user_id إذا كان ID أو بريد إلكتروني
-        try:
-            staff_user_id = int(staff_user_id)
-        except ValueError:
+        # تحقق ذكي: هل staff_user_id رقم أو بريد؟
+        if not staff_user_id.isdigit():
             staff_user = request.env['res.users'].sudo().search([('login', '=', staff_user_id)], limit=1)
-            staff_user_id = staff_user.id if staff_user else None
+            if not staff_user:
+                return request.redirect('/appointment/%s?error=staff_not_found' % appointment_type_id)
+            staff_user_id = staff_user.id
+        else:
+            staff_user_id = int(staff_user_id)
 
+        # تنفيذ الدالة الأصلية
         response = super().appointment_form_submit(
             appointment_type_id, datetime_str, duration_str, staff_user_id, name, phone, email, **kwargs
         )
 
+        # ربط الموعد بأمر بيع وخدمة ومرفق
         appointment = request.env['calendar.event'].sudo().search([
             ('name', '=', name),
             ('start', '=', datetime_str),
