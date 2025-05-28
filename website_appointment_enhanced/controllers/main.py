@@ -10,6 +10,13 @@ class WebsiteAppointmentEnhanced(AppointmentController):
         service_id = int(kwargs.get('service_id') or 0)
         uploaded_file = request.httprequest.files.get('attachment')
 
+        # معالجة staff_user_id إذا كان ID أو بريد إلكتروني
+        try:
+            staff_user_id = int(staff_user_id)
+        except ValueError:
+            staff_user = request.env['res.users'].sudo().search([('login', '=', staff_user_id)], limit=1)
+            staff_user_id = staff_user.id if staff_user else None
+
         response = super().appointment_form_submit(
             appointment_type_id, datetime_str, duration_str, staff_user_id, name, phone, email, **kwargs
         )
@@ -38,7 +45,7 @@ class WebsiteAppointmentEnhanced(AppointmentController):
                 })
 
             if uploaded_file:
-                attachment = request.env['ir.attachment'].sudo().create({
+                request.env['ir.attachment'].sudo().create({
                     'name': uploaded_file.filename,
                     'res_model': 'sale.order',
                     'res_id': order.id,
