@@ -1,0 +1,15 @@
+<odoo>
+    <template id="appointment_form_custom" inherit_id="website_appointment.appointment_form">
+        <xpath expr="//form[@id='appointment_form']" position="inside">
+            <div class="form-group" t-if="products">
+                <label for="product_id">Select Service</label>
+                <select name="product_id" class="form-control" required="1">
+                    <option value="">-- Select a Service --</option>
+                    <t t-foreach="products" t-as="product">
+                        <option t-att-value="product.id" t-esc="product.name"/>
+                    </t>
+                </select>
+            </div>
+        </xpath>
+    </template>
+</odoo>
