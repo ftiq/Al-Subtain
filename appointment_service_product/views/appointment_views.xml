@@ -1,0 +1,12 @@
+<odoo>
+    <record id="view_appointment_form_inherit" model="ir.ui.view">
+        <field name="name">appointment.form.inherit</field>
+        <field name="model">appointment.appointment</field>
+        <field name="inherit_id" ref="website_appointment.view_appointment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='appointment_type_id']" position="after">
+                <field name="product_id" widget="many2one"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
