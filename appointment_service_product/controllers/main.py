@@ -1,11 +1,11 @@
 from odoo import http
-from odoo.addons.website_appointment.controllers.main import WebsiteAppointment
+from odoo.addons.website_calendar.controllers.main import WebsiteCalendarController
 
-class CustomWebsiteAppointment(WebsiteAppointment):
-    
+class CustomWebsiteCalendarController(WebsiteCalendarController):
+
     @http.route()
-    def appointment(self, **kwargs):
-        response = super().appointment(**kwargs)
+    def calendar_appointment(self, **kwargs):
+        response = super().calendar_appointment(**kwargs)
         if response.qcontext:
             response.qcontext['products'] = http.request.env['product.product'].search([
                 ('type', '=', 'service'),
