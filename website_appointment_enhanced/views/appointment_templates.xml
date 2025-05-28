@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
   <template id="appointment_form_custom" inherit_id="appointment.appointment_form">
+    <!-- السماح بإرفاق ملفات -->
     <xpath expr="//form" position="attributes">
       <attribute name="enctype">multipart/form-data</attribute>
     </xpath>
+
+    <!-- الحقول الجديدة: اختيار خدمة + مرفق -->
     <xpath expr="//form//div[last()]" position="before">
       <div class="form-group">
         <label for="service_id">اختر الخدمة المطلوبة</label>
         <select name="service_id" id="service_id" class="form-control" required="1">
           <option value="">-- اختر الخدمة --</option>
-          <t t-foreach="request.env['product.product'].sudo().search([('type','=','service')])" t-as="prod">
+          <!-- استدعاء من product.template بدلاً من product.product -->
+          <t t-foreach="request.env['product.template'].sudo().search([('type','=','service')])" t-as="prod">
             <option t-att-value="prod.id">
-              <t t-esc="prod.display_name"/>
+              <t t-esc="prod.name"/>
             </option>
           </t>
         </select>
       </div>
+
       <div class="form-group">
         <label for="attachment">مرفق (اختياري)</label>
         <input type="file" name="attachment" id="attachment" class="form-control" accept=".pdf,image/*"/>
