@@ -1,0 +1,19 @@
+
+<odoo>
+    <template id="website_appointment_custom_form" name="Appointment Form With Service" inherit_id="appointment.appointment_form">
+        <xpath expr="//form" position="inside">
+            <div class="form-group">
+                <label for="service_product_id">Choose a Service</label>
+                <select name="service_product_id" class="form-control">
+                    <t t-foreach="services" t-as="service">
+                        <option t-att-value="service.id"><t t-esc="service.name"/></option>
+                    </t>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="attachment_file">Upload File (optional)</label>
+                <input type="file" name="attachment_file" class="form-control"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
