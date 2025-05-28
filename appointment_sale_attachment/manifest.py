@@ -1,23 +1,21 @@
 {
-    'name': 'Appointment Sales and Attachments',
+    'name': 'Custom Appointment Sales',
     'version': '1.0',
-    'summary': 'Add product and attachment to appointments',
-    'description': """
-        This module extends appointment functionality to:
-        - Add product to appointment types
-        - Allow file uploads during booking
-        - Create sales orders automatically
-    """,
-    'author': 'Your Name',
-    'website': 'https://yourwebsite.com',
-    'category': 'Services/Appointment',
+    'category': 'Website',
+    'summary': 'Create Sale Order from Appointment Form',
+    'description': 'Generate Sale Order from Appointment and Save Attachment',
     'depends': ['appointment', 'sale'],
     'data': [
+        'views/appointment_templates.xml',
         'views/appointment_type_views.xml',
         'views/calendar_event_views.xml',
-        'static/src/xml/appointment_templates.xml',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            # Include any custom CSS/JS here if needed
+        ],
+    },
     'installable': True,
-    'application': False,
+    'application': True,
     'license': 'LGPL-3',
 }
