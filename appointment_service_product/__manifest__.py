@@ -1,11 +1,9 @@
 {
-    'name': 'خدمة اختيار المنتج للمواعيد',
+    'name': 'Add Service Field',
     'version': '1.0',
-    'depends': ['calendar', 'website', 'product'],
+    'depends': ['website', 'product'],
     'data': [
-        'views/calendar_views.xml',
         'views/website_templates.xml',
     ],
     'installable': True,
-    'application': False,
 }
