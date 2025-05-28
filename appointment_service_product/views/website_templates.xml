@@ -1,31 +1,17 @@
 <odoo>
-    <template id="appointment_page" name="Appointment Page">
-        <t t-call="website.layout">
-            <div class="container mt-5">
-                <form method="post" action="/appointment/submit" class="mt-4">
-                    
-                    <!-- Service Selection -->
-                    <div class="form-group">
-                        <label for="service_id">Select Service</label>
-                        <select name="service_id" class="form-control" required="required">
-                            <option value="">-- Select Service --</option>
-                            <t t-foreach="services" t-as="service">
-                                <option t-att-value="service.id">
-                                    <t t-esc="service.name"/> - <t t-esc="service.list_price"/>
-                                </option>
-                            </t>
-                        </select>
-                    </div>
-                    
-                    <!-- Basic Fields -->
-                    <div class="form-group">
-                        <label for="name">Your Name</label>
-                        <input type="text" name="name" class="form-control" required="required"/>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">Book Appointment</button>
-                </form>
+    <template id="appointment_form_custom" inherit_id="website_calendar.index">
+        <xpath expr="//form[contains(@class,'o_appointment_form')]" position="inside">
+            <div class="form-group">
+                <label for="product_id">اختر الخدمة</label>
+                <select name="product_id" class="form-control" required="required">
+                    <option value="">-- اختر خدمة --</option>
+                    <t t-foreach="services" t-as="service">
+                        <option t-att-value="service.id">
+                            <t t-esc="service.name"/> - <t t-esc="service.list_price"/> ر.س
+                        </option>
+                    </t>
+                </select>
             </div>
-        </t>
+        </xpath>
     </template>
 </odoo>
