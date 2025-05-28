@@ -1,44 +1,14 @@
 from odoo import http
-from odoo.http import request
-import base64
+from odoo.addons.website_appointment.controllers.main import WebsiteAppointment
 
-class WebsiteAppointmentExtended(http.Controller):
-
-    @http.route('/website/appointment', type='http', auth='public', website=True)
-    def render_appointment_form(self, **kwargs):
-        services = request.env['product.product'].sudo().search([('sale_ok', '=', True), ('type', '=', 'service')])
-        return request.render('website_appointment_service.website_appointment_custom_form', {
-            'services': services
-        })
-
-    @http.route('/website/appointment/submit', type='http', auth='public', website=True, csrf=True)
-    def appointment_submit(self, **post):
-        uploaded_file = request.httprequest.files.get('attachment_file')
-        product_id = int(post.get('service_product_id'))
-        product = request.env['product.product'].sudo().browse(product_id)
-        partner = request.env.user.partner_id
-
-        appointment = request.env['calendar.event'].sudo().create({
-            'name': post.get('name'),
-            'partner_ids': [(4, partner.id)],
-            'x_service_product_id': product.id  # custom field must exist in calendar.event
-        })
-
-        if uploaded_file:
-            request.env['ir.attachment'].sudo().create({
-                'name': uploaded_file.filename,
-                'datas': base64.b64encode(uploaded_file.read()),
-                'res_model': 'calendar.event',
-                'res_id': appointment.id,
-                'type': 'binary',
-            })
-
-        request.env['sale.order'].sudo().create({
-            'partner_id': partner.id,
-            'order_line': [(0, 0, {
-                'product_id': product.id,
-                'product_uom_qty': 1,
-            })]
-        })
-
-        return request.redirect('/website/appointment/thank-you')
+class CustomWebsiteAppointment(WebsiteAppointment):
+    
+    @http.route()
+    def appointment(self, **kwargs):
+        response = super().appointment(**kwargs)
+        if response.qcontext:
+            response.qcontext['products'] = http.request.env['product.product'].search([
+                ('type', '=', 'service'),
+                ('sale_ok', '=', True)
+            ])
+        return response
