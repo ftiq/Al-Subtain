@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="appointment_info_inherit" inherit_id="appointment.appointment_info" name="Appointment Info Inherit">
+        <xpath expr="//form" position="inside">
+            <div class="form-group">
+                <label for="x_service_product_id">نوع الخدمة</label>
+                <select name="x_service_product_id" class="form-control" required="required">
+                    <t t-foreach="products" t-as="product">
+                        <option t-att-value="product.id"><t t-esc="product.name"/></option>
+                    </t>
+                </select>
+            </div>
+        </xpath>
+    </template>
+</odoo>
