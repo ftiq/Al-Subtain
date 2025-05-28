@@ -5,6 +5,6 @@ class CalendarEvent(models.Model):
 
     product_id = fields.Many2one(
         'product.product',
-        string='Service/Product',
-        domain=[('type', '=', 'service')]
+        string='Booked Service',
+        domain="[('type', '=', 'service')]"
     )
