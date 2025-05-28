@@ -1,8 +1,0 @@
-
-<odoo>
-  <template id="appointment.appointment_form" inherit_id="appointment.appointment_form">
-    <xpath expr="//form//div[last()]" position="before">
-      <t t-call="safe_appointment_extension.safe_appointment_extra_fields"/>
-    </xpath>
-  </template>
-</odoo>
