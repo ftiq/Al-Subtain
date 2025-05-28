@@ -1,17 +1,47 @@
 <odoo>
-    <template id="product_selection_snippet" inherit_id="website_calendar.appointment">
-        <xpath expr="//div[hasclass('o_appointment_form')]" position="inside">
-            <div class="form-group" t-if="products">
-                <label for="product_id">Service Selection</label>
-                <select name="product_id" class="form-control" required>
-                    <option value="">-- Select Service --</option>
-                    <t t-foreach="products" t-as="product">
-                        <option t-att-value="product.id">
-                            <t t-esc="product.name"/> - <t t-esc="product.list_price"/>
-                        </option>
-                    </t>
-                </select>
+    <template id="appointment_page" name="Appointment Page">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <h2>حجز موعد</h2>
+                <form method="post" action="/appointment/submit" class="mt-4">
+                    
+                    <!-- Service Selection -->
+                    <div class="form-group">
+                        <label for="service_id">اختر الخدمة</label>
+                        <select name="service_id" class="form-control" required>
+                            <option value="">-- الرجاء اختيار الخدمة --</option>
+                            <t t-foreach="services" t-as="service">
+                                <option value="<t t-esc='service.id'/>">
+                                    <t t-esc="service.name"/> - <t t-esc="service.list_price"/> ر.س
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                    
+                    <!-- Date/Time Selection -->
+                    <div class="form-group">
+                        <label for="start_datetime">تاريخ ووقت البدء</label>
+                        <input type="datetime-local" name="start_datetime" class="form-control" required/>
+                    </div>
+                    
+                    <!-- Other Fields -->
+                    <div class="form-group">
+                        <label for="name">الاسم الكامل</label>
+                        <input type="text" name="name" class="form-control" required/>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary mt-3">تأكيد الحجز</button>
+                </form>
             </div>
-        </xpath>
+        </t>
+    </template>
+    
+    <template id="confirmation_page" name="Confirmation Page">
+        <t t-call="website.layout">
+            <div class="container mt-5 text-center">
+                <h2>تم حجز الموعد بنجاح!</h2>
+                <p>شكراً لك، سنتواصل معك قريباً لتأكيد التفاصيل.</p>
+            </div>
+        </t>
     </template>
 </odoo>
