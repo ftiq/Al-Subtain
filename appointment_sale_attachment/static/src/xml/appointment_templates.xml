@@ -1,0 +1,15 @@
+<odoo>
+    <template id="appointment_form_custom_fields" inherit_id="appointment.appointment_form">
+        <xpath expr="//form[@id='appointment_form']" position="before">
+            <t t-if="appointment_type.allow_attachment">
+                <div class="form-group">
+                    <label for="attachment">Upload File</label>
+                    <input type="file" class="form-control" id="attachment" name="attachment"/>
+                </div>
+            </t>
+            <t t-if="appointment_type.product_id">
+                <input type="hidden" name="product_id" t-att-value="appointment_type.product_id.id"/>
+            </t>
+        </xpath>
+    </template>
+</odoo>
