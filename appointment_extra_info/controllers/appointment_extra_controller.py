@@ -42,3 +42,10 @@ class AppointmentExtraController(http.Controller):
             })
 
         return request.redirect('/website/appointment/thank-you')
+        from odoo.addons.appointment.controllers.main import AppointmentWebsite
+
+        class AppointmentWebsiteCustom(AppointmentWebsite):
+
+            def _redirect_to_next(self, appointment, event):
+                # إعادة التوجيه إلى صفحة الخدمة والمرفق بدل thank-you
+                return '/appointment/extra-info/{}'.format(event.id)
