@@ -3,10 +3,16 @@ from odoo import models, api
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    SAMPLE_PRODUCT_ID = 735  # Product ID from user image
+    SAMPLE_PRODUCT_ID = 735  # Product ID for "العينات المستلمة"
 
     def action_confirm(self):
         res = super().action_confirm()
+        # Remove the standard delivery pickings for sample product
+        for picking in self.picking_ids:
+            for move in picking.move_lines:
+                if move.product_id.id == self.SAMPLE_PRODUCT_ID:
+                    picking.unlink()
+                    break
 
         picking_type = self.env.ref('stock.picking_type_in')  # Receipt
         location_dest = self.env.ref('stock.stock_location_stock')
