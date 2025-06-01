@@ -9,7 +9,8 @@ class SaleOrder(models.Model):
         res = super().action_confirm()
         # Remove the standard delivery pickings for sample product
         for picking in self.picking_ids:
-            for move in picking.move_lines:
+            move_lines = getattr(picking, 'move_ids_without_package', False) or getattr(picking, 'move_lines', False)
+            for move in move_lines:
                 if move.product_id.id == self.SAMPLE_PRODUCT_ID:
                     picking.unlink()
                     break
