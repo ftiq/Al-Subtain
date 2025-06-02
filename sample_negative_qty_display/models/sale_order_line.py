@@ -1,7 +1,6 @@
-
 from odoo import models, fields, api
 
-SAMPLE_PRODUCT_ID = 735  # Replace with your product's ID
+SAMPLE_PRODUCT_ID = 735  # عدّل هذا إلى رقم المنتج الفعلي لديك
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
