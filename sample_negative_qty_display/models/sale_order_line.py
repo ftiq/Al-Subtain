@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 
-SAMPLE_PRODUCT_ID = 735  # عدل حسب رقم المنتج الخاص بك
+SAMPLE_PRODUCT_ID = 735  # عدل هذا إلى رقم المنتج الخاص بك
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -9,7 +9,7 @@ class SaleOrderLine(models.Model):
         string='Quantity',
         compute='_compute_display_qty',
         inverse='_inverse_display_qty',
-        store=True,
+        store=True,   # مهم جدًا ليتم تخزين الحقل في قاعدة البيانات
     )
 
     @api.depends('product_id', 'product_uom_qty')
