@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 
-SAMPLE_PRODUCT_ID = 735  # عدل هذا إلى رقم المنتج المطلوب
+SAMPLE_PRODUCT_ID = 735  # عدل رقم المنتج
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -36,9 +36,10 @@ class SaleOrderLine(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
-        res = super().write(vals)
-        # بعد الكتابة، نعكس قيمة product_uom_qty للسطر إذا المنتج هو المطلوب
-        for line in self:
-            if line.product_id and line.product_id.id == SAMPLE_PRODUCT_ID and line.product_uom_qty > 0:
-                line.product_uom_qty = -abs(line.product_uom_qty)
-        return res
+        if 'product_uom_qty' in vals or 'product_id' in vals:
+            for line in self:
+                product_id = vals.get('product_id', line.product_id.id)
+                qty = vals.get('product_uom_qty', line.product_uom_qty)
+                if product_id == SAMPLE_PRODUCT_ID and qty > 0:
+                    vals['product_uom_qty'] = -abs(qty)
+        return super().write(vals)
