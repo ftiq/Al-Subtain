@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 
-SAMPLE_PRODUCT_ID = 735  # عدّل إلى ID منتج العينات
+SAMPLE_PRODUCT_ID = 735  # عدل حسب رقم المنتج الخاص بك
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -27,18 +27,18 @@ class SaleOrderLine(models.Model):
             else:
                 line.product_uom_qty = line.display_qty
 
-    @api.model
-    def create(self, vals):
-        if 'product_id' in vals and vals.get('product_uom_qty'):
-            if vals['product_id'] == SAMPLE_PRODUCT_ID:
-                vals['product_uom_qty'] = -abs(vals['product_uom_qty'])
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if 'product_id' in vals and 'product_uom_qty' in vals:
+                if vals['product_id'] == SAMPLE_PRODUCT_ID:
+                    vals['product_uom_qty'] = -abs(vals['product_uom_qty'])
+        return super().create(vals_list)
 
     def write(self, vals):
-        if 'product_id' in vals or 'product_uom_qty' in vals:
-            for line in self:
-                product_id = vals.get('product_id', line.product_id.id)
-                qty = vals.get('product_uom_qty', line.product_uom_qty)
-                if product_id == SAMPLE_PRODUCT_ID and qty > 0:
-                    vals['product_uom_qty'] = -abs(qty)
+        for line in self:
+            product_id = vals.get('product_id', line.product_id.id)
+            qty = vals.get('product_uom_qty', line.product_uom_qty)
+            if product_id == SAMPLE_PRODUCT_ID and qty > 0:
+                vals['product_uom_qty'] = -abs(qty)
         return super().write(vals)
