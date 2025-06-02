@@ -1,14 +1,21 @@
-
 <odoo>
-    <record id="view_order_form_inherit_sample_qty" model="ir.ui.view">
-        <field name="name">sale.order.form.sample.qty</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
+    <record id="view_order_line_tree_inherit_sample_qty" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.sample.qty</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="replace">
+            <xpath expr="//field[@name='product_uom_qty']" position="replace">
                 <field name="display_qty"/>
             </xpath>
-            <xpath expr="//field[@name='order_line']/form//field[@name='product_uom_qty']" position="replace">
+        </field>
+    </record>
+
+    <record id="view_order_line_form_inherit_sample_qty" model="ir.ui.view">
+        <field name="name">sale.order.line.form.sample.qty</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_uom_qty']" position="replace">
                 <field name="display_qty"/>
             </xpath>
         </field>
