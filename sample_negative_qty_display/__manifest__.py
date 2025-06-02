@@ -4,7 +4,9 @@
     "category": "Sales",
     "summary": "Show only display quantity for a specific product as positive in Sale Order lines",
     "depends": ["sale_management"],
- 
+    "data": [
+        # اتركها فارغة أو احذف السطر
+    ],
     "installable": True,
     "application": False,
     "license": "LGPL-3"
