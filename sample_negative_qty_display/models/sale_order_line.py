@@ -10,23 +10,16 @@ class SaleOrderLine(models.Model):
         store=False,
     )
 
-    @api.depends('product_uom_qty', 'product_id')
+    @api.depends('product_uom_qty')
     def _compute_display_qty(self):
         for line in self:
-            if line.product_id.id == 735:  # فقط للمادة ذات ID = 735
-                line.display_qty = abs(line.product_uom_qty)
-            else:
-                line.display_qty = line.product_uom_qty  # القيمة الأصلية للمواد الأخرى
+            line.display_qty = abs(line.product_uom_qty)
 
     def _inverse_display_qty(self):
         for line in self:
-            if line.product_id.id == 735:  # فقط للمادة ذات ID = 735
-                line.product_uom_qty = -abs(line.display_qty)
-            # لا تفعل شيئاً للمواد الأخرى
+            line.product_uom_qty = -abs(line.display_qty)
 
     @api.onchange('display_qty')
     def _onchange_display_qty(self):
         for line in self:
-            if line.product_id.id == 735:  # فقط للمادة ذات ID = 735
-                line.product_uom_qty = -abs(line.display_qty)
-            # لا تفعل شيئاً للمواد الأخرى
+            line.product_uom_qty = -abs(line.display_qty)
