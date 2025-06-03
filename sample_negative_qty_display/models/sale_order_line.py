@@ -1,35 +1,41 @@
 from odoo import models, fields, api
 
-SAMPLE_PRODUCT_ID = 735  # عدل حسب المنتج
+SAMPLE_PRODUCT_ID = 735  # عدل الرقم حسب المنتج المطلوب
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     display_qty = fields.Float(
-        string='Quantity',
-        compute='_compute_display_qty',
-        store=False,
+        string='Display Quantity',
+        default=0.0,
     )
 
-    @api.depends('product_uom_qty', 'product_id')
-    def _compute_display_qty(self):
+    @api.onchange('display_qty')
+    def _onchange_display_qty(self):
         for line in self:
             if line.product_id and line.product_id.id == SAMPLE_PRODUCT_ID:
-                line.display_qty = abs(line.product_uom_qty)
+                # نغير الكمية الحقيقية إلى سالبة
+                line.product_uom_qty = -abs(line.display_qty)
             else:
-                line.display_qty = line.product_uom_qty
+                # لباقي المنتجات نحتفظ بالكمية كما هي
+                line.product_uom_qty = line.display_qty
 
     @api.model_create_multi
     def create(self, vals_list):
-        records = super().create(vals_list)
-        for line in records:
-            if line.product_id and line.product_id.id == SAMPLE_PRODUCT_ID and line.product_uom_qty > 0:
-                line.product_uom_qty = -abs(line.product_uom_qty)
-        return records
+        for vals in vals_list:
+            if vals.get('product_id') == SAMPLE_PRODUCT_ID and 'display_qty' in vals:
+                vals['product_uom_qty'] = -abs(vals['display_qty'])
+            elif 'display_qty' in vals:
+                vals['product_uom_qty'] = vals['display_qty']
+        return super().create(vals_list)
 
     def write(self, vals):
-        res = super().write(vals)
-        for line in self:
-            if line.product_id and line.product_id.id == SAMPLE_PRODUCT_ID and line.product_uom_qty > 0:
-                line.product_uom_qty = -abs(line.product_uom_qty)
-        return res
+        if 'display_qty' in vals or 'product_id' in vals:
+            for line in self:
+                product_id = vals.get('product_id', line.product_id.id)
+                display_qty = vals.get('display_qty', line.display_qty)
+                if product_id == SAMPLE_PRODUCT_ID:
+                    vals['product_uom_qty'] = -abs(display_qty)
+                else:
+                    vals['product_uom_qty'] = display_qty
+        return super().write(vals)
