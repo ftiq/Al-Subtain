@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 
-SAMPLE_PRODUCT_ID = 735  # رقم المادة التي تريد عكس الإشارة لها فقط
+SAMPLE_PRODUCT_ID = 735
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
