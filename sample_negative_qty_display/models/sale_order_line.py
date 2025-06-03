@@ -22,8 +22,11 @@ class SaleOrderLine(models.Model):
     def _inverse_display_qty(self):
         for line in self:
             if line.product_id.product_tmpl_id.id == 735:
-                # تأكيد التحويل إلى سالب مع تقييم القيمة المطلقة
+                # يخزنها كسالب دائماً
                 line.product_uom_qty = -abs(line.display_qty) if line.display_qty else 0.0
+            else:
+                # يخزنها كما هي
+                line.product_uom_qty = line.display_qty
 
     @api.onchange('display_qty')
     def _onchange_display_qty(self):
