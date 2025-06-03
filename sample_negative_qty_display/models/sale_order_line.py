@@ -10,34 +10,23 @@ class SaleOrderLine(models.Model):
         store=False,
     )
 
-    @api.model
-    def _get_sample_product_id(self):
-        # جلب id من xml id
-        product = self.env.ref('__export__.product_template_735_e00f2af9', raise_if_not_found=False)
-        return product.id if product else False
-
-    @api.depends('product_id', 'product_uom_qty')
+    @api.depends('product_uom_qty', 'product_id')
     def _compute_display_qty(self):
-        sample_id = self._get_sample_product_id()
         for line in self:
-            if line.product_id and line.product_id.id == sample_id:
+            if line.product_id.id == 735:  # فقط للمادة ذات ID = 735
                 line.display_qty = abs(line.product_uom_qty)
             else:
-                line.display_qty = line.product_uom_qty
+                line.display_qty = line.product_uom_qty  # القيمة الأصلية للمواد الأخرى
 
     def _inverse_display_qty(self):
-        sample_id = self._get_sample_product_id()
         for line in self:
-            if line.product_id and line.product_id.id == sample_id:
+            if line.product_id.id == 735:  # فقط للمادة ذات ID = 735
                 line.product_uom_qty = -abs(line.display_qty)
-            else:
-                line.product_uom_qty = line.display_qty
+            # لا تفعل شيئاً للمواد الأخرى
 
-    @api.onchange('display_qty', 'product_id')
+    @api.onchange('display_qty')
     def _onchange_display_qty(self):
-        sample_id = self._get_sample_product_id()
         for line in self:
-            if line.product_id and line.product_id.id == sample_id:
+            if line.product_id.id == 735:  # فقط للمادة ذات ID = 735
                 line.product_uom_qty = -abs(line.display_qty)
-            else:
-                line.product_uom_qty = line.display_qty
+            # لا تفعل شيئاً للمواد الأخرى
