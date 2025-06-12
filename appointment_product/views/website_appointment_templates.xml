@@ -1,0 +1,14 @@
+<odoo>
+    <template id="website_appointment_service_select" inherit_id="website_appointment.appointment_select_details">
+        <xpath expr="//div[@id='appointment_fields']" position="before">
+            <div class="form-group" t-if="appointment_type_id">
+                <label for="service_select">اختر الخدمة/المنتج</label>
+                <select name="product_ids" id="service_select" class="form-control" multiple="multiple">
+                    <t t-foreach="request.env['calendar.appointment.product'].search([('appointment_type_id','=',appointment_type_id)])" t-as="service">
+                        <option t-att-value="service.id"><t t-esc="service.name"/></option>
+                    </t>
+                </select>
+            </div>
+        </xpath>
+    </template>
+</odoo>
