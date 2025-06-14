@@ -1,0 +1,10 @@
+<odoo>
+  <record id="seq_internal_mail" model="ir.sequence">
+    <field name="name">Internal Mail Sequence</field>
+    <field name="code">internal.mail.seq</field>
+    <field name="prefix">أ/</field>
+    <field name="padding">0</field>
+    <field name="number_next">1</field>
+    <field name="company_id" eval="False"/>
+  </record>
+</odoo>
