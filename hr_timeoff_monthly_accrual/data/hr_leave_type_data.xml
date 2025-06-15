@@ -1,8 +1,6 @@
 <odoo>
   <record id="timeoff_type_time_credit" model="hr.leave.type">
     <field name="name">الإجازات الزمنية</field>
-    <field name="allocation_unit">hour</field>
-    <field name="limit">False</field>
     <field name="monthly_alloc_hours">8.0</field>
     <field name="threshold_hours">0.0</field>
     <field name="annual_alloc_hours">0.0</field>
