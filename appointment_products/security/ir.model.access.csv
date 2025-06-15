@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_appointment_type_product_user,appointment.type.product.user,model_appointment_type_product,appointment.group_appointment_user,1,1,1,1
+access_appointment_type_product_manager,appointment.type.product.manager,model_appointment_type_product,appointment.group_appointment_manager,1,1,1,1
+access_appointment_product_selector_user,appointment.product.selector.user,model_appointment_product_selector,appointment.group_appointment_user,1,1,1,1
+access_appointment_product_selector_manager,appointment.product.selector.manager,model_appointment_product_selector,appointment.group_appointment_manager,1,1,1,1
