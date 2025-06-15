@@ -7,7 +7,6 @@
     <field name="code">model._cron_accrue_timeoff()</field>
     <field name="interval_number">1</field>
     <field name="interval_type">months</field>
-    <field name="doall">False</field>
     <field name="active">True</field>
   </record>
   <!-- Annual allocation -->
@@ -18,7 +17,6 @@
     <field name="code">model._cron_annual_allocate()</field>
     <field name="interval_number">1</field>
     <field name="interval_type">years</field>
-    <field name="doall">False</field>
     <field name="active">True</field>
   </record>
 </odoo>
