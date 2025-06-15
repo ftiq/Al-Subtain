@@ -5,7 +5,7 @@ from datetime import timedelta
 class HrLeaveType(models.Model):
     _inherit = 'hr.leave.type'
 
-    monthly_alloc_hours = fields.Float(string="Monthly Allocation Hours", default=8.0)
+    monthly_alloc_hours = fields.Float(string="Monthly Allocation Hours", default=10.0)
     threshold_hours = fields.Float(string="Low Balance Threshold Hours", default=0.0,
                                    help="Send email alert when remaining hours <= this value")
     annual_alloc_hours = fields.Float(string="Annual Allocation Hours", default=0.0)
