@@ -20,10 +20,8 @@
     ],
     'assets': {
         'web.assets_backend': [
-            'project_correspondence/static/src/js/dashboard.js',
-        ],
-        'web.assets_qweb': [
             'project_correspondence/static/src/xml/dashboard_template.xml',
+            'project_correspondence/static/src/js/dashboard.js',
         ],
     },
     'icon': 'static/description/icon.png',
