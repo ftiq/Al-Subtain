@@ -16,6 +16,7 @@
         'security/ir.model.access.csv',
         'security/rules.xml',
         'views/correspondence_views.xml',
+        'views/dashboard_action.xml', 
     ],
     'assets': {
         'web.assets_backend': [
