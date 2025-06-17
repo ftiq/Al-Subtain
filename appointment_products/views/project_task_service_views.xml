@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_task_view_form_inherit_services" model="ir.ui.view">
+        <field name="name">project.task.form.inherit.fsm.services</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="الخدمات" name="fsm_services">
+                    <field name="service_line_ids" nolabel="1">
+                        <list editable="bottom" string="الخدمات">
+                            <field name="product_id" string="المنتج" options="{'no_create': True}"/>
+                            <field name="quantity" string="الكمية"/>
+                            <field name="price_unit" string="سعر الوحدة" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="price_subtotal" string="الإجمالي" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo> 
