@@ -1,0 +1,16 @@
+<templates id="template" xml:space="preserve">
+  <t t-name="project_correspondence.DashboardTemplate">
+    <div class="o_dashboard row">
+      <t t-foreach="cards" t-as="card">
+        <div class="col-4">
+          <div t-att-data-state="card.state" class="o_dashboard_card card mb-3">
+            <div class="card-body text-center">
+              <h5 t-esc="card.label"/>
+              <p class="h2 font-weight-bold" t-esc="card.count"/>
+            </div>
+          </div>
+        </div>
+      </t>
+    </div>
+  </t>
+</templates>

@@ -1,0 +1,58 @@
+<odoo>
+  <data>
+    <record id="action_correspondence" model="ir.actions.act_window">
+      <field name="name">كتب القسم</field>
+      <field name="res_model">project.correspondence</field>
+      <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_correspondence_root" name="كتب القسم"/>
+    <menuitem id="menu_correspondence_list" name="قائمة الكتب" parent="menu_correspondence_root" action="action_correspondence"/>
+    <record id="view_correspondence_list" model="ir.ui.view">
+      <field name="name">project.correspondence.list</field>
+      <field name="model">project.correspondence</field>
+      <field name="type">list</field>
+      <field name="priority">10</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="department_id"/>
+          <field name="subject"/>
+          <field name="create_date"/>
+          <field name="attachment_ids" widget="attachment"/>
+        </list>
+      </field>
+    </record>
+    <record id="view_correspondence_form" model="ir.ui.view">
+      <field name="name">project.correspondence.form</field>
+      <field name="model">project.correspondence</field>
+      <field name="type">form</field>
+      <field name="priority">20</field>
+      <field name="arch" type="xml">
+        <form string="إنشاء كتاب">
+          <sheet>
+            <group>
+              <field name="type"/>
+              <field name="priority"/>
+              <field name="department_id"/>
+              <field name="user_to_id"/>
+            </group>
+            <group>
+              <field name="subject"/>
+              <field name="summary"/>
+              <field name="body"/>
+            </group>
+            <notebook>
+              <page string="المرفقات">
+                <field name="attachment_ids" widget="many2many_binary"/>
+              </page>
+            </notebook>
+            <footer>
+              <button name="action_submit" string="إرسال" type="object" class="btn-primary"/>
+              <button name="action_archive" string="أرشفة" type="object" class="btn-secondary"/>
+            </footer>
+          </sheet>
+        </form>
+      </field>
+    </record>
+  </data>
+</odoo>
