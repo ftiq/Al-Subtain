@@ -1,12 +1,13 @@
 <odoo>
   <data>
-    <!-- تعريف عميل العرض -->
+    <!-- Client Action -->
     <record id="action_correspondence_dashboard" model="ir.actions.client">
       <field name="name">الصفحة الرئيسية</field>
       <field name="tag">correspondence.dashboard</field>
       <field name="target">fullscreen</field>
     </record>
-    <!-- قائمة للدخول إلى الـ Dashboard -->
+
+    <!-- Menu Entry -->
     <menuitem 
       id="menu_correspondence_dashboard" 
       name="الصفحة الرئيسية" 
@@ -14,5 +15,29 @@
       action="action_correspondence_dashboard"
       sequence="1"
     />
+
+    <!-- QWeb Template registered on server -->
+    <record id="template_correspondence_dashboard" model="ir.ui.view">
+      <field name="name">project_correspondence.DashboardTemplate</field>
+      <field name="type">qweb</field>
+      <field name="arch" type="xml">
+        <templates id="template" xml:space="preserve">
+          <t t-name="project_correspondence.DashboardTemplate">
+            <div class="o_dashboard row">
+              <t t-foreach="cards" t-as="card">
+                <div class="col-4">
+                  <div t-att-data-state="card.state" class="o_dashboard_card card mb-3">
+                    <div class="card-body text-center">
+                      <h5 t-esc="card.label"/>
+                      <p class="h2 font-weight-bold" t-esc="card.count"/>
+                    </div>
+                  </div>
+                </div>
+              </t>
+            </div>
+          </t>
+        </templates>
+      </field>
+    </record>
   </data>
 </odoo>
