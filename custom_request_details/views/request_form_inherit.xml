@@ -2,7 +2,8 @@
   <record id="inherit_request_form_extra" model="ir.ui.view">
     <field name="name">documents.request.form.extra.details</field>
     <field name="model">documents.request</field>
-    <field name="inherit_id" ref="documents.request_wizard_view_form"/>
+    <!-- تم تعديل السطر ليشير إلى الـExternal ID الصحيح -->
+    <field name="inherit_id" ref="documents.request_wizard"/>
     <field name="arch" type="xml">
 
       <!-- 1. إضافة مجموعة الحقول العلوية -->
