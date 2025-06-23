@@ -1,0 +1,29 @@
+<odoo>
+  <record id="inherit_request_form_extra" model="ir.ui.view">
+    <field name="name">documents.request.form.extra.details</field>
+    <field name="model">documents.request</field>
+    <field name="inherit_id" ref="documents.request_wizard_view_form"/>
+    <field name="arch" type="xml">
+
+      <!-- 1. إضافة مجموعة الحقول العلوية -->
+      <xpath expr="//sheet/group" position="before">
+        <group string="تفاصيل الكتاب">
+          <field name="book_type"/>
+          <field name="importance"/>
+          <field name="book_dest_ids" widget="many2many_tags"/>
+          <field name="to_partner_ids" widget="many2many_tags"/>
+        </group>
+      </xpath>
+
+      <!-- 2. إضافة موضوع وملخص ومحتوى قبل حقل التعليقات -->
+      <xpath expr="//field[@name='activity_note']" position="before">
+        <group string="معلومات إضافية">
+          <field name="subject"/>
+          <field name="summary"/>
+          <field name="content"/>
+        </group>
+      </xpath>
+
+    </field>
+  </record>
+</odoo>
