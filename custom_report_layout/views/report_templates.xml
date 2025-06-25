@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+
+        <template id="custom_report_styles">
+            <style type="text/css">
+
+                .custom-header, .custom-footer {
+                    page-break-inside: avoid;
+                    text-align: center;
+                    margin: 0 -1cm 20px -1cm;
+                    padding: 0;
+                }
+                
+                .custom-header img {
+                    width: 100%;
+                    height: 4cm;
+                    object-fit: cover;
+                    display: block;
+                    margin: 0;
+                }
+                
+                .custom-footer img {
+                    width: 100%;
+                    height: 4cm;
+                    object-fit: cover;
+                    display: block;
+                    margin: 0;
+                }
+                
+                .custom-article {
+                    min-height: 15cm;
+                    margin: 2cm 0;
+                    page-break-inside: auto;
+                }
+                
+                @media print {
+                    .custom-header, .custom-footer {
+                        -webkit-print-color-adjust: exact;
+                        color-adjust: exact;
+                        margin-left: -1cm !important;
+                        margin-right: -1cm !important;
+                    }
+                    
+                    .custom-header img, .custom-footer img {
+                        width: calc(100% + 2cm) !important;
+                        max-width: none !important;
+                        margin-left: -1cm !important;
+                        margin-right: -1cm !important;
+                        height:4cm !important;
+                    }
+                }
+                
+                @page {
+                    margin: 1cm;
+                }
+                
+                body {
+                    font-family: 'Lucida Grande', Helvetica, Arial, sans-serif;
+                    font-size: 10pt;
+                }
+                
+                .o_company_tagline, .o_footer_content {
+                    display: none !important;
+                }
+            </style>
+        </template>
+
+
+        <template id="custom_header_layout">
+            <div class="header custom-header">
+                <img t-if="company.header_image" 
+                     t-att-src="image_data_uri(company.header_image)" 
+                     t-att-style="'width:100%;height:4cm;object-fit:cover;margin:0;'" 
+                     alt="شعار الشركة"/>
+            </div>
+        </template>
+
+
+        <template id="custom_footer_layout">
+            <div class="footer custom-footer">
+                <img t-if="company.footer_image" 
+                     t-att-src="image_data_uri(company.footer_image)" 
+                     t-att-style="'width:100%;height:4cm;object-fit:cover;margin:0;'" 
+                     alt="صورة التذييل"/>
+            </div>
+        </template>
+
+
+        <template id="custom_external_layout">
+
+            <t t-call="custom_report_layout.custom_report_styles"/>
+            
+            <t t-if="not o" t-set="o" t-value="doc"/>
+
+            <t t-if="not company">
+
+                <t t-if="company_id">
+                    <t t-set="company" t-value="company_id"/>
+                </t>
+                <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                </t>
+                <t t-else="else">
+                    <t t-set="company" t-value="res_company"/>
+                </t>
+            </t>
+
+
+            <t t-call="custom_report_layout.custom_header_layout"/>
+
+
+            <div class="article custom-article" 
+                 t-att-data-oe-model="o and o._name" 
+                 t-att-data-oe-id="o and o.id" 
+                 t-att-data-oe-lang="o and o.env.context.get('lang')">
+                <t t-out="0"/>
+            </div>
+
+
+            <t t-call="custom_report_layout.custom_footer_layout"/>
+        </template>
+
+
+
+
+    </data>
+</odoo> 

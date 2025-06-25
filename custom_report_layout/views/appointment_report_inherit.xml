@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="appointment_external_layout_no_header_custom" inherit_id="appointment_products.external_layout_no_header" priority="20">
+            <xpath expr="//div[hasclass('article')]" position="replace">
+                <t t-call="custom_report_layout.custom_external_layout">
+                    <t t-out="0"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="appointment_complete_worksheet_use_custom_layout" inherit_id="appointment_products.appointment_complete_worksheet" priority="30">
+            <xpath expr="//t[@t-call='appointment_products.external_layout_no_header']" position="replace">
+                <t t-call="custom_report_layout.custom_external_layout">
+                    <t t-call="appointment_products.appointment_complete_worksheet_page" t-lang="doc.partner_id.lang"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="worksheet_custom_use_custom_layout" inherit_id="industry_fsm.worksheet_custom" priority="40">
+            <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+                <t t-call="custom_report_layout.custom_external_layout">
+                    <t t-call="appointment_products.appointment_complete_worksheet_page" t-lang="doc.partner_id.lang"/>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo> 

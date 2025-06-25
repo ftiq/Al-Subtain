@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        
+
+        <record id="report_layout_custom" model="report.layout">
+            <field name="name">التخطيط المخصص</field>
+            <field name="sequence">1</field>
+            <field name="view_id" ref="custom_report_layout.custom_external_layout"/>
+        </record>
+
+
+
+    </data>
+</odoo> 
