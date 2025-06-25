@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="stock_move_line_form_signature" model="ir.ui.view">
+        <field name="name">stock.move.line.form.signature</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_move_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lot_id']" position="after">
+                <field name="is_picking_signed" invisible="1"/>
+                <field name="field_code" 
+                       placeholder="وقع أولاً لتمكين هذا الحقل"
+                       readonly="not is_picking_signed"
+                       decoration-success="field_code and is_picking_signed"
+                       help="يمكن إدخال الرمز فقط بعد التوقيع على الطلبية"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- تعديل عرض القائمة -->
+    <record id="stock_move_line_tree_signature" model="ir.ui.view">
+        <field name="name">stock.move.line.tree.signature</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lot_id']" position="after">
+                <field name="field_code" string="الرمز المختبري" optional="show"/>
+                <field name="is_picking_signed" string="موقع" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="stock_move_line_detailed_signature" model="ir.ui.view">
+        <field name="name">stock.move.line.detailed.signature</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_move_line_tree_detailed"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lot_id']" position="after">
+                <field name="field_code" string="الرمز المختبري" optional="show"/>
+                <field name="is_picking_signed" string="موقع" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo> 
