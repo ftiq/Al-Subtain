@@ -1,0 +1,71 @@
+/* تنسيق التقارير المخصص */
+
+/* الترويسة */
+.custom-header {
+    page-break-inside: avoid;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px 0;
+}
+
+.custom-header img {
+    max-width: 20cm;
+    max-height: 3cm;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+/* التذييل */
+.custom-footer {
+    page-break-inside: avoid;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px 0;
+}
+
+.custom-footer img {
+    max-width: 20cm;
+    max-height: 3cm;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+/* محتوى المستند */
+.custom-article {
+    min-height: 15cm;
+    margin: 2cm 0;
+    page-break-inside: auto;
+}
+
+/* تنسيق خاص للطباعة */
+@media print {
+    .custom-header,
+    .custom-footer {
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .custom-header img,
+    .custom-footer img {
+        width: 20cm !important;
+        height: 3cm !important;
+    }
+}
+
+/* تنسيق إضافي للصفحة */
+@page {
+    margin: 1cm;
+}
+
+body {
+    font-family: 'Lucida Grande', Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+}
+
+/* إخفاء العناصر الافتراضية إذا كانت موجودة */
+.o_company_tagline,
+.o_footer_content {
+    display: none !important;
+} 
