@@ -1,0 +1,9 @@
+<odoo>
+    <record id="seq_stock_move_line_field_code" model="ir.sequence">
+        <field name="name">Stock Move Line Field Code</field>
+        <field name="code">stock.move.line.field_code</field>
+        <field name="prefix">SMLFC</field>
+        <field name="padding">6</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo> 
