@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_task_view_form_inherit_nav_buttons" model="ir.ui.view">
+        <field name="name">project.task.form.inherit.nav.buttons</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_receipt" type="object" class="oe_stat_button"
+                        icon="fa-truck" invisible="not stock_receipt_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">إيصال</span>
+                    </div>
+                </button>
+                <button name="action_open_sale_order" type="object" class="oe_stat_button"
+                        icon="fa-file-text-o" invisible="not sale_order_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">عرض السعر</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo> 

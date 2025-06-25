@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="report_simple_label4x12_no_price_enhanced" inherit_id="product.report_simple_label4x12_no_price">
+            
+
+            <xpath expr="//t[@t-set='table_style']" position="replace">
+
+                <t t-set="use_qr_code" t-value="env['ir.config_parameter'].sudo().get_param('appointment_products.use_qr_code_labels', False)"/>
+                <t t-if="use_qr_code">
+                    <t t-set="table_style" t-value="'width:45mm;height:50mm;border: 1px solid ' + (product.env.user.company_id.primary_color or 'black') + ';display:flex;flex-direction:column;justify-content:space-between;padding:1mm'"/>
+                </t>
+                <t t-else="">
+                    <t t-set="table_style" t-value="'width:45mm;height:26mm;border: 1px solid ' + (product.env.user.company_id.primary_color or 'black')"/>
+                </t>
+            </xpath>
+            
+
+            <xpath expr="//t[@t-set='barcode_size']" position="replace">
+
+                <t t-if="use_qr_code">
+                    <t t-set="barcode_size" t-value="'width:20mm;height:20mm'"/>
+                </t>
+                <t t-else="">
+                    <t t-set="barcode_size" t-value="'width:35mm;height:6mm'"/>
+                </t>
+            </xpath>
+            
+
+            <xpath expr="//div[@class= 'text-center o_label_small_barcode']" position="before">
+                <t t-set="use_lab_code_barcode" t-value="env['ir.config_parameter'].sudo().get_param('appointment_products.use_lab_code_as_barcode', False)"/>
+                <t t-set="current_barcode" t-value="barcode"/>
+                <t t-set="original_barcode" t-value="barcode"/>
+                <t t-set="lab_code" t-value="False"/>
+                <t t-if="current_barcode">
+                    <t t-set="move_line" t-value="env['stock.move.line'].search([
+                        ('product_id', '=', product.id), 
+                        ('field_code', '!=', False),
+                        '|', ('lot_id.name', '=', current_barcode), ('lot_name', '=', current_barcode)
+                    ], limit=1, order='id desc')"/>
+                    <t t-if="not move_line">
+                        <t t-set="move_line" t-value="env['stock.move.line'].search([
+                            ('product_id', '=', product.id), 
+                            ('field_code', '!=', False)
+                        ], limit=1, order='id desc')"/>
+                    </t>
+                    <t t-set="lab_code" t-value="move_line.field_code if move_line else False"/>
+                </t>
+                <t t-if="use_lab_code_barcode and lab_code" t-set="barcode" t-value="lab_code"/>
+            </xpath>
+            
+
+            <xpath expr="//div[@class='text-center o_label_small_barcode']" position="replace">
+                <div class="text-center o_label_small_barcode" style="flex: 1; display: flex; flex-direction: column; justify-content: center; margin: 0;">
+                    <t t-if="barcode">
+                        <t t-if="use_qr_code">
+
+                            <t t-try="">
+                                <div style="text-align: center; margin-bottom: 1mm;">
+                                    <div t-out="barcode" style="padding:0; display: inline-block;" t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 100, 'height': 100, 'humanreadable': 0}"/>
+                                </div>
+                                <div class="text-center" style="font-size: 6px; word-break: break-all; line-height: 1.1; margin: 0;">
+                                    <t t-out="barcode"/>
+                                </div>
+                            </t>
+                            <t t-except="">
+
+                            </t>
+                        </t>
+                        <t t-else="">
+
+                            <div t-out="barcode" style="padding:0" t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': barcode_size}"/>
+                            <span class="text-center" t-out="barcode"/>
+                        </t>
+                    </t>
+                </div>
+            </xpath>
+            
+
+            <xpath expr="//div[@class='text-center o_label_small_barcode']" position="after">
+                <div style="text-align: center; font-size: 7px; margin: 0; padding: 1mm 0.5mm; background-color: #f0f8f0; border: 1px solid #4CAF50; border-radius: 1mm; flex-shrink: 0;">
+
+                    <t t-if="use_lab_code_barcode and lab_code">
+                        <div style="color: #333; font-weight: bold; margin: 0; line-height: 1.2;">الرمز الحقلي</div>
+                        <div style="color: #2E7D32; font-weight: bold; font-size: 8px; margin: 0; line-height: 1.2;">
+                            <t t-out="original_barcode or 'غير محدد'"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div style="color: #333; font-weight: bold; margin: 0; line-height: 1.2;">الرمز المختبري</div>
+                        <div style="color: #2E7D32; font-weight: bold; font-size: 8px; margin: 0; line-height: 1.2;">
+                            <t t-out="lab_code or 'غير محدد'"/>
+                        </div>
+                    </t>
+                </div>
+            </xpath>
+            
+        </template>
+    </data>
+</odoo> 
