@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_view_form_inherit_appointment_questions" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.appointment.questions</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="الأسئلة" name="appointment_questions">
+                    <field name="appointment_answer_ids" nolabel="1">
+                        <list editable="bottom" string="Questions &amp; Answers">
+                            <field name="question_id" string="السؤال"/>
+                            <field name="value_answer_id" string="الإجابة المختارة"/>
+                            <field name="value_text_box" string="إجابة نصية"/>
+                        </list>
+                        <form string="Question Answer">
+                            <group>
+                                <field name="question_id" string="السؤال" readonly="1"/>
+                                <field name="value_answer_id" string="الإجابة المختارة" readonly="1"/>
+                                <field name="value_text_box" string="إجابة نصية" readonly="1"/>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+                <page string="المرفقات" name="appointment_attachments">
+                    <field name="appointment_attachment_ids" nolabel="1">
+                        <list string="المرفقات">
+                            <field name="name" string="الاسم"/>
+                            <field name="name" string="الملف"/>
+                            <field name="create_uid" string="أنشِئ بواسطة"/>
+                            <field name="create_date" string="تاريخ الإنشاء"/>
+                        </list>
+                        <form string="مرفق">
+                            <group>
+                                <field name="name" string="الاسم"/>
+                                <field name="datas" filename="name" string="الملف" widget="binary"/>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+                <page string="التوقيعات" name="sale_signatures">
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo> 
