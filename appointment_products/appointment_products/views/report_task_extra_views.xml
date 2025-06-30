@@ -1,0 +1,918 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="appointment_complete_worksheet_page">
+        <div class="page">
+            <div class="oe_structure"></div>
+            <style>
+
+                @font-face {
+                    font-family: 'tradbdo';
+                    src: url('/appointment_products/static/src/fonts/tradbdo.ttf') format('truetype');
+                    font-weight: bold;
+                    font-style: normal;
+                }
+                
+
+                .custom-main-title {
+                    background: #0d6efd;
+                    color: #fff !important;
+                    padding: 15px;
+                    margin: 0 0 20px 0;
+                    border-radius: 8px;
+                    text-align: center;
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                    font-size: 20px !important;
+                    font-weight: 600;
+                }
+                
+
+                h1, h2, h3, h4, h5, h6 {
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                }
+                
+
+                table th {
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                }
+                
+
+                .appt-card {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    margin: 10px 0;
+                    padding: 12px;
+                }
+                
+                .appt-card h5 {
+                    background: #f8f9fa;
+                    color: #000 !important;
+                    padding: 8px 12px;
+                    margin: -12px -12px 12px -12px;
+                    border-radius: 8px 8px 0 0;
+                    font-weight: 600;
+                    font-size: 16px !important;
+                    text-align: center;
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                    border-bottom: 1px solid #dee2e6;
+                }
+                
+                .appt-card h5::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(45deg, rgba(0,0,0,0.05) 0%, transparent 100%);
+                    pointer-events: none;
+                }
+                
+                .appt-card table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    background: #fff;
+                }
+                
+                .appt-card table thead th {
+                    background: rgba(13, 110, 253, 0.1);
+                    color: #0d6efd;
+                    font-weight: 600;
+                    padding: 8px 6px;
+                    text-align: center;
+                    border: 1px solid #dee2e6;
+                    font-size: 14px;
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                }
+                
+                .appt-card table tbody td {
+                    padding: 6px 4px;
+                    border: 1px solid #dee2e6;
+                    text-align: center;
+                    font-size: 13px;
+                }
+                
+                .appt-card table tbody tr.product-header {
+                    background: rgba(13, 110, 253, 0.08);
+                    font-weight: 600;
+                    color: #0d6efd;
+                }
+                
+
+                .appt-card .o_project_questions_table tbody td:first-child {
+                    width: 2.5cm;
+                    font-weight: 600;
+                    background: rgba(13, 110, 253, 0.05);
+                    text-align: right;
+                    padding-right: 15px;
+                }
+                
+                .appt-card .o_project_questions_table tbody td:last-child {
+                    text-align: right;
+                    padding-right: 15px;
+                }
+                
+
+                .page {
+                    background: #fff;
+                    padding: 15px;
+                    font-size: 15px;
+                }
+                
+
+                .worker-customer-card {
+                    background: linear-gradient(to bottom, #fff 0%, #f8f9ff 100%);
+                    border: none;
+                    border-radius: 16px;
+                    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.15);
+                    margin: 20px 0;
+                    padding: 20px;
+                }
+                
+                .worker-customer-card h5 {
+                    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                    color: #fff !important;
+                    padding: 15px 20px;
+                    margin: -20px -20px 20px -20px;
+                    border-radius: 16px 16px 0 0;
+                    font-weight: 700;
+                    font-size: 18px !important;
+                    text-align: center;
+                    box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                    border: 2px solid #28a745;
+                }
+                
+                .contact-info {
+                    background: rgba(40, 167, 69, 0.05);
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-bottom: 15px;
+                    border-left: 4px solid #28a745;
+                }
+                
+                .contact-info strong {
+                    color: #28a745;
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                }
+                
+
+                .appt-signature {
+                    margin: 15px 0;
+                    padding: 0;
+                    background: none;
+                    border: none;
+                    page-break-inside: avoid;
+                    text-align: left;
+                    direction: ltr;
+                }
+                
+                .appt-signature h5 {
+                    color: #000 !important;
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                    text-align: left;
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                    font-size: 16px;
+                    background: none !important;
+                    padding: 0 !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                }
+                
+                .signature-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    gap: 20px;
+                    direction: ltr;
+                    margin-top: 10px;
+                }
+                
+                .appt-signature img {
+                    max-width: 120px;
+                    max-height: 60px;
+                    flex-shrink: 0;
+                    border: none !important;
+                    background: transparent !important;
+                    padding: 0;
+                }
+                
+                .appt-signature .signer-name {
+                    font-weight: 600;
+                    color: #000;
+                    font-size: 14px;
+                    text-align: left;
+                    padding-bottom: 2px;
+                    min-width: 120px;
+                }
+                
+
+                .signature-container-fallback {
+                    text-align: left;
+                    direction: ltr;
+                }
+                
+                .signature-container-fallback img {
+                    float: left;
+                    margin-right: 20px;
+                    max-width: 120px;
+                    max-height: 60px;
+                }
+                
+                .signature-container-fallback .signer-name {
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-top: 20px;
+                }
+
+
+                .bold-label {
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                    font-weight: 600;
+                }
+
+
+                body, .page, table, p, span, div, td, th {
+                    font-family: 'tradbdo', Arial, sans-serif !important;
+                }
+
+
+                .time-card-container {
+                    display: -webkit-box;      /* دعم قديم */
+                    display: -webkit-flex;
+                    display: flex;
+                    -webkit-flex-wrap: wrap;
+                    flex-wrap: wrap;
+                    justify-content: center; /* توسيط البطاقات مع مسافات متساوية */
+                    gap: 20px; /* مسافة ثابتة بين البطاقات */
+                    direction: rtl; /*  RTL */
+                }
+
+                .time-card {
+                    background: #ffffff;
+                    border: 1px solid #c0d6e4;
+                    border-radius: 8px;
+                    padding: 10px 8px;
+                    text-align: center;
+                    display: -webkit-box;
+                    display: -webkit-flex;
+                    display: flex;
+                    -webkit-box-orient: vertical;
+                    -webkit-box-direction: normal;
+                    -webkit-flex-direction: column;
+                    flex-direction: column;
+                    -webkit-box-pack: center;
+                    -webkit-justify-content: center;
+                    justify-content: center;
+                    -webkit-align-items: center;
+                    align-items: center;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+
+                    width: 5.5cm !important;
+                    min-width: 5.5cm !important;
+                    max-width: 5.5cm !important;
+                    -webkit-flex: 0 0 5.5cm !important;
+                    flex: 0 0 5.5cm !important;
+                    flex-shrink: 0 !important;
+                    box-sizing: border-box;
+                }
+
+                @media print, (max-width: 600px) {
+                    .time-card {
+                        -webkit-flex: 0 0 calc(50% - 12px);
+                        flex: 0 0 calc(50% - 12px);
+                        max-width: calc(50% - 12px);
+                    }
+                }
+                @media print, (max-width: 400px) {
+                    .time-card {
+                        -webkit-flex: 0 0 100%;
+                        flex: 0 0 100%;
+                        max-width: 100%;
+                    }
+                }
+                .time-card:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                }
+                .time-card i.icon {
+                    font-size: 18px;
+                    color: #1a73e8;
+                    margin-right: 4px;
+                    margin-bottom: 0;
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                .time-card .label {
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-bottom: 0;
+                }
+                .time-card .value {
+                    font-size: 14px;
+                    font-weight: 700;
+                }
+
+
+                .time-card .label,
+                .time-card .value,
+                .info-card .label,
+                .info-card .value {
+                    word-break: break-word;
+                    overflow-wrap: anywhere;
+                    max-width: 100%;
+                }
+
+                .custom-main-title {
+                    font-size: 24px !important;
+                }
+
+
+                .info-card-container {
+                    display: -webkit-box;
+                    display: -webkit-flex;
+                    display: flex;
+                    -webkit-flex-wrap: wrap;
+                    flex-wrap: wrap;
+                    gap: 12px;
+                    justify-content: center;
+                    direction: rtl;
+                }
+                .info-card {
+                    background: #ffffff;
+                    border: 1px solid #c0d6e4;
+                    border-radius: 8px;
+                    padding: 10px 8px;
+                    text-align: center;
+                    display: -webkit-box;
+                    display: -webkit-flex;
+                    display: flex;
+                    -webkit-box-orient: vertical;
+                    -webkit-box-direction: normal;
+                    -webkit-flex-direction: column;
+                    flex-direction: column;
+                    -webkit-box-pack: center;
+                    -webkit-justify-content: center;
+                    justify-content: center;
+                    -webkit-align-items: center;
+                    align-items: center;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+                    width: 11cm !important;
+                    min-width: 11cm !important;
+                    max-width: 11cm !important;
+                    -webkit-flex: 0 0 11cm !important;
+                    flex: 0 0 11cm !important;
+                    flex-shrink: 0 !important;
+                }
+                .info-card i.icon {
+                    font-size: 18px;
+                    color: #1a73e8;
+                    margin-right: 4px;
+                    margin-bottom: 0;
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                .info-card .label {
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-bottom: 0;
+                }
+                .info-card .value {
+                    font-size: 14px;
+                    font-weight: 700;
+                }
+
+
+                .signatures-container {
+                    display:-webkit-box;
+                    display:-webkit-flex;
+                    display:flex;
+                    -webkit-flex-wrap:nowrap;
+                    flex-wrap:nowrap;
+                    -webkit-justify-content:space-between;
+                    justify-content:space-between;
+                    direction:rtl;
+                    gap:4px;
+                }
+
+
+                .signature-box {
+                    width:8cm;
+                    max-width:8cm;
+                    -webkit-box-flex:0;
+                    -webkit-flex:0 0 8cm;
+                    flex:0 0 8cm;
+                    text-align:center;
+                    box-sizing:border-box;
+                    border:1px solid #c0d6e4;
+                    border-radius:8px;
+                    padding:4px 0;
+                }
+
+                .sig-frame {
+                    border:1px solid #c0d6e4;
+                    border-radius:8px;
+                    height:90px;
+                    margin-top:4px;
+                    position:relative;
+                }
+
+
+                .break-before-page {
+                    page-break-before:always;
+                }
+
+                .appt-card .o_project_questions_table {
+                    table-layout: fixed;
+                }
+
+                .o_project_questions_table td:nth-child(2) {
+                    white-space: pre-wrap; 
+                    word-break: break-word;
+                    overflow-wrap: anywhere;
+                }
+
+
+                .page * {
+                    font-size: 105%;
+                }
+
+
+                .time-card,
+                .time-card * {
+                    font-size: 14px !important;
+                }
+            </style>
+            
+
+
+            <t t-set="sample_suffix" t-value="(doc.form_line_ids and (doc.form_line_ids[0].product_id.display_name.split('-')[-1]).strip()) or 'طابوق'"/>
+            <div class="custom-main-title">
+                <strong>محضر نمذجة <t t-esc="sample_suffix"/></strong>
+            </div>
+
+
+            <div class="appt-card">
+                <table class="time-table" style="width:100%;border-collapse:collapse;direction:rtl;">
+                    <tr>
+                        <td class="time-cell" style="width:33.33%;text-align:center;padding:15px;border:1px solid #c0d6e4;border-radius:8px;background:#ffffff;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="margin-bottom:8px;">
+                                <i class="fa fa-play-circle" style="font-size:18px;color:#1a73e8;margin-left:4px;"/>
+                                <span style="font-weight:600;">وقت البدء</span>
+                            </div>
+                            <div style="font-size:14px;font-weight:700;">
+                                <span t-field="doc.planned_date_begin" t-options="{'widget':'datetime','tz':'Asia/Baghdad'}"/>
+                            </div>
+                        </td>
+                        <td style="width:10px;"></td>
+                        <td class="time-cell" style="width:33.33%;text-align:center;padding:15px;border:1px solid #c0d6e4;border-radius:8px;background:#ffffff;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="margin-bottom:8px;">
+                                <i class="fa fa-stop-circle" style="font-size:18px;color:#1a73e8;margin-left:4px;"/>
+                                <span style="font-weight:600;">وقت الانتهاء</span>
+                            </div>
+                            <div style="font-size:14px;font-weight:700;">
+                                <span t-field="doc.date_deadline" t-options="{'widget':'datetime','tz':'Asia/Baghdad'}"/>
+                            </div>
+                        </td>
+                        <td style="width:10px;"></td>
+                        <td class="time-cell" style="width:33.33%;text-align:center;padding:15px;border:1px solid #c0d6e4;border-radius:8px;background:#ffffff;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="margin-bottom:8px;">
+                                <i class="fa fa-clock-o" style="font-size:18px;color:#1a73e8;margin-left:4px;"/>
+                                <span style="font-weight:600;">الوقت الكلي</span>
+                            </div>
+                            <div style="font-size:14px;font-weight:700;">
+                                <span t-field="doc.total_duration_hours" t-options="{'widget':'float_time'}"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+
+            <div class="appt-card">
+                <p style="margin:0; font-size:18px; text-align:center;" class="bold-label">بناء على كتابكم ذي العدد (<t t-esc="doc.book_number or ''"/>) في تاريخ (<span t-field="doc.book_date" t-options="{'widget':'date'}"/>) تمت النمذجة بتاريخ (<span t-field="doc.modeling_date" t-options="{'widget':'date'}"/>)</p>
+            </div>
+
+
+            <t t-set="first_qa" t-value="doc.fsm_question_ids and doc.fsm_question_ids[0] or False"/>
+            <div class="appt-card">
+                <div class="info-card-container">
+
+                    <div class="info-card">
+                        <i class="fa fa-building icon"/>
+                        <span class="label">اسم المشروع (
+                            <t t-if="first_qa">
+                                <t t-if="first_qa.value_text_box"><t t-esc="first_qa.value_text_box"/></t>
+                                <t t-elif="first_qa.value_answer_id"><t t-esc="first_qa.value_answer_id.name"/></t>
+                                <t t-else="">-</t>
+                            </t>
+                            <t t-if="not first_qa">-</t>)
+                        </span>
+                    </div>
+
+                    <div class="info-card">
+                        <i class="fa fa-hashtag icon"/>
+                        <span class="label">الكمية (<t t-esc="doc.total_samples_count or 0"/>)</span>
+                    </div>
+                </div>
+            </div>
+
+            <t t-set="quantity_val" t-value="(doc.form_line_ids and doc.form_line_ids[0].quantity) or 0"/>
+
+            <div class="appt-card">
+                <p class="bold-label" style="margin:0; font-size:18px; text-align:center;">
+                    عدد النماذج الكلية (<t t-esc="quantity_val"/>)
+                </p>
+            </div>
+
+
+            <div class="appt-card">
+                <h5>الرموز الحقلية</h5>
+                <div class="field-codes-container" style="font-size:0;direction:ltr;text-align:center;">
+                    <t t-foreach="doc.form_line_ids" t-as="fl">
+                        <t t-foreach="fl.move_id.move_line_ids" t-as="ml">
+                            <div class="code-cell" style="display:inline-block;width:16%;min-width:60px;margin:4px 2px;border:1px solid #dee2e6;border-radius:4px;padding:6px 4px;font-weight:600;font-size:14px;min-height:28px;box-sizing:border-box;">
+                                <t t-if="ml.lot_id"><t t-esc="ml.lot_id.name"/></t>
+                                <t t-elif="ml.lot_name"><t t-esc="ml.lot_name"/></t>
+                            </div>
+                        </t>
+                    </t>
+                </div>
+            </div>
+
+
+            <div class="appt-card">
+                <p class="bold-label" style="margin:0; font-size:18px; text-align:right;">
+                    ملاحظات (
+                    <t t-if="doc.book_notes">
+                        <t t-raw="doc.book_notes"/>
+                    </t>
+                    <t t-else=""> </t>)
+                </p>
+            </div>
+
+
+            <div class="appt-card" style="direction:rtl;">
+                <p class="bold-label" style="margin:0; font-size:18px; text-align:right;">
+
+                </p>
+                <t t-if="doc.service_line_ids">
+                    <t t-set="sorted_lines" t-value="sorted(doc.service_line_ids, key=lambda l: l.product_id.display_name)"/>
+                    <t t-foreach="sorted_lines" t-as="pl">
+                        <div style="text-align:right; margin-right:0;">
+                            <i class="fa fa-check-square-o icon"/>
+                            <span t-esc="pl.product_id.display_name"/>
+                        </div>
+                    </t>
+                </t>
+                <t t-if="not doc.service_line_ids">
+                    <div style="text-align:right; margin-right:0;">-</div>
+                </t>
+            </div>
+
+
+            <div class="signatures-container">
+
+                <div class="signature-box">
+                    <div><strong>ممثل الجهة المنفذة</strong></div>
+                    <t t-if="doc.exec_signature">
+                        <div class="sig-frame">
+                            <img t-att-src="image_data_uri(doc.exec_signature)" style="max-width:100%;max-height:100%;"/>
+                        </div>
+                        <div class="signer-name"><t t-esc="doc.exec_signer_name or ''"/></div>
+                    </t>
+                    <t t-else="">
+                        <div class="sig-frame"/>
+                        <div class="signer-name">الاسم/ ____________</div>
+                    </t>
+                </div>
+
+
+                <div class="signature-box">
+                    <div><strong>ممثل الجهة المشرفة</strong></div>
+                    <t t-if="doc.super_signature">
+                        <div class="sig-frame">
+                            <img t-att-src="image_data_uri(doc.super_signature)" style="max-width:100%;max-height:100%;"/>
+                        </div>
+                        <div class="signer-name"><t t-esc="doc.super_signer_name or ''"/></div>
+                    </t>
+                    <t t-else="">
+                        <div class="sig-frame"/>
+                        <div class="signer-name">الاسم/ ____________</div>
+                    </t>
+                </div>
+
+
+                <div class="signature-box">
+                    <div><strong>ممثل شركة السبطين</strong></div>
+                    <t t-if="doc.company_signature">
+                        <div class="sig-frame">
+                            <img t-att-src="image_data_uri(doc.company_signature)" style="max-width:100%;max-height:100%;"/>
+                        </div>
+                        <div class="signer-name"><t t-esc="doc.company_signer_name or (doc.user_ids and doc.user_ids[0].name) or ''"/></div>
+                    </t>
+                    <t t-else="">
+                        <div class="sig-frame"/>
+                        <div class="signer-name">الاسم/ ____________</div>
+                    </t>
+                </div>
+            </div>
+
+
+            <p style="page-break-before:always;"/>
+
+
+            <t t-if="doc.fsm_question_ids">
+                <div class="appt-card">
+
+            <t t-if="doc.name">
+                <div class="custom-main-title">
+                    <strong>تقرير الخدمة الميدانية: <t t-out="doc.name"/></strong>
+                </div>
+            </t>
+                    <h5>ورقة العمل</h5>
+                        <table class="table table-sm table-bordered o_project_questions_table w-100 mb-0">
+                            <tbody>
+                                <tr t-foreach="doc.fsm_question_ids" t-as="qa">
+                                    <td class="fw-bold"><span t-field="qa.question_id"/></td>
+                                    <td>
+                                        <t t-if="qa.value_answer_id"><span t-field="qa.value_answer_id"/></t>
+                                        <t t-if="qa.value_text_box"><span t-esc="qa.value_text_box"/></t>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
+            </t>
+            <t t-if="doc.allow_billable and doc.sale_order_id and doc.sale_order_id.order_line">
+                <t t-set="order" t-value="doc.sale_order_id"/>
+                <t t-set="final_subtotal" t-value="0"/>
+                <t t-set="final_tax" t-value="0"/>
+                <t t-set="amount_due" t-value="0"/>
+                <t t-set="is_any_total_discount_line" t-value="False"/>
+                <t t-set="display_discount" t-value="False"/>
+                
+
+                <t t-foreach="order.order_line" t-as="line">
+                    <t t-set="is_task" t-value="line == doc.sale_line_id"/>
+                    <t t-set="use_qty_delivered" t-value="is_task and line.product_id.service_policy != 'ordered_prepaid'"/>
+                    <t t-if="use_qty_delivered">
+                        <t t-set="final_subtotal" t-value="final_subtotal + line.delivered_price_subtotal"/>
+                        <t t-set="final_tax" t-value="final_tax + line.delivered_price_tax"/>
+                        <t t-set="amount_due" t-value="amount_due + line.delivered_price_total - sum(line.invoice_lines.mapped('price_total'))"/>
+                        <t t-set="is_any_total_discount_line" t-value="is_any_total_discount_line or (line.discount and line.price_unit != 0 and line.delivered_price_total == 0)"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="final_subtotal" t-value="final_subtotal + line.price_subtotal"/>
+                        <t t-set="final_tax" t-value="final_tax + line.price_tax"/>
+                        <t t-set="amount_due" t-value="amount_due + line.price_total - sum(line.invoice_lines.mapped('price_total'))"/>
+                        <t t-set="is_any_total_discount_line" t-value="is_any_total_discount_line or (line.discount and line.price_unit != 0 and line.price_total == 0)"/>
+                    </t>
+                    <t t-if="line.discount > 0">
+                        <t t-set="display_discount" t-value="True"/>
+                    </t>
+                </t>
+                
+                <t t-if="final_subtotal != 0 or is_any_total_discount_line">
+                    <div class="appt-card">
+                        <h5>الوقت والمواد</h5>
+                        <table class="table table-sm table-bordered w-100 mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 40%;">المنتج</th>
+                                    <th class="text-center" style="width: 15%;">الكمية</th>
+                                    <t t-if="final_tax > 0">
+                                        <th class="text-center" style="width: 15%;">الضرائب</th>
+                                    </t>
+                                    <t t-if="display_discount">
+                                        <th class="text-center" style="width: 10%;">التخفيض%</th>
+                                    </t>
+                                    <th class="text-center" style="width: 15%;">المبلغ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="order.order_line" t-as="line">
+                                    <t t-set="is_task" t-value="line == doc.sale_line_id"/>
+                                    <t t-set="use_qty_delivered" t-value="is_task and line.product_id.service_policy != 'ordered_prepaid'"/>
+                                    <t t-set="line_total" t-value="line.delivered_price_subtotal if use_qty_delivered else line.price_subtotal"/>
+                                    <t t-set="is_total_discount" t-value="line.discount and line.price_unit != 0 and line_total == 0"/>
+                                    
+                                    <t t-if="(line_total > 0) or is_total_discount">
+                                        <tr t-att-style="'background-color: rgba(13, 110, 253, 0.02);' if line_index % 2 == 0 else ''">
+                                            <t t-if="not line.display_type and not line.is_downpayment">
+                                                <td class="text-center"><span t-field="line.name"/></td>
+                                                <td class="text-center">
+                                                    <span t-if="use_qty_delivered" t-field="line.qty_delivered"/>
+                                                    <span t-else="" t-field="line.product_uom_qty"/>
+                                                    <span t-field="line.product_uom" groups="uom.group_uom"/>
+                                                </td>
+
+                                                <t t-if="final_tax > 0">
+                                                    <td class="text-center">
+                                                        <span t-esc="', '.join(map(lambda x: x.name, line.tax_id))"/>
+                                                    </td>
+                                                </t>
+                                                <t t-if="display_discount">
+                                                    <td class="text-center">
+                                                        <span t-field="line.discount"/>%
+                                                    </td>
+                                                </t>
+                                                <td class="text-center">
+                                                    <span t-esc="line_total" t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                                </td>
+                                            </t>
+                                            <t t-if="line.display_type == 'line_section'">
+                                                <td t-att-colspan="6 + (1 if final_tax > 0 else 0) + (1 if display_discount else 0)" class="text-center">
+                                                    <strong><span t-field="line.name"/></strong>
+                                                </td>
+                                            </t>
+                                            <t t-if="line.display_type == 'line_note'">
+                                                <td t-att-colspan="6 + (1 if final_tax > 0 else 0) + (1 if display_discount else 0)" class="text-center">
+                                                    <em><span t-field="line.name"/></em>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+                        
+
+                        <div class="row justify-content-end mt-3">
+                            <div class="col-auto">
+                                <table class="table table-sm table-borderless">
+                                    <t t-if="final_tax > 0">
+                                        <tr style="border-bottom: 1px solid #dee2e6;">
+                                            <td class="text-end"><strong>المبلغ غير شامل الضريبة:</strong></td>
+                                            <td class="text-end" style="min-width: 120px;">
+                                                <span t-esc="final_subtotal" t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #dee2e6;">
+                                            <td class="text-end"><strong>الضرائب:</strong></td>
+                                            <td class="text-end">
+                                                <span t-esc="final_tax" t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr style="border-bottom: 2px solid #0d6efd;">
+                                        <td class="text-end"><strong>الإجمالي:</strong></td>
+                                        <td class="text-end">
+                                            <span t-esc="final_subtotal + final_tax" t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr style="background-color: rgba(13, 110, 253, 0.1);">
+                                        <td class="text-end"><strong>المبلغ المستحق:</strong></td>
+                                        <td class="text-end">
+                                            <span t-esc="amount_due" t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+
+
+            <t t-if="doc.form_line_ids">
+                <div class="appt-card" style="direction:rtl;">
+                    <h5>النماذج والعينات المستلمة</h5>
+                        <table class="table table-sm table-bordered o_project_form_lines_table w-100 mb-0">
+                                                <thead>
+                                                    <tr>
+                                <th style="width:25%;">الرمز الحقلي</th>
+                                <th style="width:25%;">الكمية لكل رمز</th>
+                                <th style="width:25%;">وحدة القياس</th>
+                                <th style="width:25%;">ملاحظات</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                            <t t-foreach="doc.form_line_ids" t-as="fl">
+                                <tr class="product-header">
+                                    <td class="fw-bold" colspan="4"><span t-field="fl.product_id"/> - <t t-esc="fl.quantity"/> <t t-esc="fl.product_id.uom_id.name"/></td>
+                                </tr>
+                                                    <t t-set="move_lines" t-value="fl.move_id.move_line_ids"/>
+                                <t t-set="samples_total" t-value="fl.task_id.total_samples_count or 0"/>
+                                <t t-set="codes_count" t-value="len(move_lines) if move_lines else 1"/>
+                                <t t-set="qty_each" t-value="(samples_total // codes_count) if samples_total and codes_count else 0"/>
+                                                    <t t-foreach="move_lines" t-as="ml">
+                                                        <tr>
+                                        <td class="text-center">
+                                            <t t-if="ml.lot_id"><span t-field="ml.lot_id"/></t>
+                                            <t t-if="not ml.lot_id"><t t-esc="ml.lot_name"/></t>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="ml.sample_quantity or ml.qty_done or 0"/>
+                                        </td>
+                                        <td class="text-center"><span t-field="ml.product_uom_id"/></td>
+                                        <td class="text-center">-</td>
+                                    </tr>
+                                </t>
+                                </t>
+                            </tbody>
+                        </table>
+                </div>
+            </t>
+            
+            <!-- 
+            <t t-set='is_uom_day' t-value='doc.timesheet_ids._is_timesheet_encode_uom_day()'/>
+            <t t-if="doc.allow_timesheets and doc.timesheet_ids">
+                <div class="appt-card">
+                    <h5>سجل الأوقات</h5>
+                    <table class="table table-sm table-bordered w-100 mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-center">التاريخ</th>
+                                <th class="text-center">الموظف</th>
+                                <th class="text-center">الوصف</th>
+                                <th class="text-center">الوقت المستغرق</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.timesheet_ids" t-as="line">
+                                <tr t-att-style="'background-color: rgba(13, 110, 253, 0.02);' if line_index % 2 == 0 else ''">
+                                    <td class="text-center">
+                                        <span t-field="line.date"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.employee_id.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-if="is_uom_day" t-out="line._convert_hours_to_days(line.unit_amount)" t-options='{"widget": "timesheet_uom"}'/>
+                                        <span t-else="" t-out="line.unit_amount" t-options="{'widget': 'float_time'}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <div class="row justify-content-end mt-3">
+                        <div class="col-auto me-2">
+                            <div class="alert alert-info text-center">
+                                <strong>الوقت المستغرق: </strong>
+                                <span t-if="is_uom_day" t-out="doc.timesheet_ids._convert_hours_to_days(doc.effective_hours)"/>
+                                <span t-else="" t-field="doc.effective_hours" t-options='{"widget": "float_time"}'/>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="alert alert-info text-center">
+                                <strong>الوقت الكلي: </strong>
+                                <span t-field="doc.total_duration_hours" t-options='{"widget": "float_time"}'/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            -->
+          
+
+            <t t-if="doc.worksheet_signature">
+                <div class="appt-signature">
+                    <h5>التوقيع</h5>
+                    <div class="signature-container">
+                        <div class="signer-name">
+                            <span t-field="doc.worksheet_signed_by"/>
+                        </div>
+                        <img t-att-src="image_data_uri(doc.worksheet_signature)"/>
+                    </div>
+                </div>
+            </t>
+            
+
+        </div>
+
+    </template>
+
+
+    <template id="appointment_complete_worksheet">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="appointment_products.external_layout_no_header">
+                    <t t-call="appointment_products.appointment_complete_worksheet_page" t-lang="doc.partner_id.lang"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+    <template id="external_layout_no_header">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+        <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-out="0"/>
+        </div>
+    </template>
+
+
+    <template id="worksheet_custom_replacement" inherit_id="industry_fsm.worksheet_custom">
+        <xpath expr="//t[@t-call='industry_fsm.worksheet_custom_page']" position="replace">
+            <t t-call="appointment_products.appointment_complete_worksheet_page" t-lang="doc.partner_id.lang"/>
+        </xpath>
+    </template>
+</odoo> 
