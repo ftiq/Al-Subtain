@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_lab_inspector" model="res.groups">
+        <field name="name">المختبريون</field>
+        <field name="category_id" ref="base.module_category_services"/>
+        <field name="implied_ids" eval="[(4, ref('mail.group_mail_notification_type_inbox'))]"/>
+    </record>
+</odoo> 

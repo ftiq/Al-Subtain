@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_task_attachment_view_list" model="ir.ui.view">
+        <field name="name">project.task.attachment.list</field>
+        <field name="model">project.task.attachment</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" default_order="sequence,create_date desc">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="attachment_type"/>
+                <field name="date_taken"/>
+                <field name="uploaded_by" readonly="1"/>
+                <field name="file_size" string="الحجم (KB)" readonly="1"/>
+                <field name="is_public"/>
+                <button name="action_preview" type="object" 
+                        string="معاينة" class="btn-link" 
+                        icon="fa-eye" title="معاينة الصورة"/>
+                <button name="action_download" type="object" 
+                        string="تحميل" class="btn-link" 
+                        icon="fa-download" title="تحميل الصورة"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="project_task_attachment_view_form" model="ir.ui.view">
+        <field name="name">project.task.attachment.form</field>
+        <field name="model">project.task.attachment</field>
+        <field name="arch" type="xml">
+            <form string="صورة مرفقة">
+                <header>
+                    <button name="action_preview" type="object" 
+                            string="معاينة الصورة" class="btn-primary"
+                            icon="fa-eye" invisible="not image"/>
+                    <button name="action_download" type="object" 
+                            string="تحميل الصورة" class="btn-success"
+                            icon="fa-download" invisible="not image"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" 
+                                name="action_preview" invisible="not image">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="file_size" widget="float" digits="[16,1]"/>
+                                </span>
+                                <span class="o_stat_text">KB</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <group>
+                        <group string="معلومات أساسية">
+                            <field name="task_id" invisible="context.get('default_task_id')" readonly="1"/>
+                            <field name="name"/>
+                            <field name="attachment_type"/>
+                            <field name="sequence"/>
+                            <field name="is_public"/>
+                        </group>
+                        <group string="تفاصيل التقاط الصورة">
+                            <field name="date_taken"/>
+                            <field name="uploaded_by" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group string="الصورة">
+                        <field name="image" widget="image" class="oe_avatar" 
+                               options="{'size': [300, 300]}"/>
+                    </group>
+                    
+                    <group string="تفاصيل إضافية">
+                        <field name="description" nolabel="1" placeholder="أضف تفاصيل أو ملاحظات حول الصورة..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="project_task_attachment_view_kanban" model="ir.ui.view">
+        <field name="name">project.task.attachment.kanban</field>
+        <field name="model">project.task.attachment</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="attachment_type" class="o_kanban_dashboard">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="attachment_type"/>
+                <field name="date_taken"/>
+                <field name="uploaded_by"/>
+                <field name="file_size"/>
+                <field name="is_public"/>
+                <field name="image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('project.task.attachment', 'image', record.id.raw_value)" 
+                                     class="o_image_64_max" alt="صورة" 
+                                     style="max-width: 150px; max-height: 100px; object-fit: cover;"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <div class="o_kanban_record_subtitle">
+                                        <i class="fa fa-clock-o"/> <field name="date_taken" widget="relative"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span class="badge badge-pill badge-info">
+                                            <field name="file_size" widget="float" digits="[16,1]"/> KB
+                                        </span>
+                                        <span t-if="record.is_public.raw_value" 
+                                              class="badge badge-pill badge-success">عامة</span>
+                                        <span t-if="!record.is_public.raw_value" 
+                                              class="badge badge-pill badge-warning">خاصة</span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <img t-att-src="kanban_image('res.users', 'avatar_128', record.uploaded_by.raw_value)" 
+                                             t-att-title="record.uploaded_by.value" 
+                                             t-att-alt="record.uploaded_by.value" 
+                                             width="24" height="24" class="oe_kanban_avatar"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oe_kanban_card_action">
+                                <button name="action_preview" type="object" 
+                                        class="btn btn-sm btn-primary mr-1" title="معاينة الصورة">
+                                    <i class="fa fa-eye"/> معاينة
+                                </button>
+                                <button name="action_download" type="object" 
+                                        class="btn btn-sm btn-success" title="تحميل الصورة">
+                                    <i class="fa fa-download"/> تحميل
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="project_task_attachment_view_search" model="ir.ui.view">
+        <field name="name">project.task.attachment.search</field>
+        <field name="model">project.task.attachment</field>
+        <field name="arch" type="xml">
+            <search string="البحث في الصور المرفقة">
+                <field name="name" string="اسم الصورة"/>
+                <field name="task_id" string="المهمة"/>
+                <field name="uploaded_by" string="رفعت بواسطة"/>
+                <field name="description" string="التفاصيل"/>
+                
+                <filter string="قبل التنفيذ" name="filter_before" 
+                        domain="[('attachment_type', '=', 'before')]"/>
+                <filter string="أثناء التنفيذ" name="filter_during" 
+                        domain="[('attachment_type', '=', 'during')]"/>
+                <filter string="بعد التنفيذ" name="filter_after" 
+                        domain="[('attachment_type', '=', 'after')]"/>
+                <filter string="مرفق مع التوقيع" name="filter_signature" 
+                        domain="[('attachment_type', '=', 'signature')]"/>
+                        
+                <separator/>
+                <filter string="عامة" name="filter_public" 
+                        domain="[('is_public', '=', True)]"/>
+                <filter string="خاصة" name="filter_private" 
+                        domain="[('is_public', '=', False)]"/>
+                        
+                <separator/>
+                <filter string="اليوم" name="filter_today" 
+                        domain="[('date_taken', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0))), ('date_taken', '&lt;=', datetime.datetime.combine(context_today(), datetime.time(23,59,59)))]"/>
+                <filter string="هذا الأسبوع" name="filter_week" 
+                        domain="[('date_taken', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')), ('date_taken', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                        
+                <group expand="0" string="تجميع حسب">
+                    <filter string="نوع المرفق" name="group_by_type" 
+                            context="{'group_by': 'attachment_type'}"/>
+                    <filter string="المهمة" name="group_by_task" 
+                            context="{'group_by': 'task_id'}"/>
+                    <filter string="رفعت بواسطة" name="group_by_user" 
+                            context="{'group_by': 'uploaded_by'}"/>
+                    <filter string="تاريخ التقاط" name="group_by_date" 
+                            context="{'group_by': 'date_taken:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="project_task_attachment_action" model="ir.actions.act_window">
+        <field name="name">الصور المرفقة</field>
+        <field name="res_model">project.task.attachment</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="project_task_attachment_view_search"/>
+        <field name="context">{
+            'search_default_group_by_type': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء صورة مرفقة جديدة
+            </p>
+            <p>
+                يمكنك إرفاق صور متعددة لكل مهمة مع تصنيفها حسب نوع المرفق
+                ووضع تفاصيل وملاحظات لكل صورة.
+            </p>
+        </field>
+    </record>
+
+
+    <menuitem id="menu_project_task_attachments"
+              name="الصور المرفقة"
+              parent="industry_fsm.fsm_menu_root"
+              action="project_task_attachment_action"
+              sequence="15"/>
+
+</odoo> 
