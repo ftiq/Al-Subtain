@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- قاعدة سجلات: إظهار الصور المرفقة فقط لصاحبها أو إذا كانت عامة -->
+    <record id="project_task_attachment_owner_or_public_rule" model="ir.rule">
+        <field name="name">مشاهدة الصور العامة أو الخاصة بصاحبها فقط</field>
+        <field name="model_id" ref="appointment_products.model_project_task_attachment"/>
+        <field name="domain_force">['|', ('is_public', '=', True), ('uploaded_by', '=', user.id)]</field>
+        <!-- تطبق على جميع مستخدمي النظام الداخلي -->
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+</odoo> 
