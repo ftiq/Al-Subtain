@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="uom_square_millimeter_ap" model="uom.uom">
+            <field name="name">mm²</field>
+            <field name="category_id" ref="uom.uom_categ_surface"/>
+            <field name="factor" eval="1000000"/>
+            <field name="uom_type">smaller</field>
+        </record>
+
+        <record id="template_brick_dimensions" model="lab.test.template">
+            <field name="name">فحص قياسات الطابوق الطيني</field>
+            <field name="code">BRICK_DIMENS</field>
+            <field name="description">فحص الطول والعرض والارتفاع وقطر الثقوب للطابوق الطيني حسب IQS 25</field>
+            <field name="standard_reference">IQS 25</field>
+            <field name="industry_type">masonry</field>
+            <field name="state">active</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="crit_brick_length" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">الطول (مم)</field>
+            <field name="code">LENGTH</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="min_value">232.8</field>
+            <field name="max_value">247.2</field>
+            <field name="target_value">240</field>
+            <field name="sequence">10</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_brick_width" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">العرض (مم)</field>
+            <field name="code">WIDTH</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="min_value">115</field>
+            <field name="max_value">121.54</field>
+            <field name="target_value">118</field>
+            <field name="sequence">20</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_brick_height" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">الارتفاع (مم)</field>
+            <field name="code">HEIGHT</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="min_value">73</field>
+            <field name="max_value">77</field>
+            <field name="target_value">75</field>
+            <field name="sequence">30</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_brick_hole_dia" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">قطر الفتحة (مم)</field>
+            <field name="code">HOLE_DIA</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="min_value">0</field>
+            <field name="max_value">50</field>
+            <field name="sequence">40</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_brick_area" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">المساحة (مم²)</field>
+            <field name="code">AREA</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="appointment_products.uom_square_millimeter_ap"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('LENGTH') * avg_series('WIDTH')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_length'), ref('crit_brick_width')])]"/>
+            <field name="sequence">50</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_brick_void_ratio" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">نسبة الفتحات (%)</field>
+            <field name="code">VOID_RATIO</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (pow((avg_series('HOLE_DIA') / 2), 2) * 3.1416 * HOLE_COUNT) / (avg_series('LENGTH') * avg_series('WIDTH')) * 100 if (avg_series('LENGTH') * avg_series('WIDTH')) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_hole_dia'), ref('crit_brick_width')])]"/>
+            <field name="sequence">60</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_avg_length" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">متوسط الطول (مم)</field>
+            <field name="code">AVG_LENGTH</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('LENGTH')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_length')])]"/>
+            <field name="sequence">110</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_avg_width" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">متوسط العرض (مم)</field>
+            <field name="code">AVG_WIDTH</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('WIDTH')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_width')])]"/>
+            <field name="sequence">120</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_avg_height" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">متوسط الارتفاع (مم)</field>
+            <field name="code">AVG_HEIGHT</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('HEIGHT')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_height')])]"/>
+            <field name="sequence">130</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_avg_hole" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">متوسط قطر الفتحة (مم)</field>
+            <field name="code">AVG_HOLE_DIA</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('HOLE_DIA')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_hole_dia')])]"/>
+            <field name="sequence">140</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+
+
+        <record id="template_brick_absorption" model="lab.test.template">
+            <field name="name">فحص امتصاص الماء للطابوق الطيني</field>
+            <field name="code">BRICK_ABSORB</field>
+            <field name="description">قياس امتصاص الماء بعد غمر الطابوق لمدة 24 ساعة</field>
+            <field name="standard_reference">IQS 25</field>
+            <field name="industry_type">masonry</field>
+            <field name="state">active</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="crit_dry_weight" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_absorption"/>
+            <field name="name">وزن جاف (غم)</field>
+            <field name="code">DRY_WT</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sequence">10</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_immersion_timer" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_absorption"/>
+            <field name="name">مؤقت الغمر لمدة 24 ساعة</field>
+            <field name="code">IMMERSION_TIMER</field>
+            <field name="test_type">text</field>
+            <field name="sequence">15</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+            <field name="is_time_based">True</field>
+            <field name="is_global">True</field>
+            <field name="time_duration">24</field>
+            <field name="time_unit">hours</field>
+            <field name="help_text">يجب انتظار 24 ساعة من بداية الغمر قبل أخذ وزن العينة المشبعة</field>
+        </record>
+
+        <record id="crit_wet_weight" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_absorption"/>
+            <field name="name">وزن بعد 24 ساعة (غم)</field>
+            <field name="code">WET_WT</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sequence">20</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_absorption_pct" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_absorption"/>
+            <field name="name">نسبة الامتصاص %</field>
+            <field name="code">ABSORB_PCT</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = ((WET_WT - DRY_WT) / DRY_WT) * 100 if DRY_WT else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_dry_weight'), ref('crit_wet_weight')])]"/>
+            <field name="sequence">30</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="template_brick_compression" model="lab.test.template">
+            <field name="name">فحص مقاومة الانضغاط للطابوق الطيني</field>
+            <field name="code">BRICK_COMP</field>
+            <field name="description">قياس مقاومة الانضغاط لـ 10 طابوقات</field>
+            <field name="standard_reference">IQS 25</field>
+            <field name="industry_type">masonry</field>
+            <field name="state">active</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="crit_comp_load" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_compression"/>
+            <field name="name">الحمولة المسجلة (kN)</field>
+            <field name="code">LOAD_KN</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sequence">10</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_comp_area" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_compression"/>
+            <field name="name">المساحة (مم²)</field>
+            <field name="code">AREA_COMP</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_square_millimeter_ap"/>
+            <field name="sequence">20</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_comp_strength" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_compression"/>
+            <field name="name">مقاومة الانضغاط (N/mm²)</field>
+            <field name="code">COMP_STRENGTH</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (LOAD_KN * 1000) / AREA_COMP if AREA_COMP else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_comp_load'), ref('crit_comp_area')])]"/>
+            <field name="sequence">30</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="template_brick_efflorescence" model="lab.test.template">
+            <field name="name">فحص التزهر للطابوق الطيني</field>
+            <field name="code">BRICK_EFFLOR</field>
+            <field name="description">تقييم التزهر بعد النقع 7 أيام والتجفيف 3 أيام</field>
+            <field name="standard_reference">IQS 25</field>
+            <field name="industry_type">masonry</field>
+            <field name="state">active</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="crit_efflorescence" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_efflorescence"/>
+            <field name="name">درجة التزهر</field>
+            <field name="code">EFFLOR_GRADE</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="max_value">3</field>
+            <field name="sequence">10</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="brick_test_flow_template" model="lab.test.flow.template">
+            <field name="name">خطة فحص طابوق طيني متعددة المراحل</field>
+            <field name="description">قياسات → امتصاص → انضغاط → تزهر</field>
+        </record>
+
+        <record id="brick_test_flow_stage1" model="lab.test.flow.template.line">
+            <field name="template_id" ref="brick_test_flow_template"/>
+            <field name="sequence">10</field>
+            <field name="test_template_id" ref="template_brick_dimensions"/>
+            <field name="sample_qty">24</field>
+        </record>
+
+        <record id="brick_test_flow_stage2" model="lab.test.flow.template.line">
+            <field name="template_id" ref="brick_test_flow_template"/>
+            <field name="sequence">20</field>
+            <field name="test_template_id" ref="template_brick_absorption"/>
+            <field name="sample_qty">15</field>
+        </record>
+
+        <record id="brick_test_flow_stage3" model="lab.test.flow.template.line">
+            <field name="template_id" ref="brick_test_flow_template"/>
+            <field name="sequence">30</field>
+            <field name="test_template_id" ref="template_brick_compression"/>
+            <field name="sample_qty">10</field>
+        </record>
+
+        <record id="brick_test_flow_stage4" model="lab.test.flow.template.line">
+            <field name="template_id" ref="brick_test_flow_template"/>
+            <field name="sequence">40</field>
+            <field name="test_template_id" ref="template_brick_efflorescence"/>
+            <field name="sample_qty">10</field>
+        </record>
+
+        <record id="product_brick_sample_demo" model="product.template">
+            <field name="name">العينة - طابوق طيني للاختبار</field>
+            <field name="type">consu</field>
+            <field name="is_sample_product">True</field>
+            <field name="tracking">serial</field>
+            <field name="test_flow_template_id" ref="brick_test_flow_template"/>
+            <field name="hole_count">10</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+        </record>
+    </data>
+</odoo> 
