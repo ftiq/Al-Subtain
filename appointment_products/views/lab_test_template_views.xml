@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_lab_test_template_tree" model="ir.ui.view">
+        <field name="name">lab.test.template.tree</field>
+        <field name="model">lab.test.template</field>
+        <field name="arch" type="xml">
+            <list string="قوالب الفحص" default_order="sequence, name">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="standard_code"/>
+                <field name="quality_level"/>
+                <field name="applicable_sample_type_ids" widget="many2many_tags" string="أنواع العينات" optional="show"/>
+                <field name="criterion_count" string="المعايير"/>
+                <field name="product_count" string="المنتجات"/>
+                <field name="estimated_duration" widget="float_time"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'"
+                       decoration-muted="state == 'archived'"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="action_lab_test_criterion" model="ir.actions.act_window">
+        <field name="name">معايير الفحص</field>
+        <field name="res_model">lab.test.criterion</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('template_id','=',context.get('default_template_id'))]</field>
+        <field name="context">{}</field>
+    </record>
+
+
+    <record id="view_lab_test_template_form" model="ir.ui.view">
+        <field name="name">lab.test.template.form</field>
+        <field name="model">lab.test.template</field>
+        <field name="arch" type="xml">
+            <form string="قالب الفحص">
+                <header>
+                    <button name="action_activate" string="تفعيل" type="object" 
+                            invisible="state == 'active'" class="btn-primary"/>
+                    <button name="action_archive" string="أرشفة" type="object" 
+                            invisible="state == 'archived'" class="btn-secondary"/>
+                    <button name="action_duplicate" string="نسخ" type="object" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,archived"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_lab_test_criterion)d" type="action"
+                                class="oe_stat_button" icon="fa-list-ol"
+                                context="{'default_template_id': id}">
+                            <field name="criterion_count" widget="statinfo" string="المعايير"/>
+                        </button>
+                    </div>
+                    
+                    <group>
+                        <group string="معلومات أساسية">
+                            <field name="name" placeholder="اسم قالب الفحص"/>
+                            <field name="code" placeholder="رمز فريد"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="معايير الجودة">
+                            <field name="standard_code" placeholder="ISO 17025، ASTM C39، IQS 44"/>
+                            <field name="quality_level"/>
+                            <field name="estimated_duration" widget="float_time"/>
+                        </group>
+                    </group>
+                    
+                    <field name="description" placeholder="وصف تفصيلي لقالب الفحص"/>
+                    
+                    <notebook>
+                        <page string="معايير الفحص" name="criteria">
+                            <field name="criterion_ids" context="{'default_template_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="reference_id" optional="hide"/>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="test_type"/>
+                                    <field name="uom_id" invisible="test_type not in ['numeric','computed']"/>
+                                    <field name="min_value" invisible="test_type not in ['numeric','computed']"/>
+                                    <field name="max_value" invisible="test_type not in ['numeric','computed']"/>
+                                    <field name="is_required"/>
+                                    <field name="is_critical"/>
+                                    <field name="is_summary_field" string="تلخيصي"/>
+                                    <field name="is_global" string="عام"/>
+                                    <field name="timer_scope" widget="selection" optional="show"/>
+                                    <field name="waiting_value" optional="show"/>
+                                    <field name="waiting_unit" widget="selection" optional="show"/>
+                                    <field name="lock_during_wait" string="قفل؟" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="المنتجات المرتبطة" name="products">
+                            <field name="product_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="أنواع العينات" name="sample_types">
+                            <group string="أنواع العينات المدعومة">
+                                <field name="applicable_sample_type_ids" widget="many2many_tags" 
+                                       string="أنواع العينات القابلة للتطبيق"
+                                       placeholder="اختر أنواع العينات التي يمكن تطبيق هذا القالب عليها"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_lab_test_criterion_tree" model="ir.ui.view">
+        <field name="name">lab.test.criterion.tree</field>
+        <field name="model">lab.test.criterion</field>
+        <field name="arch" type="xml">
+            <list string="معايير الفحص" default_order="template_id, sequence, name">
+                <field name="sequence" widget="handle"/>
+                <field name="reference_id" optional="hide"/>
+                <field name="template_id"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="test_type"/>
+                <field name="uom_id" optional="hide"/>
+                <field name="min_value" optional="hide"/>
+                <field name="max_value" optional="hide"/>
+                <field name="is_required"/>
+                <field name="is_critical"/>
+                <field name="is_summary_field" string="تلخيصي"/>
+                <field name="is_global" string="عام"/>
+                <field name="timer_scope" optional="hide"/>
+                <field name="waiting_value" optional="hide"/>
+                <field name="waiting_unit" optional="hide"/>
+                <field name="lock_during_wait" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_lab_test_criterion_form" model="ir.ui.view">
+        <field name="name">lab.test.criterion.form</field>
+        <field name="model">lab.test.criterion</field>
+        <field name="arch" type="xml">
+            <form string="معيار الفحص">
+                <sheet>
+                    <group>
+                        <group string="معلومات أساسية">
+                            <field name="template_id"/>
+                            <field name="reference_id"/>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="test_type"/>
+                        </group>
+                        <group string="إعدادات المعيار">
+                            <field name="is_required"/>
+                            <field name="is_critical"/>
+                            <field name="widget_type"/>
+                            <field name="timer_scope"/>
+                            <field name="waiting_value" invisible="not timer_scope"/>
+                            <field name="waiting_unit" invisible="not timer_scope"/>
+                            <field name="lock_during_wait" invisible="not timer_scope"/>
+                            <field name="is_summary_field"/>
+                            <field name="is_global"/>
+                        </group>
+                    </group>
+                    
+                    <group string="حدود القيم" invisible="test_type not in ['numeric','computed']">
+                        <group>
+                            <field name="uom_id"/>
+                            <field name="min_value"/>
+                            <field name="max_value"/>
+                        </group>
+                        <group>
+                            <field name="target_value"/>
+                        </group>
+                    </group>
+                    
+                    <group string="خيارات الاختيار" invisible="test_type != 'selection'">
+                        <field name="selection_options" nolabel="1" 
+                               placeholder="خيار 1&#10;خيار 2&#10;خيار 3"/>
+                    </group>
+                    
+                    <group string="معادلة الحساب" invisible="test_type != 'computed'">
+                        <field name="computation_formula" nolabel="1" 
+                               placeholder="# مثال:&#10;result = value1 + value2&#10;return result"/>
+                    </group>
+                    
+                    <separator string="تعليمات ومساعدة"/>
+                    <field name="instructions" placeholder="تعليمات تفصيلية لإجراء هذا الفحص"/>
+                    <field name="help_text" placeholder="نص مساعدة للمستخدم"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_lab_test_template_search" model="ir.ui.view">
+        <field name="name">lab.test.template.search</field>
+        <field name="model">lab.test.template</field>
+        <field name="arch" type="xml">
+            <search string="البحث في قوالب الفحص">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="standard_code"/>
+                <field name="applicable_sample_type_ids" string="أنواع العينات"/>
+                <filter string="نشط" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="مسودة" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="مؤرشف" name="archived" domain="[('state', '=', 'archived')]"/>
+                <separator/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="مستوى الجودة" name="group_quality_level" context="{'group_by': 'quality_level'}"/>
+                    <filter name="group_standard" string="المعيار المرجعي" context="{'group_by': 'standard_code'}"/>
+                    <filter string="أنواع العينات" name="group_sample_types" context="{'group_by': 'applicable_sample_type_ids'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_lab_test_template_kanban" model="ir.ui.view">
+        <field name="name">lab.test.template.kanban</field>
+        <field name="model">lab.test.template</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column o_lab_test_template_kanban" 
+                    sample="1" 
+                    quick_create="false" 
+                    delete="false" 
+                    records_draggable="false" 
+                    groups_draggable="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="quality_level"/>
+                <field name="state"/>
+                <field name="criterion_count"/>
+                <field name="product_count"/>
+                <field name="template_category"/>
+                <field name="industry_type"/>
+                <field name="standard_reference"/>
+                <field name="applicable_sample_type_ids" widget="many2many_tags"/>
+                <templates>
+                    <t t-name="menu">
+                        <a role="menuitem" type="open" class="dropdown-item">
+                            <i class="fa fa-pencil me-2"/> فتح
+                        </a>
+                        <a role="menuitem" type="duplicate" class="dropdown-item">
+                            <i class="fa fa-copy me-2"/> نسخ
+                        </a>
+                    </t>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click bg-light border-start border-4 border-primary">
+                            
+
+                            <div class="o_kanban_card_header bg-gradient p-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="o_kanban_record_title text-primary fw-bold mb-1">
+                                            <field name="name"/>
+                                        </h5>
+                                        <div class="small text-muted">
+                                            <i class="fa fa-code me-1"></i>
+                                            <span class="badge bg-secondary rounded-pill">
+                                                <field name="code"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <t t-if="record.state.raw_value == 'active'">
+                                            <span class="badge bg-success rounded-pill">
+                                                <i class="fa fa-check-circle"></i> نشط
+                                            </span>
+                                        </t>
+                                        <t t-if="record.state.raw_value == 'draft'">
+                                            <span class="badge bg-warning rounded-pill">
+                                                <i class="fa fa-edit"></i> مسودة
+                                            </span>
+                                        </t>
+                                        <t t-if="record.state.raw_value == 'archived'">
+                                            <span class="badge bg-secondary rounded-pill">
+                                                <i class="fa fa-archive"></i> مؤرشف
+                                            </span>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
+                            <div class="o_kanban_card_body p-3">
+
+                                <div class="mb-3">
+                                    <t t-if="record.template_category.raw_value">
+                                        <span class="badge bg-info rounded-pill me-2">
+                                            <i class="fa fa-folder"></i>
+                                            <field name="template_category"/>
+                                        </span>
+                                    </t>
+                                    <t t-if="record.industry_type.raw_value">
+                                        <span class="badge bg-primary rounded-pill">
+                                            <i class="fa fa-industry"></i>
+                                            <field name="industry_type"/>
+                                        </span>
+                                    </t>
+                                </div>
+                                
+
+                                <div class="sample-types-section">
+                                    <div class="sample-types-title">
+                                        <i class="fa fa-flask me-1"></i>
+                                        <strong>أنواع العينات:</strong>
+                                    </div>
+                                    <t t-if="record.applicable_sample_type_ids.raw_value and record.applicable_sample_type_ids.raw_value.length > 0">
+                                        <t t-foreach="record.applicable_sample_type_ids.raw_value" t-as="sample_type">
+                                            <span class="sample-type-badge">
+                                                <i class="fa fa-vial me-1"></i>
+                                                <t t-esc="sample_type[1]"/>
+                                            </span>
+                                        </t>
+                                    </t>
+                                    <t t-if="!record.applicable_sample_type_ids.raw_value or record.applicable_sample_type_ids.raw_value.length == 0">
+                                        <span class="no-sample-types">
+                                            <i class="fa fa-question-circle me-1"></i>
+                                            غير محدد
+                                        </span>
+                                    </t>
+                                </div>
+                                
+
+                                <div class="row text-center mb-3">
+                                    <div class="col-4">
+                                        <div class="border rounded p-2 bg-light">
+                                            <div class="fw-bold text-primary fs-5">
+                                                <t t-esc="record.criterion_count.raw_value"/>
+                                            </div>
+                                            <small class="text-muted">
+                                                <i class="fa fa-list-ul"></i> المعايير
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="border rounded p-2 bg-light">
+                                            <div class="fw-bold text-success fs-5">
+                                                <t t-esc="record.product_count.raw_value"/>
+                                            </div>
+                                            <small class="text-muted">
+                                                <i class="fa fa-cube"></i> المنتجات
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="border rounded p-2 bg-light">
+                                            <div class="fw-bold text-info fs-5">
+                                                <t t-if="record.quality_level.raw_value == 'basic'">⭐</t>
+                                                <t t-if="record.quality_level.raw_value == 'standard'">⭐⭐</t>
+                                                <t t-if="record.quality_level.raw_value == 'advanced'">⭐⭐⭐</t>
+                                                <t t-if="record.quality_level.raw_value == 'specialized'">⭐⭐⭐⭐</t>
+                                            </div>
+                                            <small class="text-muted">
+                                                <i class="fa fa-star"></i> الجودة
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                                <t t-if="record.standard_reference.raw_value">
+                                    <div class="text-center">
+                                        <div class="small text-muted">
+                                            <i class="fa fa-certificate me-1"></i>
+                                            <strong>المعيار المرجعي:</strong>
+                                        </div>
+                                        <span class="badge bg-dark rounded-pill mt-1">
+                                            <field name="standard_reference"/>
+                                        </span>
+                                    </div>
+                                </t>
+                            </div>
+                            
+
+                            <div class="o_kanban_card_footer bg-light p-2 border-top">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fa fa-clock-o me-1"></i>
+                                        ID: <t t-esc="record.id.raw_value"/>
+                                    </small>
+                                    <small class="text-muted">
+                                        <i class="fa fa-mouse-pointer me-1"></i>
+                                        انقر للفتح
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_lab_test_template" model="ir.actions.act_window">
+        <field name="name">قوالب الفحص</field>
+        <field name="res_model">lab.test.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_lab_test_template_kanban')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_lab_test_template_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_lab_test_template_form')})]"/>
+        <field name="search_view_id" ref="view_lab_test_template_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء قالب فحص جديد
+            </p>
+            <p>
+                قوالب الفحص تحدد معايير الفحص المطلوبة لكل نوع من أنواع العينات.
+                يمكنك إنشاء قوالب مختلفة لكل مادة أو معيار.
+            </p>
+        </field>
+    </record>
+</odoo>
