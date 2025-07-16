@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+
+        
+
+        <record id="category_administrative" model="document.category">
+            <field name="name">الوثائق الإدارية</field>
+            <field name="description">جميع الوثائق والمخاطبات الإدارية</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,circular,memo,report,other</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+
+        <record id="category_ebooks" model="document.category">
+            <field name="name">الكتب الإلكترونية</field>
+            <field name="description">مكتبة الكتب الإلكترونية</field>
+            <field name="allowed_document_types">ebook</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+
+        
+
+        <record id="category_incoming" model="document.category">
+            <field name="name">المخاطبات الواردة</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">جميع المخاطبات الواردة من الجهات الخارجية</field>
+            <field name="allowed_document_types">incoming</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+
+        <record id="category_outgoing" model="document.category">
+            <field name="name">المخاطبات الصادرة</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">جميع المخاطبات الصادرة إلى الجهات الخارجية</field>
+            <field name="allowed_document_types">outgoing</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+
+        <record id="category_internal" model="document.category">
+            <field name="name">المخاطبات الداخلية</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">المخاطبات بين الأقسام الداخلية</field>
+            <field name="allowed_document_types">internal</field>
+            <field name="auto_archive_days">180</field>
+            <field name="is_active">True</field>
+            <field name="sequence">30</field>
+        </record>
+
+
+        <record id="category_circulars" model="document.category">
+            <field name="name">التعاميم</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">التعاميم والقرارات الإدارية</field>
+            <field name="allowed_document_types">circular</field>
+            <field name="auto_archive_days">730</field>
+            <field name="is_active">True</field>
+            <field name="sequence">40</field>
+        </record>
+
+
+        
+
+        <record id="category_hr" model="document.category">
+            <field name="name">الموارد البشرية</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">وثائق الموارد البشرية والشؤون الإدارية</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,memo,report</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">100</field>
+        </record>
+
+
+        <record id="category_hr_employment" model="document.category">
+            <field name="name">التوظيف والتعيين</field>
+            <field name="parent_id" ref="category_hr"/>
+            <field name="description">وثائق التوظيف والتعيين</field>
+            <field name="allowed_document_types">incoming,outgoing,internal</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_hr_leaves" model="document.category">
+            <field name="name">الإجازات والغياب</field>
+            <field name="parent_id" ref="category_hr"/>
+            <field name="description">طلبات الإجازات والغياب</field>
+            <field name="allowed_document_types">internal,memo</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="category_hr_evaluation" model="document.category">
+            <field name="name">التقييم والترقية</field>
+            <field name="parent_id" ref="category_hr"/>
+            <field name="description">تقييم الأداء والترقيات</field>
+            <field name="allowed_document_types">report,memo</field>
+            <field name="auto_archive_days">1825</field>
+            <field name="is_active">True</field>
+            <field name="sequence">30</field>
+        </record>
+
+
+        <record id="category_finance" model="document.category">
+            <field name="name">المالية والمحاسبة</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">الوثائق المالية والمحاسبية</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,report</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">200</field>
+        </record>
+
+
+        <record id="category_finance_budget" model="document.category">
+            <field name="name">الميزانية والتخطيط المالي</field>
+            <field name="parent_id" ref="category_finance"/>
+            <field name="description">وثائق الميزانية والتخطيط المالي</field>
+            <field name="allowed_document_types">report,internal</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_finance_invoices" model="document.category">
+            <field name="name">الفواتير والمدفوعات</field>
+            <field name="parent_id" ref="category_finance"/>
+            <field name="description">الفواتير والمدفوعات</field>
+            <field name="allowed_document_types">incoming,outgoing</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        
+        <record id="category_legal" model="document.category">
+            <field name="name">الشؤون القانونية</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">الوثائق والمراسلات القانونية</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,report</field>
+            <field name="auto_archive_days">3650</field>
+            <field name="is_active">True</field>
+            <field name="sequence">300</field>
+        </record>
+
+        
+        <record id="category_legal_contracts" model="document.category">
+            <field name="name">العقود والاتفاقيات</field>
+            <field name="parent_id" ref="category_legal"/>
+            <field name="description">العقود والاتفاقيات القانونية</field>
+            <field name="allowed_document_types">incoming,outgoing</field>
+            <field name="auto_archive_days">3650</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_legal_litigation" model="document.category">
+            <field name="name">القضايا والتقاضي</field>
+            <field name="parent_id" ref="category_legal"/>
+            <field name="description">وثائق القضايا والتقاضي</field>
+            <field name="allowed_document_types">incoming,outgoing,report</field>
+            <field name="auto_archive_days">3650</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        
+        <record id="category_it" model="document.category">
+            <field name="name">تقنية المعلومات</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">وثائق تقنية المعلومات والأنظمة</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,report,memo</field>
+            <field name="auto_archive_days">1095</field>
+            <field name="is_active">True</field>
+            <field name="sequence">400</field>
+        </record>
+
+        
+        <record id="category_procurement" model="document.category">
+            <field name="name">المشتريات والمناقصات</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">وثائق المشتريات والمناقصات</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,report</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">500</field>
+        </record>
+
+
+        
+
+        <record id="category_ebooks_technical" model="document.category">
+            <field name="name">الكتب التقنية</field>
+            <field name="parent_id" ref="category_ebooks"/>
+            <field name="description">الكتب التقنية والمتخصصة</field>
+            <field name="allowed_document_types">ebook</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+
+        <record id="category_ebooks_admin" model="document.category">
+            <field name="name">الكتب الإدارية</field>
+            <field name="parent_id" ref="category_ebooks"/>
+            <field name="description">كتب الإدارة والقيادة</field>
+            <field name="allowed_document_types">ebook</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+
+        <record id="category_ebooks_legal" model="document.category">
+            <field name="name">الكتب القانونية</field>
+            <field name="parent_id" ref="category_ebooks"/>
+            <field name="description">الكتب والمراجع القانونية</field>
+            <field name="allowed_document_types">ebook</field>
+            <field name="is_active">True</field>
+            <field name="sequence">30</field>
+        </record>
+
+
+        <record id="category_ebooks_reference" model="document.category">
+            <field name="name">المراجع والأدلة</field>
+            <field name="parent_id" ref="category_ebooks"/>
+            <field name="description">كتب المراجع والأدلة الإرشادية</field>
+            <field name="allowed_document_types">ebook</field>
+            <field name="is_active">True</field>
+            <field name="sequence">40</field>
+        </record>
+
+
+        
+
+        <record id="category_reports" model="document.category">
+            <field name="name">التقارير</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">التقارير الدورية والخاصة</field>
+            <field name="allowed_document_types">report</field>
+            <field name="auto_archive_days">1095</field>
+            <field name="is_active">True</field>
+            <field name="sequence">600</field>
+        </record>
+
+
+        <record id="category_memos" model="document.category">
+            <field name="name">المذكرات</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">المذكرات الداخلية</field>
+            <field name="allowed_document_types">memo</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">700</field>
+        </record>
+
+
+        <record id="category_archive" model="document.category">
+            <field name="name">الأرشيف</field>
+            <field name="description">الوثائق المؤرشفة</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,circular,memo,report,ebook,other</field>
+            <field name="is_active">True</field>
+            <field name="sequence">9999</field>
+        </record>
+
+    </data>
+</odoo> 

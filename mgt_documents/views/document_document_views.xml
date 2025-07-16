@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record id="view_document_document_tree" model="ir.ui.view">
+            <field name="name">document.document.list</field>
+            <field name="model">document.document</field>
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list string="الوثائق" default_order="date desc, id desc" 
+                      decoration-success="state == 'approved'"
+                      decoration-info="state == 'in_review'"
+                      decoration-warning="state == 'submitted'"
+                      decoration-muted="state == 'archived'"
+                      decoration-danger="state == 'rejected'">
+                    <field name="reference_number" string="الرقم المرجعي"/>
+                    <field name="name" string="العنوان"/>
+                    <field name="document_type" string="النوع"/>
+                    <field name="date" string="التاريخ"/>
+                    <field name="sender_id" string="المرسل" optional="show"/>
+                    <field name="recipient_id" string="المستلم" optional="show"/>
+                    <field name="department_id" string="القسم" optional="hide"/>
+                    <field name="category_id" string="الفئة" optional="hide"/>
+                    <field name="priority" string="الأولوية" widget="priority" optional="hide"/>
+                    <field name="state" string="الحالة" widget="badge"
+                           decoration-success="state == 'approved'"
+                           decoration-info="state == 'in_review'"
+                           decoration-warning="state == 'submitted'"
+                           decoration-muted="state == 'archived'"
+                           decoration-danger="state == 'rejected'"/>
+                    <field name="create_uid" string="المنشئ" optional="hide"/>
+                    <field name="create_date" string="تاريخ الإنشاء" optional="hide"/>
+                    <field name="activity_ids" widget="list_activity" optional="show"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_document_document_form" model="ir.ui.view">
+            <field name="name">document.document.form</field>
+            <field name="model">document.document</field>
+            <field name="arch" type="xml">
+                <form string="الوثيقة">
+                    <header>
+                        <button name="action_submit" type="object" string="إرسال للمراجعة" 
+                                class="oe_highlight" groups="group_document_clerk"/>
+                        <button name="action_approve" type="object" string="اعتماد" 
+                                class="oe_highlight" groups="group_document_approver"/>
+                        <button name="action_reject" type="object" string="رفض" 
+                                groups="group_document_approver"/>
+                        <button name="action_archive" type="object" string="أرشفة" 
+                                groups="group_document_manager"/>
+                        <button name="action_cancel" type="object" string="إلغاء" 
+                                groups="group_document_manager"/>
+                        <button name="action_reset_to_draft" type="object" string="إعادة للمسودة" 
+                                groups="group_document_clerk"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_attachments" type="object" 
+                                    class="oe_stat_button" icon="fa-paperclip">
+                                <field name="attachment_count" widget="statinfo" string="المرفقات"/>
+                            </button>
+                            <button name="action_view_approvals" type="object" 
+                                    class="oe_stat_button" icon="fa-check-circle">
+                                <field name="approval_count" widget="statinfo" string="طلبات الموافقة"/>
+                            </button>
+                            <button name="action_view_signatures" type="object" 
+                                    class="oe_stat_button" icon="fa-signature">
+                                <field name="signature_count" widget="statinfo" string="التوقيعات"/>
+                            </button>
+                            <button name="action_view_history" type="object" 
+                                    class="oe_stat_button" icon="fa-history">
+                                <field name="history_count" widget="statinfo" string="سجل التغييرات"/>
+                            </button>
+                        </div>
+                        
+                        <widget name="web_ribbon" title="مؤرشفة" bg_color="text-bg-secondary" invisible="state != 'archived'"/>
+                        <widget name="web_ribbon" title="معتمدة" bg_color="text-bg-success" invisible="state != 'approved'"/>
+                        <widget name="web_ribbon" title="مرفوضة" bg_color="text-bg-danger" invisible="state != 'rejected'"/>
+
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="عنوان الوثيقة..." required="1"/>
+                            </h1>
+                            <h2>
+                                <field name="reference_number" readonly="1"/>
+                            </h2>
+                        </div>
+
+                        <group>
+                            <group name="document_info" string="معلومات الوثيقة" col="2">
+                                <field name="document_type" required="1"/>
+                                <field name="category_id" required="1"/>
+                                <field name="date" required="1"/>
+                                <field name="priority"/>
+                                <field name="subject" placeholder="موضوع الوثيقة..." colspan="2"/>
+                            </group>
+                            <group name="parties_info" string="معلومات الأطراف" col="2">
+                                <field name="sender_id"/>
+                                <field name="sender_employee_id"/>
+                                <field name="recipient_id"/>
+                                <field name="recipient_employee_id"/>
+                                <field name="department_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+
+                        <group name="ebook_info" string="معلومات الكتاب الإلكتروني" invisible="document_type != 'ebook'">
+                            <group>
+                                <field name="author"/>
+                                <field name="publisher"/>
+                                <field name="publication_date"/>
+                            </group>
+                            <group>
+                                <field name="isbn"/>
+                                <field name="language"/>
+                                <field name="page_count"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="المحتوى والملخص" name="content">
+                                <group>
+                                    <field name="summary" placeholder="ملخص الوثيقة..." 
+                                           widget="text" nolabel="1"/>
+                                </group>
+                                <separator string="المحتوى"/>
+                                <field name="content" widget="html" placeholder="محتوى الوثيقة..."/>
+                            </page>
+                            
+                            <page string="المرفقات" name="attachments">
+                                <field name="attachment_ids" widget="many2many_binary" 
+                                       string="ملفات الوثيقة"/>
+                            </page>
+                            
+                            <page string="سير العمل" name="workflow">
+                                <group>
+                                    <group string="معلومات الموافقة">
+                                        <field name="needs_approval" readonly="1"/>
+                                        <field name="approved_by" readonly="1" />
+                                        <field name="approved_date" readonly="1" />
+                                        <field name="rejection_reason" readonly="1" />
+                                    </group>
+                                    <group string="معلومات الأرشفة">
+                                        <field name="is_archived" readonly="1"/>
+                                        <field name="archived_by" readonly="1" />
+                                        <field name="archived_date" readonly="1" />
+                                        <field name="archive_location" readonly="1" />
+                                    </group>
+                                </group>
+                                
+                                <separator string="طلبات الموافقة"/>
+                                <field name="approval_request_ids" readonly="1" widget="one2many_list"/>
+                            </page>
+                            
+                            <page string="التوقيعات الرقمية" name="signatures">
+                                <field name="digital_signature_ids" readonly="1" widget="one2many_list"/>
+                            </page>
+                            
+                            <page string="سجل التغييرات" name="history">
+                                <field name="history_ids" readonly="1" widget="one2many_list"/>
+                            </page>
+                            
+                            <page string="معلومات إضافية" name="additional_info">
+                                <group>
+                                    <group string="البيانات الوصفية">
+                                        <field name="keywords" widget="many2many_tags" 
+                                               placeholder="الكلمات المفتاحية..."/>
+                                        <field name="confidentiality_level"/>
+                                        <field name="retention_period"/>
+                                        <field name="related_documents" widget="many2many_tags"/>
+                                    </group>
+                                    <group string="معلومات النظام">
+                                        <field name="create_uid" readonly="1"/>
+                                        <field name="create_date" readonly="1"/>
+                                        <field name="write_uid" readonly="1"/>
+                                        <field name="write_date" readonly="1"/>
+                                    </group>
+                                </group>
+                                
+                                <separator string="ملاحظات داخلية"/>
+                                <field name="notes" placeholder="ملاحظات داخلية..." widget="text"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    
+                    <chatter>
+                        <field name="message_follower_ids" options="{'display_log_button': True}"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids" options="{'display_log_button': True}"/>
+                    </chatter>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_document_document_kanban" model="ir.ui.view">
+            <field name="name">document.document.kanban</field>
+            <field name="model">document.document</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state" class="o_kanban_small_column" 
+                        quick_create="false" sample="1">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="reference_number"/>
+                    <field name="document_type"/>
+                    <field name="state"/>
+                    <field name="priority"/>
+                    <field name="date"/>
+                    <field name="sender_id"/>
+                    <field name="recipient_id"/>
+                    <field name="category_id"/>
+                    <field name="attachment_count"/>
+                    <field name="activity_ids"/>
+                    <field name="activity_state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <small class="text-muted">
+                                            <field name="reference_number"/>
+                                        </small>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <span class="fa fa-calendar"/> <field name="date"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <field name="priority" widget="priority"/>
+                                            </div>
+                                        </div>
+                                        <div t-if="record.sender_id.raw_value">
+                                            <span class="fa fa-user"/> من: <field name="sender_id"/>
+                                        </div>
+                                        <div t-if="record.recipient_id.raw_value">
+                                            <span class="fa fa-user-o"/> إلى: <field name="recipient_id"/>
+                                        </div>
+                                        <div t-if="record.category_id.raw_value">
+                                            <span class="fa fa-folder"/> <field name="category_id"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <span t-if="record.attachment_count.raw_value" 
+                                              class="fa fa-paperclip" title="مرفقات"/>
+                                        <field name="document_type" widget="label" 
+                                               options="{'classes': {'incoming': 'primary', 'outgoing': 'success', 'internal': 'info', 'ebook': 'warning'}}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="view_document_document_search" model="ir.ui.view">
+            <field name="name">document.document.search</field>
+            <field name="model">document.document</field>
+            <field name="arch" type="xml">
+                <search string="البحث في الوثائق">
+                    <field name="name" string="العنوان/المحتوى" 
+                           filter_domain="['|', '|', ('name', 'ilike', self), ('content', 'ilike', self), ('summary', 'ilike', self)]"/>
+                    <field name="reference_number" string="الرقم المرجعي"/>
+                    <field name="subject" string="الموضوع"/>
+                    <field name="sender_id" string="المرسل"/>
+                    <field name="recipient_id" string="المستلم"/>
+                    <field name="category_id" string="الفئة"/>
+                    <field name="department_id" string="القسم"/>
+                    <field name="keywords" string="الكلمات المفتاحية"/>
+                    
+                    <separator/>
+                    <filter string="مسوداتي" name="my_drafts" 
+                            domain="[('create_uid', '=', uid), ('state', '=', 'draft')]"/>
+                    <filter string="وثائقي" name="my_documents" 
+                            domain="[('create_uid', '=', uid)]"/>
+                    <filter string="المحالة إلي" name="assigned_to_me" 
+                            domain="['|', ('recipient_employee_id.user_id', '=', uid), ('recipient_id.user_ids', 'in', uid)]"/>
+                    <filter string="قسمي" name="my_department" 
+                            domain="[('department_id.member_ids.user_id', '=', uid)]"/>
+                    
+                    <separator/>
+                    <filter string="المخاطبات الواردة" name="incoming" 
+                            domain="[('document_type', '=', 'incoming')]"/>
+                    <filter string="المخاطبات الصادرة" name="outgoing" 
+                            domain="[('document_type', '=', 'outgoing')]"/>
+                    <filter string="المخاطبات الداخلية" name="internal" 
+                            domain="[('document_type', '=', 'internal')]"/>
+                    <filter string="التعاميم" name="circulars" 
+                            domain="[('document_type', '=', 'circular')]"/>
+                    <filter string="الكتب الإلكترونية" name="ebooks" 
+                            domain="[('document_type', '=', 'ebook')]"/>
+                    
+                    <separator/>
+                    <filter string="مسودة" name="draft" 
+                            domain="[('state', '=', 'draft')]"/>
+                    <filter string="مرسلة للمراجعة" name="submitted" 
+                            domain="[('state', '=', 'submitted')]"/>
+                    <filter string="قيد المراجعة" name="in_review" 
+                            domain="[('state', '=', 'in_review')]"/>
+                    <filter string="معتمدة" name="approved" 
+                            domain="[('state', '=', 'approved')]"/>
+                    <filter string="مؤرشفة" name="archived" 
+                            domain="[('state', '=', 'archived')]"/>
+                    <filter string="مرفوضة" name="rejected" 
+                            domain="[('state', '=', 'rejected')]"/>
+                    
+                    <separator/>
+                    <filter string="أولوية عالية" name="high_priority" 
+                            domain="[('priority', '=', '3')]"/>
+                    <filter string="تحتاج موافقة" name="needs_approval" 
+                            domain="[('needs_approval', '=', True)]"/>
+                    <filter string="لها مرفقات" name="has_attachments" 
+                            domain="[('attachment_count', '>', 0)]"/>
+                    
+                    <separator/>
+                    <filter string="اليوم" name="today" 
+                            domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="هذا الأسبوع" name="this_week" 
+                            domain="[('date', '>=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="هذا الشهر" name="this_month" 
+                            domain="[('date', '>=', (context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
+                    
+                    <separator/>
+                    <filter string="الأنشطة المتأخرة" name="activities_overdue" 
+                            domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" 
+                            help="الأنشطة المتأخرة"/>
+                    <filter string="أنشطة اليوم" name="activities_today" 
+                            domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    
+                    <group expand="0" string="تجميع حسب">
+                        <filter string="الحالة" name="group_by_state" context="{'group_by': 'state'}"/>
+                        <filter string="النوع" name="group_by_type" context="{'group_by': 'document_type'}"/>
+                        <filter string="الفئة" name="group_by_category" context="{'group_by': 'category_id'}"/>
+                        <filter string="القسم" name="group_by_department" context="{'group_by': 'department_id'}"/>
+                        <filter string="المرسل" name="group_by_sender" context="{'group_by': 'sender_id'}"/>
+                        <filter string="المستلم" name="group_by_recipient" context="{'group_by': 'recipient_id'}"/>
+                        <filter string="الأولوية" name="group_by_priority" context="{'group_by': 'priority'}"/>
+                        <filter string="تاريخ الإنشاء" name="group_by_create_date" context="{'group_by': 'create_date:month'}"/>
+                        <filter string="التاريخ" name="group_by_date" context="{'group_by': 'date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+        <record id="action_document_document" model="ir.actions.act_window">
+            <field name="name">جميع الوثائق</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    إنشاء وثيقة جديدة
+                </p>
+                <p>
+                    ابدأ بإنشاء وثيقة جديدة، مخاطبة أو كتاب إلكتروني.
+                    يمكنك تتبع حالة الوثيقة من الإنشاء حتى الأرشفة.
+                </p>
+            </field>
+        </record>
+
+
+        <record id="action_document_incoming" model="ir.actions.act_window">
+            <field name="name">المخاطبات الواردة</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_type', '=', 'incoming')]</field>
+            <field name="context">{'default_document_type': 'incoming'}</field>
+        </record>
+
+
+        <record id="action_document_outgoing" model="ir.actions.act_window">
+            <field name="name">المخاطبات الصادرة</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_type', '=', 'outgoing')]</field>
+            <field name="context">{'default_document_type': 'outgoing'}</field>
+        </record>
+
+
+        <record id="action_document_internal" model="ir.actions.act_window">
+            <field name="name">المخاطبات الداخلية</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_type', '=', 'internal')]</field>
+            <field name="context">{'default_document_type': 'internal'}</field>
+        </record>
+
+
+        <record id="action_document_circulars" model="ir.actions.act_window">
+            <field name="name">التعاميم</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_type', '=', 'circular')]</field>
+            <field name="context">{'default_document_type': 'circular'}</field>
+        </record>
+
+
+        <record id="action_document_ebooks" model="ir.actions.act_window">
+            <field name="name">الكتب الإلكترونية</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_type', '=', 'ebook')]</field>
+            <field name="context">{'default_document_type': 'ebook'}</field>
+        </record>
+
+
+        <record id="action_my_created_documents" model="ir.actions.act_window">
+            <field name="name">الوثائق التي أنشأتها</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('create_uid', '=', uid)]</field>
+        </record>
+
+
+        <record id="action_documents_assigned_to_me" model="ir.actions.act_window">
+            <field name="name">الوثائق المحالة إلي</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">['|', ('recipient_employee_id.user_id', '=', uid), ('recipient_id.user_ids', 'in', uid)]</field>
+        </record>
+
+
+        <record id="action_my_department_documents" model="ir.actions.act_window">
+            <field name="name">وثائق قسمي</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('department_id.member_ids.user_id', '=', uid)]</field>
+        </record>
+
+
+        <record id="action_archived_documents" model="ir.actions.act_window">
+            <field name="name">الوثائق المؤرشفة</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', '=', 'archived')]</field>
+        </record>
+
+    </data>
+</odoo> 

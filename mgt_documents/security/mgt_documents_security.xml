@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        
+        <record id="document_document_user_rule" model="ir.rule">
+            <field name="name">وثائق المستخدم الشخصية</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|',
+                ('create_uid', '=', user.id),
+                ('sender_employee_id.user_id', '=', user.id),
+                ('recipient_employee_id.user_id', '=', user.id),
+                ('department_id.member_ids.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_user'))]"/>
+        </record>
+
+        
+        <record id="document_document_clerk_rule" model="ir.rule">
+            <field name="name">وثائق القسم للموظف</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|', '|',
+                ('create_uid', '=', user.id),
+                ('department_id', 'in', user.employee_id.department_id.ids),
+                ('sender_employee_id.department_id', 'in', user.employee_id.department_id.ids),
+                ('recipient_employee_id.department_id', 'in', user.employee_id.department_id.ids),
+                ('access_level', 'in', ['public', 'internal'])
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_clerk'))]"/>
+        </record>
+
+        
+        <record id="document_document_approver_rule" model="ir.rule">
+            <field name="name">وثائق المعتمد</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|', '|', '|',
+                ('create_uid', '=', user.id),
+                ('approval_request_ids.approver_id.user_id', '=', user.id),
+                ('department_id', 'in', user.employee_id.department_id.child_ids.ids),
+                ('department_id', '=', user.employee_id.department_id.id),
+                ('sender_employee_id.parent_id.user_id', '=', user.id),
+                ('access_level', 'in', ['public', 'internal'])
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_approver'))]"/>
+        </record>
+
+        
+        <record id="document_document_manager_rule" model="ir.rule">
+            <field name="name">وثائق المدير</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|',
+                ('access_level', '!=', 'confidential'),
+                ('create_uid', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_manager'))]"/>
+        </record>
+
+        
+        <record id="document_document_admin_rule" model="ir.rule">
+            <field name="name">جميع الوثائق للمسؤول</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_admin'))]"/>
+        </record>
+
+        
+        <record id="document_document_confidential_rule" model="ir.rule">
+            <field name="name">الوثائق السرية</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('access_level', '!=', 'confidential'),
+                ('create_uid', '=', user.id),
+                ('department_id', '=', user.employee_id.department_id.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_confidential'))]"/>
+        </record>
+
+        
+        <record id="document_document_portal_rule" model="ir.rule">
+            <field name="name">وثائق البوابة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                ('access_level', '=', 'public'),
+                ('state', 'in', ['approved', 'archived']),
+                ('recipient_id', '=', user.partner_id.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_portal'))]"/>
+        </record>
+
+        
+        
+        <record id="document_document_hr_rule" model="ir.rule">
+            <field name="name">وثائق الموارد البشرية</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('category_id.name', 'ilike', 'موارد بشرية'),
+                ('category_id.name', 'ilike', 'HR'),
+                ('department_id.name', 'ilike', 'موارد بشرية')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_hr'))]"/>
+        </record>
+
+        
+        <record id="document_document_finance_rule" model="ir.rule">
+            <field name="name">الوثائق المالية</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|',
+                ('category_id.name', 'ilike', 'مالية'),
+                ('category_id.name', 'ilike', 'محاسبة'),
+                ('category_id.name', 'ilike', 'Finance'),
+                ('department_id.name', 'ilike', 'مالية')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_finance'))]"/>
+        </record>
+
+        
+        <record id="document_document_legal_rule" model="ir.rule">
+            <field name="name">الوثائق القانونية</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('category_id.name', 'ilike', 'قانونية'),
+                ('category_id.name', 'ilike', 'Legal'),
+                ('department_id.name', 'ilike', 'قانونية')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_legal'))]"/>
+        </record>
+
+
+        
+        <record id="document_category_user_rule" model="ir.rule">
+            <field name="name">فئات الوثائق للمستخدمين</field>
+            <field name="model_id" ref="model_document_category"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_user'))]"/>
+        </record>
+
+        
+        <record id="document_history_user_rule" model="ir.rule">
+            <field name="name">سجل الوثائق للمستخدم</field>
+            <field name="model_id" ref="model_document_history"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('document_id.create_uid', '=', user.id),
+                ('document_id.sender_employee_id.user_id', '=', user.id),
+                ('document_id.recipient_employee_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_user'))]"/>
+        </record>
+
+        
+        <record id="document_history_manager_rule" model="ir.rule">
+            <field name="name">سجل الوثائق للمدير</field>
+            <field name="model_id" ref="model_document_history"/>
+            <field name="domain_force">[
+                ('document_id.access_level', '!=', 'confidential')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_manager'))]"/>
+        </record>
+
+        
+        
+        <record id="approval_request_user_rule" model="ir.rule">
+            <field name="name">طلبات الموافقة للمستخدم</field>
+            <field name="model_id" ref="model_approval_request"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('approver_id.user_id', '=', user.id),
+                ('requester_id.user_id', '=', user.id),
+                ('document_id.create_uid', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_user'))]"/>
+        </record>
+
+        
+        
+        <record id="digital_signature_user_rule" model="ir.rule">
+            <field name="name">التوقيعات الرقمية للمستخدم</field>
+            <field name="model_id" ref="model_digital_signature"/>
+            <field name="domain_force">[
+                '|', '|', '|',
+                ('document_id.create_uid', '=', user.id),
+                ('document_id.sender_employee_id.user_id', '=', user.id),
+                ('document_id.recipient_employee_id.user_id', '=', user.id),
+                ('user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_user'))]"/>
+        </record>
+
+        
+        
+        <record id="document_draft_rule" model="ir.rule">
+            <field name="name">الوثائق المسودة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|',
+                ('state', '!=', 'draft'),
+                ('create_uid', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_user'))]"/>
+        </record>
+
+        
+        <record id="document_archived_rule" model="ir.rule">
+            <field name="name">الوثائق المؤرشفة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                ('state', '!=', 'archived')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_user'))]"/>
+        </record>
+
+        
+        <record id="document_archived_manager_rule" model="ir.rule">
+            <field name="name">الوثائق المؤرشفة للمدير</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_archive'))]"/>
+        </record>
+
+            
+        <record id="document_document_company_rule" model="ir.rule">
+            <field name="name">وثائق الشركة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="document_category_company_rule" model="ir.rule">
+            <field name="name">فئات الشركة</field>
+            <field name="model_id" ref="model_document_category"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo> 

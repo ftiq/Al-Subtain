@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record id="action_ebooks_technical" model="ir.actions.act_window">
+            <field name="name">الكتب التقنية</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_type', '=', 'ebook'), ('category_id.name', 'ilike', 'تقنية')]</field>
+            <field name="context">{'default_document_type': 'ebook'}</field>
+        </record>
+
+        <record id="action_ebooks_admin" model="ir.actions.act_window">
+            <field name="name">الكتب الإدارية</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_type', '=', 'ebook'), ('category_id.name', 'ilike', 'إدارية')]</field>
+            <field name="context">{'default_document_type': 'ebook'}</field>
+        </record>
+
+        <record id="action_ebooks_legal" model="ir.actions.act_window">
+            <field name="name">الكتب القانونية</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_type', '=', 'ebook'), ('category_id.name', 'ilike', 'قانونية')]</field>
+            <field name="context">{'default_document_type': 'ebook'}</field>
+        </record>
+
+
+        <record id="action_approval_request" model="ir.actions.act_window">
+            <field name="name">طلبات الموافقة</field>
+            <field name="res_model">document.approval.request</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_my_approval_requests" model="ir.actions.act_window">
+            <field name="name">طلبات موافقتي</field>
+            <field name="res_model">document.approval.request</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('approver_id.user_id', '=', uid)]</field>
+        </record>
+
+
+        <record id="action_digital_signature" model="ir.actions.act_window">
+            <field name="name">التوقيعات الرقمية</field>
+            <field name="res_model">digital.signature</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+
+        <record id="action_archive_management" model="ir.actions.act_window">
+            <field name="name">إدارة الأرشيف</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', 'in', ['approved', 'archived'])]</field>
+        </record>
+
+
+        <record id="action_document_reports" model="ir.actions.act_window">
+            <field name="name">تقارير الوثائق</field>
+            <field name="res_model">document.report</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+
+        <record id="action_document_category" model="ir.actions.act_window">
+            <field name="name">فئات الوثائق</field>
+            <field name="res_model">document.category</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+
+        <record id="action_document_history" model="ir.actions.act_window">
+            <field name="name">سجل التغييرات</field>
+            <field name="res_model">document.history</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+
+        <record id="action_document_settings" model="ir.actions.act_window">
+            <field name="name">إعدادات النظام</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module': 'mgt_documents'}</field>
+        </record>
+
+    </data>
+</odoo> 
