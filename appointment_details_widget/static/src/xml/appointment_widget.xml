@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="appointment_details_widget" xml:space="preserve">
+
+
+    <t t-name="appointment_details_widget.AppointmentDetailsWidget">
+
+        <button t-if="isVisible" 
+                class="btn btn-sm btn-info o_field_appointment_details_widget" 
+                t-on-click="onButtonClick"
+                title="عرض تفاصيل الموعد">
+            <i class="fa fa-calendar-check-o">📅</i>
+        </button>
+    </t>
+
+
+    <t t-name="appointment_details_widget.AppointmentDetailsPopover">
+        <div class="p-3" style="max-height: 500px; overflow-y: auto; min-width: 600px;">
+
+            <div class="mb-3 text-center bg-primary text-white p-3 rounded">
+                <h5 class="mb-0">
+                    <i class="fa fa-calendar-check me-2"/>
+                    تفاصيل الموعد
+                </h5>
+            </div>
+
+
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fa fa-user text-primary me-2"/>
+                        معلومات العميل
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>الاسم:</strong> <span t-esc="appointmentData.customer_name"/>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>الهاتف:</strong> <span t-esc="appointmentData.customer_phone"/>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <strong>البريد الإلكتروني:</strong> <span t-esc="appointmentData.customer_email"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fa fa-clock text-warning me-2"/>
+                        معلومات الموعد
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>تاريخ ووقت الموعد:</strong> 
+                            <br/>
+                            <span class="badge bg-info fs-6" t-esc="appointmentData.appointment_datetime"/>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>حالة الموعد:</strong>
+                            <br/>
+                            <span class="badge fs-6" 
+                                  t-att-class="appointmentData.appointment_status === 'قادم' ? 'bg-success' : 
+                                             appointmentData.appointment_status === 'مؤكد' ? 'bg-primary' : 'bg-danger'"
+                                  t-esc="appointmentData.appointment_status"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fa fa-project-diagram text-success me-2"/>
+                        معلومات المشروع
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <strong>اسم المشروع:</strong> <span t-esc="appointmentData.project_name"/>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>مندوب المبيعات:</strong> <span t-esc="appointmentData.salesperson"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fa fa-shopping-cart text-danger me-2"/>
+                        معلومات الطلب
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>حالة الطلب:</strong>
+                            <span class="badge fs-6"
+                                  t-att-class="appointmentData.state === 'مؤكد' ? 'bg-success' : 
+                                             appointmentData.state === 'مسودة' ? 'bg-secondary' : 'bg-warning'"
+                                  t-esc="appointmentData.state"/>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>إجمالي المبلغ:</strong> 
+                            <span class="fw-bold text-success" t-esc="appointmentData.total_amount"/> د.ع
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fa fa-cube text-primary me-2"/>
+                        المنتجات المحجوزة
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div t-if="appointmentData.products.length > 0">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>المنتج</th>
+                                        <th class="text-center">الكمية</th>
+                                        <th class="text-center">السعر</th>
+                                        <th class="text-center">المجموع</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="appointmentData.products" t-as="product" t-key="product_index">
+                                        <tr>
+                                            <td>
+                                                <span class="fw-bold" t-esc="product.name"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-info" t-esc="product.qty"/>
+                                                <small t-if="product.uom" class="text-muted ms-1" t-esc="product.uom"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-if="product.price_unit" t-esc="product.price_unit"/> د.ع
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="fw-bold text-success" t-if="product.price_subtotal" t-esc="product.price_subtotal"/> د.ع
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div t-else="" class="text-muted text-center">
+                        <i class="fa fa-info-circle me-2"/>
+                        لا توجد منتجات محجوزة
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates> 
