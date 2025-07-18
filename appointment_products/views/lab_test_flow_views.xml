@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+
+    <record id="view_lab_test_flow_template_form" model="ir.ui.view">
+        <field name="name">lab.test.flow.template.form</field>
+        <field name="model">lab.test.flow.template</field>
+        <field name="arch" type="xml">
+            <form string="قالب خطة الفحص">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="description"/>
+                        <field name="allow_parallel_tests" widget="boolean_toggle"/>
+                    </group>
+                    <div class="alert alert-info" invisible="not allow_parallel_tests">
+                        <i class="fa fa-info-circle"/> 
+                        <strong>ملاحظة:</strong> تم تفعيل خاصية تجاوز الترتيب في هذا القالب. سيتم تجاهل الترتيب المتبع وإظهار كل الفحوصات دفعة واحدة عند إنشاء العينة.
+                    </div>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="sequence"/>
+                            <field name="test_template_id"/>
+                            <field name="sample_qty"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_lab_test_flow_template_tree" model="ir.ui.view">
+        <field name="name">lab.test.flow.template.tree</field>
+        <field name="model">lab.test.flow.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="line_ids" widget="many2many_tags" string="عدد المراحل"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_lab_test_flow_template_kanban" model="ir.ui.view">
+        <field name="name">lab.test.flow.template.kanban</field>
+        <field name="model">lab.test.flow.template</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column o_lab_test_flow_template_kanban" sample="1" quick_create="false" delete="false" records_draggable="false" groups_draggable="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="line_ids"/>
+                <templates>
+                    <t t-name="menu">
+                        <a role="menuitem" type="open" class="dropdown-item"><i class="fa fa-pencil me-2"/> فتح</a>
+                    </t>
+                    <t t-name="card">
+                        <div class="o_kanban_record_top">
+                            <strong class="o_kanban_record_title"><field name="name"/></strong>
+                        </div>
+                        <div class="o_kanban_record_body">
+                            <p class="text-muted" t-if="record.description.raw_value">
+                                <t t-esc="record.description.raw_value"/>
+                            </p>
+                            <span class="badge bg-info"><t t-esc="record.line_ids.raw_value.length"/> مراحل</span>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="act_lab_test_flow_template" model="ir.actions.act_window">
+        <field name="name">📁 قوالب خطط الفحص</field>
+        <field name="res_model">lab.test.flow.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_lab_test_flow_template_kanban')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_lab_test_flow_template_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_lab_test_flow_template_form')})]"/>
+    </record>
+
+
+
+    <record id="view_lab_test_flow_form" model="ir.ui.view">
+        <field name="name">lab.test.flow.form</field>
+        <field name="model">lab.test.flow</field>
+        <field name="arch" type="xml">
+            <form string="خطة الفحص">
+                <header>
+                    <button name="action_next_step" type="object" string="بدء / المرحلة التالية" class="btn-primary" invisible="state == 'completed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name" readonly="state != 'draft'"/>
+                        <field name="sample_id" readonly="state != 'draft'"/>
+                        <field name="template_id" readonly="state != 'draft'"/>
+                        <field name="current_step" readonly="1"/>
+                        <field name="allow_parallel_tests" readonly="1" widget="boolean_toggle"/>
+                    </group>
+                    <div class="alert alert-info" invisible="not allow_parallel_tests">
+                        <i class="fa fa-info-circle"/> 
+                        <strong>ملاحظة:</strong> تم تفعيل خاصية تجاوز الترتيب في هذه الخطة. سيتم تجاهل الترتيب المتبع وإظهار كل الفحوصات دفعة واحدة عند بدء الخطة.
+                    </div>
+                    <notebook>
+                        <page string="المراحل">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="sequence"/>
+                                    <field name="test_template_id"/>
+                                    <field name="sample_qty"/>
+                                    <field name="state"/>
+                                    <button name="action_open_result_set" type="object" string="نتائج" icon="fa-flask" invisible="not result_set_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_lab_test_flow_tree" model="ir.ui.view">
+        <field name="name">lab.test.flow.tree</field>
+        <field name="model">lab.test.flow</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="sample_id"/>
+                <field name="template_id"/>
+                <field name="state"/>
+                <field name="current_step"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_lab_test_flow_kanban" model="ir.ui.view">
+        <field name="name">lab.test.flow.kanban</field>
+        <field name="model">lab.test.flow</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column o_lab_test_flow_kanban" sample="1" quick_create="false" delete="false" records_draggable="false" groups_draggable="false" default_group_by="state">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="sample_id"/>
+                <field name="template_id"/>
+                <field name="state"/>
+                <field name="current_step"/>
+                <templates>
+                    <t t-name="menu">
+                        <a role="menuitem" type="open" class="dropdown-item"><i class="fa fa-pencil me-2"/> فتح</a>
+                    </t>
+                    <t t-name="card">
+                        <div class="o_kanban_record_top">
+                            <strong class="o_kanban_record_title"><field name="name"/></strong>
+                        </div>
+                        <div class="o_kanban_record_body">
+                            <p class="mb-1" t-if="record.sample_id.raw_value">
+                                <i class="fa fa-vial me-1"/> <field name="sample_id"/>
+                            </p>
+                            <p class="mb-1" t-if="record.template_id.raw_value">
+                                <i class="fa fa-file-alt me-1"/> <field name="template_id"/>
+                            </p>
+                            <p class="mb-0">
+                                <small class="text-muted">المرحلة الحالية:</small> <span class="fw-bold"><t t-esc="record.current_step.raw_value"/></span>
+                            </p>
+                        </div>
+                        <div class="o_kanban_record_bottom">
+                            <field name="state" widget="badge"
+                                   decoration-info="state == 'draft'"
+                                   decoration-primary="state == 'in_progress'"
+                                   decoration-success="state == 'completed'"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="act_lab_test_flow" model="ir.actions.act_window">
+        <field name="name">🗒️ خطط الفحص</field>
+        <field name="res_model">lab.test.flow</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_lab_test_flow_kanban')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_lab_test_flow_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_lab_test_flow_form')})]"/>
+    </record>
+
+    <record id="view_lab_test_flow_wizard" model="ir.ui.view">
+        <field name="name">lab.test.flow.wizard.form</field>
+        <field name="model">lab.test.flow.wizard</field>
+        <field name="arch" type="xml">
+            <form string="إنشاء خطة فحص" create="false" edit="false">
+                <group>
+                    <field name="sample_id"/>
+                    <field name="template_id"/>
+                </group>
+                <footer>
+                    <button string="إنشاء" type="object" name="action_create_flow" class="btn-primary"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <menuitem id="menu_lab_test_flow_template" name="📁 خطط الفحص" parent="menu_lab_standards" action="act_lab_test_flow_template" sequence="40"/>
+
+</odoo> 

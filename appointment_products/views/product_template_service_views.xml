@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_inherit_service_flag" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.service.flag</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="is_service_fsm" string="الخدمة"/>
+                <field name="is_sample_product" string="منتج العينات"/>
+                <field name="sample_type_id" invisible="not is_sample_product" options="{'no_create_edit': True}"/>
+                <field name="related_sample_product_id" 
+                       string="منتج العينات المرتبط"
+                       invisible="is_sample_product == True"
+                       options="{'no_create': True, 'no_create_edit': True}"
+                       help="اختر منتج العينات الذي سيتم استخدامه مع هذا المنتج"/>
+                <field name="sample_info" 
+                       string="معلومات العينة"
+                       readonly="1"
+                       widget="badge"
+                       decoration-info="sample_info != 'لا يستخدم عينات'"
+                       help="معلومات حول علاقة هذا المنتج بمنتجات العينات"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_normal_form_inherit_service_flag" model="ir.ui.view">
+        <field name="name">product.product.form.inherit.service.flag</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="is_service_fsm" string="الخدمة"/>
+                <field name="is_sample_product" string="منتج العينات"/>
+                <field name="sample_type_id" invisible="not is_sample_product" options="{'no_create_edit': True}"/>
+                <field name="related_sample_product_id" 
+                       string="منتج العينات المرتبط"
+                       invisible="is_sample_product == True"
+                       options="{'no_create': True, 'no_create_edit': True}"
+                       help="اختر منتج العينات الذي سيتم استخدامه مع هذا المنتج"/>
+
+
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="product_template_tree_inherit_sample_info" model="ir.ui.view">
+        <field name="name">product.template.tree.inherit.sample.info</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='list_price']" position="after">
+                <field name="is_sample_product" optional="hide"/>
+                <field name="sample_info" optional="hide" widget="badge" decoration-info="sample_info != 'لا يستخدم عينات'"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_product_template_form_inherit_lab_testing" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.lab.testing</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_test_templates" type="object"
+                        class="oe_stat_button" icon="fa-flask"
+                        invisible="not test_template_ids">
+                    <field name="test_template_count" widget="statinfo" string="قوالب الفحص"/>
+                </button>
+            </xpath>
+            
+
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="is_service_fsm" invisible="type != 'service'"/>
+                <field name="related_sample_product_id" 
+                       invisible="is_sample_product or type != 'service'"
+                       domain="[('is_sample_product', '=', True)]"/>
+                <field name="sample_info" readonly="1" 
+                       invisible="not is_sample_product and not related_sample_product_id"/>
+            </xpath>
+            
+
+            <xpath expr="//notebook" position="inside">
+                <page string="قوالب الفحص" name="test_templates" 
+                      invisible="not is_sample_product">
+                    <group>
+                        <group string="قوالب متاحة" invisible="test_flow_template_id">
+                            <field name="test_template_ids" nolabel="1" 
+                                   widget="many2many_tags" 
+                                   options="{'color_field': 'quality_level'}"
+                                   placeholder="اختر قوالب الفحص المتاحة لهذا المنتج"/>
+                        </group>
+                        <group string="قوالب افتراضية" invisible="test_flow_template_id">
+                            <field name="default_test_template_ids" nolabel="1" 
+                                   widget="many2many_tags"
+                                   options="{'color_field': 'quality_level'}" 
+                                   domain="[('id', 'in', test_template_ids)]"
+                                   placeholder="اختر القوالب التي تطبق تلقائياً"/>
+                        </group>
+                        <group string="خطة فحص">
+                            <field name="test_flow_template_id" nolabel="1" options="{'no_create_edit': True}"/>
+                        </group>
+                    </group>
+                    
+                    <separator string="معلومات قوالب الفحص"/>
+                    <field name="test_template_ids" mode="list" readonly="1">
+                        <list string="قوالب الفحص المتاحة">
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="standard_code"/>
+                            <field name="quality_level"/>
+                            <field name="criterion_count" string="المعايير"/>
+                            <field name="estimated_duration" widget="float_time"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_product_template_tree_inherit_lab_testing" model="ir.ui.view">
+        <field name="name">product.template.tree.inherit.lab.testing</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="is_service_fsm" optional="hide"/>
+                <field name="is_sample_product" optional="hide"/>
+                <field name="sample_info" optional="hide"/>
+                <field name="test_template_count" string="قوالب الفحص" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_product_template_search_inherit_lab_testing" model="ir.ui.view">
+        <field name="name">product.template.search.inherit.lab.testing</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="test_template_ids" string="قوالب الفحص"/>
+                <field name="related_sample_product_id" string="منتج العينات المرتبط"/>
+            </xpath>
+            
+            <xpath expr="//filter[@name='services']" position="after">
+                <filter string="خدمات ميدانية" name="fsm_services" 
+                        domain="[('is_service_fsm', '=', True)]"/>
+                <filter string="منتجات العينات" name="sample_products" 
+                        domain="[('is_sample_product', '=', True)]"/>
+                <filter string="منتجات مع عينات" name="products_with_samples" 
+                        domain="[('related_sample_product_id', '!=', False)]"/>
+            </xpath>
+            
+            <xpath expr="//group[@expand='1']" position="inside">
+                <filter string="نوع الخدمة" name="group_service_type" 
+                        context="{'group_by': 'is_service_fsm'}"/>
+                <filter string="منتجات العينات" name="group_sample_products" 
+                        context="{'group_by': 'is_sample_product'}"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="action_product_template_with_test_templates" model="ir.actions.act_window">
+        <field name="name">المنتجات مع قوالب الفحص</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('test_template_ids', '!=', False)]</field>
+        <field name="context">{'search_default_sample_products': 1}</field>
+    </record>
+</odoo> 
