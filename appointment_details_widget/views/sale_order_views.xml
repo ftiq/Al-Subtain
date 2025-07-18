@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_list_appointment_details" model="ir.ui.view">
+        <field name="name">sale.order.list.appointment.details</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="appointment_products.view_sale_order_tree_inherit_project_name"/>
+        <field name="arch" type="xml">
+            
+
+            <xpath expr="//field[@name='project_name']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            
+
+            <xpath expr="//field[@name='fsm_products_display']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            
+
+            <xpath expr="//field[@name='appointment_datetime']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            
+
+            <xpath expr="//field[@name='appointment_status']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            
+
+            <field name="appointment_datetime" position="before">
+                <field name="partner_id" optional="hide"/>
+                <field name="partner_phone" optional="hide"/>
+                <field name="partner_email" optional="hide"/>
+                <field name="user_id" optional="hide"/>
+                <field name="order_line" optional="hide"/>
+                <field name="amount_total" optional="hide"/>
+                <field name="state" optional="hide"/>
+                <field name="products_info" optional="hide"/>
+            </field>
+            
+
+            <field name="appointment_datetime" position="after">
+                <widget name="appointment_details_widget" width="40px"/>
+            </field>
+            
+        </field>
+    </record>
+</odoo> 
