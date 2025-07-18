@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_lab_test_criterion_kanban" model="ir.ui.view">
+        <field name="name">lab.test.criterion.kanban</field>
+        <field name="model">lab.test.criterion</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column o_lab_criterion_kanban" 
+                    quick_create="false" 
+                    delete="false" 
+                    sample="1"
+                    default_group_by="test_type"
+                    drag_drop="false">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="test_type"/>
+                <field name="uom_id"/>
+                <field name="min_value"/>
+                <field name="max_value"/>
+                <field name="target_value"/>
+                <field name="is_required"/>
+                <field name="is_critical"/>
+                <field name="is_computed_field"/>
+                <field name="standard_code"/>
+                <field name="total_waiting_minutes"/>
+                <field name="sequence"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click" 
+                             t-att-class="'bg-light ' + (record.is_critical.raw_value ? 'border-danger' : 'border-secondary')">
+                            
+
+                            <div class="o_kanban_card_header d-flex justify-content-between align-items-start mb-2">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_kanban_record_title">
+                                        <strong t-att-class="record.is_critical.raw_value ? 'text-danger' : 'text-primary'">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <div class="small text-muted">
+                                        <i class="fa fa-code me-1"></i>
+                                        <span class="badge bg-secondary rounded-pill">
+                                            <field name="code"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="o_kanban_card_manage_icons">
+                                    <t t-if="record.is_critical.raw_value">
+                                        <span class="badge bg-danger rounded-pill" title="معيار حرج">
+                                            <i class="fa fa-exclamation-triangle"></i> حرج
+                                        </span>
+                                    </t>
+                                    <t t-if="record.is_required.raw_value">
+                                        <span class="badge bg-warning rounded-pill" title="مطلوب">
+                                            <i class="fa fa-asterisk"></i> مطلوب
+                                        </span>
+                                    </t>
+                                </div>
+                            </div>
+                            
+
+                            <div class="mb-2">
+                                <t t-if="record.test_type.raw_value == 'numeric'">
+                                    <span class="badge bg-info rounded-pill me-1">
+                                        <i class="fa fa-calculator"></i> رقمي
+                                    </span>
+                                </t>
+                                <t t-if="record.test_type.raw_value == 'text'">
+                                    <span class="badge bg-warning rounded-pill me-1">
+                                        <i class="fa fa-font"></i> نصي
+                                    </span>
+                                </t>
+                                <t t-if="record.test_type.raw_value == 'computed'">
+                                    <span class="badge bg-success rounded-pill me-1">
+                                        <i class="fa fa-cog"></i> محسوب
+                                    </span>
+                                </t>
+                                
+
+                                <t t-if="record.uom_id.raw_value">
+                                    <span class="badge bg-light text-dark rounded-pill border">
+                                        <i class="fa fa-balance-scale me-1"></i>
+                                        <field name="uom_id"/>
+                                    </span>
+                                </t>
+                            </div>
+                            
+
+                            <t t-if="record.test_type.raw_value == 'numeric'">
+                                <div class="mb-2">
+                                    <div class="row g-1">
+                                        <t t-if="record.min_value.raw_value">
+                                            <div class="col-4">
+                                                <div class="small text-muted">
+                                                    <i class="fa fa-arrow-down text-danger"></i>
+                                                    أدنى: <strong t-esc="record.min_value.value"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                        <t t-if="record.max_value.raw_value">
+                                            <div class="col-4">
+                                                <div class="small text-muted">
+                                                    <i class="fa fa-arrow-up text-success"></i>
+                                                    أعلى: <strong t-esc="record.max_value.value"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                        <t t-if="record.target_value.raw_value">
+                                            <div class="col-4">
+                                                <div class="small text-muted">
+                                                    <i class="fa fa-bullseye text-primary"></i>
+                                                    مستهدف: <strong t-esc="record.target_value.value"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                            
+
+                            <t t-if="record.standard_code.raw_value">
+                                <div class="mb-2">
+                                    <div class="small text-muted">
+                                        <i class="fa fa-certificate me-1"></i>
+                                        <span class="badge bg-secondary rounded-pill">
+                                            <field name="standard_code"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </t>
+                            
+
+                            <t t-if="record.total_waiting_minutes.raw_value > 0">
+                                <div class="mb-2">
+                                    <div class="small text-muted">
+                                        <i class="fa fa-clock-o me-1"></i>
+                                        انتظار: <strong t-esc="record.total_waiting_minutes.value"/> دقيقة
+                                    </div>
+                                </div>
+                            </t>
+                            
+
+                            <div class="o_kanban_card_footer mt-2 pt-2 border-top">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="small text-muted">
+                                        <i class="fa fa-sort-numeric-asc me-1"></i>
+                                        تسلسل: <strong t-esc="record.sequence.value"/>
+                                    </div>
+                                    <t t-if="record.is_computed_field.raw_value">
+                                        <span class="badge bg-success rounded-pill">
+                                            <i class="fa fa-cogs"></i> محسوب آلياً
+                                        </span>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action to open criteria -->
+    <record id="action_lab_test_criterion" model="ir.actions.act_window">
+        <field name="name">📝 المعايير</field>
+        <field name="res_model">lab.test.criterion</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'group_by': 'test_type'}</field>
+        <field name="view_ids" eval="[(5,0,0),
+            (0,0,{'view_mode':'kanban','view_id':ref('view_lab_test_criterion_kanban')}),
+            (0,0,{'view_mode':'list','view_id':ref('appointment_products.view_lab_test_criterion_tree')}),
+            (0,0,{'view_mode':'form','view_id':ref('appointment_products.view_lab_test_criterion_form')})]"/>
+    </record>
+</odoo> 

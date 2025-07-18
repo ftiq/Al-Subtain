@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_generate_cubes_wizard_form" model="ir.ui.view">
+        <field name="name">lab.generate.cubes.wizard.form</field>
+        <field name="model">lab.generate.cubes.wizard</field>
+        <field name="arch" type="xml">
+            <form string="توليد مكعبات الخرسانة" create="false" edit="false">
+                <group>
+                    <field name="sample_id" readonly="1"/>
+                    <field name="volume_m3"/>
+                    <field name="truck_ids" widget="many2many_tags"/>
+                </group>
+                <footer>
+                    <button name="action_generate" string="توليد" type="object" class="btn-primary"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_generate_cubes_wizard" model="ir.actions.act_window">
+        <field name="name">توليد مكعبات الخرسانة</field>
+        <field name="res_model">lab.generate.cubes.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_generate_cubes_wizard_form"/>
+    </record>
+</odoo> 
