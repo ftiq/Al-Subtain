@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_task_signature_wizard_form" model="ir.ui.view">
+        <field name="name">project.task.signature.wizard.form</field>
+        <field name="model">project.task.signature.wizard</field>
+        <field name="arch" type="xml">
+            <form string="التوقيع">
+                <group>
+                    <field name="signature" widget="signature" class="o_full_width"/>
+                </group>
+                <footer>
+                    <button name="action_save_signature" type="object" string="حفظ" class="btn-primary"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_project_task_signature_wizard" model="ir.actions.act_window">
+        <field name="name">التوقيع</field>
+        <field name="res_model">project.task.signature.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_project_task_signature_wizard_form"/>
+        <field name="target">new</field>
+        <field name="context">{'default_task_id': active_id}</field>
+    </record>
+</odoo> 
