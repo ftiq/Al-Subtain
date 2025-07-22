@@ -1,0 +1,932 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="uom_square_millimeter_ap" model="uom.uom">
+            <field name="name">mm²</field>
+            <field name="category_id" ref="uom.uom_categ_surface"/>
+            <field name="factor" eval="1000000"/>
+            <field name="uom_type">smaller</field>
+        </record>
+
+        <record id="template_brick_dimensions" model="lab.test.template">
+            <field name="name">فحص قياسات الطابوق الطيني</field>
+            <field name="code">BRICK_DIMENS</field>
+            <field name="description">فحص الطول والعرض والارتفاع وقطر الثقوب للطابوق الطيني حسب IQS 25</field>
+            <field name="standard_code">IQS 25</field>
+            <field name="industry_type">masonry</field>
+            <field name="state">active</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="crit_brick_length" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">الطول (مم)</field>
+            <field name="code">LENGTH</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="min_value">232.8</field>
+            <field name="max_value">247.2</field>
+            <field name="target_value">240</field>
+            <field name="sequence">10</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_brick_width" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">العرض (مم)</field>
+            <field name="code">WIDTH</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="min_value">115</field>
+            <field name="max_value">121.54</field>
+            <field name="target_value">118</field>
+            <field name="sequence">20</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_brick_height" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">الارتفاع (مم)</field>
+            <field name="code">HEIGHT</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="min_value">73</field>
+            <field name="max_value">77</field>
+            <field name="target_value">75</field>
+            <field name="sequence">30</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_brick_hole_dia" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">قطر الفتحة (مم)</field>
+            <field name="code">HOLE_DIA</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="min_value">10</field>
+            <field name="max_value">50</field>
+            <field name="sequence">40</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_brick_area" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">المساحة (مم²)</field>
+            <field name="code">AREA</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="appointment_products.uom_square_millimeter_ap"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('LENGTH') * avg_series('WIDTH')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_length'), ref('crit_brick_width')])]"/>
+            <field name="sequence">50</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_brick_void_ratio" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">نسبة الفتحات (%)</field>
+            <field name="code">VOID_RATIO</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (pow(avg_series('HOLE_DIA'), 2) * 3.1416 / 4 * HOLE_COUNT) / (avg_series('LENGTH') * avg_series('WIDTH')) * 100 if (avg_series('LENGTH') and avg_series('WIDTH')) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_hole_dia'), ref('crit_brick_length'), ref('crit_brick_width')])]"/>
+            <field name="sequence">60</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_avg_length" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">متوسط الطول (مم)</field>
+            <field name="code">AVG_LENGTH</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('LENGTH')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_length')])]"/>
+            <field name="sequence">110</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_avg_width" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">متوسط العرض (مم)</field>
+            <field name="code">AVG_WIDTH</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('WIDTH')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_width')])]"/>
+            <field name="sequence">120</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_avg_height" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">متوسط الارتفاع (مم)</field>
+            <field name="code">AVG_HEIGHT</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('HEIGHT')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_height')])]"/>
+            <field name="sequence">130</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <record id="crit_avg_hole" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_dimensions"/>
+            <field name="name">متوسط قطر الفتحة (مم)</field>
+            <field name="code">AVG_HOLE_DIA</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_millimeter"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('HOLE_DIA')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_brick_hole_dia')])]"/>
+            <field name="sequence">140</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+
+
+        <record id="template_brick_absorption" model="lab.test.template">
+            <field name="name">فحص امتصاص الماء للطابوق الطيني</field>
+            <field name="code">BRICK_ABSORB</field>
+            <field name="description">قياس امتصاص الماء بعد غمر الطابوق لمدة 24 ساعة</field>
+            <field name="standard_code">IQS 25</field>
+            <field name="industry_type">masonry</field>
+            <field name="state">active</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="crit_dry_weight" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_absorption"/>
+            <field name="name">وزن جاف (غم)</field>
+            <field name="code">DRY_WT</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sequence">10</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+
+        <record id="crit_wet_weight" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_absorption"/>
+            <field name="name">وزن بعد 24 ساعة (غم)</field>
+            <field name="code">WET_WT</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sequence">20</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_absorption_pct" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_absorption"/>
+            <field name="name">نسبة الامتصاص %</field>
+            <field name="code">ABSORB_PCT</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = ((WET_WT - DRY_WT) / DRY_WT) * 100 if DRY_WT else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_dry_weight'), ref('crit_wet_weight')])]"/>
+            <field name="sequence">30</field>
+            <field name="is_summary_field">True</field>
+            <field name="is_critical">False</field>
+
+        </record>
+
+        <record id="template_brick_compression" model="lab.test.template">
+            <field name="name">فحص مقاومة الانضغاط للطابوق الطيني</field>
+            <field name="code">BRICK_COMP</field>
+            <field name="description">قياس مقاومة الانضغاط لـ 10 طابوقات</field>
+            <field name="standard_code">IQS 25</field>
+            <field name="industry_type">masonry</field>
+            <field name="state">active</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="crit_comp_load" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_compression"/>
+            <field name="name">الحمولة المسجلة (kN)</field>
+            <field name="code">LOAD_KN</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sequence">10</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_comp_area" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_compression"/>
+            <field name="name">المساحة (مم²)</field>
+            <field name="code">AREA_COMP</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_square_millimeter_ap"/>
+            <field name="sequence">20</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_comp_strength" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_compression"/>
+            <field name="name">مقاومة الانضغاط (N/mm²)</field>
+            <field name="code">COMP_STRENGTH</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (LOAD_KN * 1000) / AREA_COMP if AREA_COMP else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_comp_load'), ref('crit_comp_area')])]"/>
+            <field name="sequence">30</field>
+            <field name="is_summary_field">True</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="template_brick_efflorescence" model="lab.test.template">
+            <field name="name">فحص التزهر للطابوق الطيني</field>
+            <field name="code">BRICK_EFFLOR</field>
+            <field name="description">تقييم التزهر بعد النقع 7 أيام والتجفيف 3 أيام. 
+- درجة التزهر: 1 = لا يوجد، 2 = خفيف، 3 = متوسط، 4 = عالي
+- للنوع A: يجب أن تكون درجة التزهر خفيفة (2) أو لا يوجد (1)
+- للنوع B: يجب أن تكون درجة التزهر متوسطة (3) أو أقل
+- للنوع C: يجب أن لا يكون هناك تزهر (1)</field>
+            <field name="standard_code">IQS 25</field>
+            <field name="industry_type">masonry</field>
+            <field name="state">active</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="crit_efflorescence" model="lab.test.criterion">
+            <field name="template_id" ref="template_brick_efflorescence"/>
+            <field name="name">درجة التزهر</field>
+            <field name="code">EFFLOR_GRADE</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">1</field>
+            <field name="max_value">4</field>
+            <field name="sequence">10</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+            <field name="help_text">درجات التزهر: 1 = لا يوجد، 2 = خفيف، 3 = متوسط، 4 = عالي
+مطابقة النتيجة تعتمد على نوع العينة الفرعي (A/B/C)</field>
+        </record>
+
+
+        <record id="brick_test_flow_template" model="lab.test.flow.template">
+            <field name="name">خطة فحص طابوق طيني متعددة المراحل</field>
+            <field name="description">قياسات → امتصاص → انضغاط → تزهر</field>
+        </record>
+
+        <record id="brick_test_flow_stage1" model="lab.test.flow.template.line">
+            <field name="template_id" ref="brick_test_flow_template"/>
+            <field name="sequence">10</field>
+            <field name="test_template_id" ref="template_brick_dimensions"/>
+            <field name="sample_qty">1</field>
+        </record>
+
+        <record id="brick_test_flow_stage2" model="lab.test.flow.template.line">
+            <field name="template_id" ref="brick_test_flow_template"/>
+            <field name="sequence">20</field>
+            <field name="test_template_id" ref="template_brick_absorption"/>
+            <field name="sample_qty">2</field>
+        </record>
+
+        <record id="brick_test_flow_stage3" model="lab.test.flow.template.line">
+            <field name="template_id" ref="brick_test_flow_template"/>
+            <field name="sequence">30</field>
+            <field name="test_template_id" ref="template_brick_compression"/>
+            <field name="sample_qty">2</field>
+        </record>
+
+        <record id="brick_test_flow_stage4" model="lab.test.flow.template.line">
+            <field name="template_id" ref="brick_test_flow_template"/>
+            <field name="sequence">40</field>
+            <field name="test_template_id" ref="template_brick_efflorescence"/>
+            <field name="sample_qty">2</field>
+        </record>
+
+
+        <record id="product_brick_sample_demo" model="product.template">
+            <field name="name">العينة - طابوق طيني</field>
+            <field name="type">consu</field>
+            <field name="is_sample_product">True</field>
+            <field name="tracking">serial</field>
+            <field name="test_flow_template_id" ref="brick_test_flow_template"/>
+            <field name="hole_count">10</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+        </record>
+
+
+    <!--
+        <record id="template_concrete_comp_building" model="lab.test.template">
+            <field name="name">فحص مقاومة الانضغاط – أبنية (28 يوم)</field>
+            <field name="code">BUILD_COMP_28D</field>
+            <field name="description">فحص مكعبات خرسانة الأبنية بعمر 28 يوم وفق IQS 348/2017</field>
+            <field name="standard_code">IQS 348/2017</field>
+            <field name="industry_type">building</field>
+            <field name="state">active</field>
+            <field name="sequence">50</field>
+        </record>
+
+
+        <record id="crit_build_cube1" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 1 (MPa)</field>
+            <field name="code">CUBE1</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">10</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+
+        <record id="crit_build_cube2" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 2 (MPa)</field>
+            <field name="code">CUBE2</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">20</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+
+        <record id="crit_build_cube3" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 3 (MPa)</field>
+            <field name="code">CUBE3</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">30</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+
+        <record id="crit_build_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">متوسط المقاومة (MPa)</field>
+            <field name="code">AVG_COMP</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (CUBE1 + CUBE2 + CUBE3) / 3 if (CUBE1 and CUBE2 and CUBE3) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_build_cube1'), ref('crit_build_cube2'), ref('crit_build_cube3')])]"/>
+            <field name="min_value">25</field>
+            <field name="sequence">40</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+
+        <record id="crit_build_group1_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">متوسط المجموعة الأولى (MPa)</field>
+            <field name="code">AVG_GRP1</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (CUBE1 + CUBE2 + CUBE3)/3 if (CUBE1 and CUBE2 and CUBE3) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_build_cube1'), ref('crit_build_cube2'), ref('crit_build_cube3')])]"/>
+            <field name="sequence">45</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+
+        <record id="crit_build_cube4" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 4 (MPa)</field>
+            <field name="code">CUBE4</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">50</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_build_cube5" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 5 (MPa)</field>
+            <field name="code">CUBE5</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">60</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_build_cube6" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 6 (MPa)</field>
+            <field name="code">CUBE6</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">70</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+        </record>
+
+        <record id="crit_build_group2_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">متوسط المجموعة الثانية (MPa)</field>
+            <field name="code">AVG_GRP2</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (CUBE4 + CUBE5 + CUBE6)/3 if (CUBE4 and CUBE5 and CUBE6) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_build_cube4'), ref('crit_build_cube5'), ref('crit_build_cube6')])]"/>
+            <field name="sequence">75</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+
+        <record id="crit_build_cube7" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 7 (MPa)</field>
+            <field name="code">CUBE7</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">80</field>
+        </record>
+        <record id="crit_build_cube8" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 8 (MPa)</field>
+            <field name="code">CUBE8</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">90</field>
+        </record>
+        <record id="crit_build_cube9" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 9 (MPa)</field>
+            <field name="code">CUBE9</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">100</field>
+        </record>
+        <record id="crit_build_group3_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">متوسط المجموعة الثالثة (MPa)</field>
+            <field name="code">AVG_GRP3</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (CUBE7 + CUBE8 + CUBE9)/3 if (CUBE7 and CUBE8 and CUBE9) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_build_cube7'), ref('crit_build_cube8'), ref('crit_build_cube9')])]"/>
+            <field name="sequence">105</field>
+        </record>
+        <record id="crit_build_cube10" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 10 (MPa)</field>
+            <field name="code">CUBE10</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">110</field>
+        </record>
+        <record id="crit_build_cube11" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 11 (MPa)</field>
+            <field name="code">CUBE11</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">120</field>
+        </record>
+        <record id="crit_build_cube12" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 12 (MPa)</field>
+            <field name="code">CUBE12</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">130</field>
+        </record>
+        <record id="crit_build_group4_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">متوسط المجموعة الرابعة (MPa)</field>
+            <field name="code">AVG_GRP4</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (CUBE10 + CUBE11 + CUBE12)/3 if (CUBE10 and CUBE11 and CUBE12) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_build_cube10'), ref('crit_build_cube11'), ref('crit_build_cube12')])]"/>
+            <field name="sequence">135</field>
+        </record>
+
+        <record id="crit_build_overall_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">المتوسط النهائى للمقاومة (MPa)</field>
+            <field name="code">AVG_COMP_FINAL</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (AVG_GRP1 + AVG_GRP2 + AVG_GRP3 + AVG_GRP4) / ((1 if AVG_GRP1 else 0) + (1 if AVG_GRP2 else 0) + (1 if AVG_GRP3 else 0) + (1 if AVG_GRP4 else 0)) if (AVG_GRP1 or AVG_GRP2 or AVG_GRP3 or AVG_GRP4) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_build_group1_avg'), ref('crit_build_group2_avg'), ref('crit_build_group3_avg'), ref('crit_build_group4_avg')])]"/>
+            <field name="sequence">140</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+
+        <record id="crit_build_cube7" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 7 (MPa)</field>
+            <field name="code">CUBE7</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">80</field>
+        </record>
+        <record id="crit_build_cube8" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 8 (MPa)</field>
+            <field name="code">CUBE8</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">90</field>
+        </record>
+        <record id="crit_build_cube9" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 9 (MPa)</field>
+            <field name="code">CUBE9</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">100</field>
+        </record>
+        <record id="crit_build_group3_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">متوسط المجموعة الثالثة (MPa)</field>
+            <field name="code">AVG_GRP3</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (CUBE7 + CUBE8 + CUBE9)/3 if (CUBE7 and CUBE8 and CUBE9) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_build_cube7'), ref('crit_build_cube8'), ref('crit_build_cube9')])]"/>
+            <field name="sequence">105</field>
+        </record>
+        <record id="crit_build_cube10" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 10 (MPa)</field>
+            <field name="code">CUBE10</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">110</field>
+        </record>
+        <record id="crit_build_cube11" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 11 (MPa)</field>
+            <field name="code">CUBE11</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">120</field>
+        </record>
+        <record id="crit_build_cube12" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">مقاومة مكعب 12 (MPa)</field>
+            <field name="code">CUBE12</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">130</field>
+        </record>
+        <record id="crit_build_group4_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">متوسط المجموعة الرابعة (MPa)</field>
+            <field name="code">AVG_GRP4</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (CUBE10 + CUBE11 + CUBE12)/3 if (CUBE10 and CUBE11 and CUBE12) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_build_cube10'), ref('crit_build_cube11'), ref('crit_build_cube12')])]"/>
+            <field name="sequence">135</field>
+        </record>
+
+        <record id="crit_build_min_comp" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">أقل مقاومة (MPa)</field>
+            <field name="code">MIN_COMP</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="computation_formula">result = min([v for v in [CUBE1, CUBE2, CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12] if v]) if any([CUBE1, CUBE2, CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12]) else 0</field>
+            <field name="sequence">150</field>
+        </record>
+        <record id="crit_build_max_comp" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">أكبر مقاومة (MPa)</field>
+            <field name="code">MAX_COMP</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="computation_formula">result = max([v for v in [CUBE1, CUBE2, CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12] if v]) if any([CUBE1, CUBE2, CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12]) else 0</field>
+            <field name="sequence">160</field>
+        </record>
+        <record id="crit_build_stdev_comp" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_building"/>
+            <field name="name">الانحراف المعيارى (MPa)</field>
+            <field name="code">STDEV_COMP</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="computation_formula">from math import sqrt; vals=[v for v in [CUBE1, CUBE2, CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12] if v]; result = (sqrt(sum((x - (sum(vals)/len(vals)))**2 for x in vals)/len(vals)) if vals else 0)</field>
+            <field name="sequence">170</field>
+        </record>
+
+
+        <record id="template_concrete_comp_foundation" model="lab.test.template">
+            <field name="name">فحص مقاومة الانضغاط – أساسات (28 يوم)</field>
+            <field name="code">FOUND_COMP_28D</field>
+            <field name="description">فحص مكعبات خرسانة الأساسات بعمر 28 يوم وفق IQS 348/2017</field>
+            <field name="standard_code">IQS 348/2017</field>
+            <field name="industry_type">foundation</field>
+            <field name="state">active</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="crit_found_cube1" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_foundation"/>
+            <field name="name">مقاومة مكعب 1 (MPa)</field>
+            <field name="code">F_CUBE1</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">10</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_found_cube2" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_foundation"/>
+            <field name="name">مقاومة مكعب 2 (MPa)</field>
+            <field name="code">F_CUBE2</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">20</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_found_cube3" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_foundation"/>
+            <field name="name">مقاومة مكعب 3 (MPa)</field>
+            <field name="code">F_CUBE3</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">30</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_found_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_foundation"/>
+            <field name="name">متوسط المقاومة (MPa)</field>
+            <field name="code">F_AVG_COMP</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (F_CUBE1 + F_CUBE2 + F_CUBE3) / 3 if (F_CUBE1 and F_CUBE2 and F_CUBE3) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_found_cube1'), ref('crit_found_cube2'), ref('crit_found_cube3')])]"/>
+            <field name="min_value">30</field>
+            <field name="sequence">40</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+
+
+        <record id="crit_found_group1_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_foundation"/>
+            <field name="name">متوسط المجموعة الأولى (MPa)</field>
+            <field name="code">F_AVG_GRP1</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="computation_formula">result = (F_CUBE1 + F_CUBE2 + F_CUBE3)/3 if (F_CUBE1 and F_CUBE2 and F_CUBE3) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_found_cube1'), ref('crit_found_cube2'), ref('crit_found_cube3')])]"/>
+            <field name="sequence">45</field>
+        </record>
+
+        <record id="crit_found_cube4" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">مقاومة مكعب 4 (MPa)</field><field name="code">F_CUBE4</field><field name="test_type">numeric</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="sequence">50</field></record>
+        <record id="crit_found_cube5" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">مقاومة مكعب 5 (MPa)</field><field name="code">F_CUBE5</field><field name="test_type">numeric</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="sequence">60</field></record>
+        <record id="crit_found_cube6" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">مقاومة مكعب 6 (MPa)</field><field name="code">F_CUBE6</field><field name="test_type">numeric</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="sequence">70</field></record>
+        <record id="crit_found_group2_avg" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">متوسط المجموعة الثانية (MPa)</field><field name="code">F_AVG_GRP2</field><field name="test_type">computed</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="computation_formula">result = (F_CUBE4 + F_CUBE5 + F_CUBE6)/3 if (F_CUBE4 and F_CUBE5 and F_CUBE6) else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_found_cube4'), ref('crit_found_cube5'), ref('crit_found_cube6')])]"/><field name="sequence">75</field></record>
+
+        <record id="crit_found_cube7" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_foundation"/>
+            <field name="name">مقاومة مكعب 7 (MPa)</field>
+            <field name="code">F_CUBE7</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sequence">80</field>
+        </record>
+        <record id="crit_found_cube8" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_foundation"/>
+            <field name="name">مقاومة مكعب 8 (MPa)</field>
+            <field name="code">F_CUBE8</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sequence">90</field>
+        </record>
+        <record id="crit_found_cube9" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_foundation"/>
+            <field name="name">مقاومة مكعب 9 (MPa)</field>
+            <field name="code">F_CUBE9</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sequence">100</field>
+        </record>
+        <record id="crit_found_group3_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_foundation"/>
+            <field name="name">متوسط المجموعة الثالثة (MPa)</field>
+            <field name="code">F_AVG_GRP3</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="computation_formula">result = (F_CUBE7 + F_CUBE8 + F_CUBE9)/3 if (F_CUBE7 and F_CUBE8 and F_CUBE9) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_found_cube7'), ref('crit_found_cube8'), ref('crit_found_cube9')])]"/>
+            <field name="sequence">105</field>
+        </record>
+        <record id="crit_found_cube10" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">مقاومة مكعب 10 (MPa)</field><field name="code">F_CUBE10</field><field name="test_type">numeric</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="sequence">110</field></record>
+        <record id="crit_found_cube11" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">مقاومة مكعب 11 (MPa)</field><field name="code">F_CUBE11</field><field name="test_type">numeric</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="sequence">120</field></record>
+        <record id="crit_found_cube12" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">مقاومة مكعب 12 (MPa)</field><field name="code">F_CUBE12</field><field name="test_type">numeric</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="sequence">130</field></record>
+        <record id="crit_found_group4_avg" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">متوسط المجموعة الرابعة (MPa)</field><field name="code">F_AVG_GRP4</field><field name="test_type">computed</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="computation_formula">result = (F_CUBE10 + F_CUBE11 + F_CUBE12)/3 if (F_CUBE10 and F_CUBE11 and F_CUBE12) else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_found_cube10'), ref('crit_found_cube11'), ref('crit_found_cube12')])]"/><field name="sequence">135</field></record>
+        <record id="crit_found_overall_avg" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">المتوسط النهائى للمقاومة (MPa)</field><field name="code">F_AVG_COMP_FINAL</field><field name="test_type">computed</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="computation_formula">result = (F_AVG_GRP1 + F_AVG_GRP2 + F_AVG_GRP3 + F_AVG_GRP4) / ((1 if F_AVG_GRP1 else 0)+(1 if F_AVG_GRP2 else 0)+(1 if F_AVG_GRP3 else 0)+(1 if F_AVG_GRP4 else 0)) if (F_AVG_GRP1 or F_AVG_GRP2 or F_AVG_GRP3 or F_AVG_GRP4) else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_found_group1_avg'), ref('crit_found_group2_avg'), ref('crit_found_group3_avg'), ref('crit_found_group4_avg')])]"/><field name="sequence">140</field><field name="is_summary_field">True</field></record>
+        <record id="crit_found_min_comp" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">أقل مقاومة (MPa)</field><field name="code">F_MIN_COMP</field><field name="test_type">computed</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="computation_formula">result = min([v for v in [F_CUBE1, F_CUBE2, F_CUBE3, F_CUBE4, F_CUBE5, F_CUBE6, F_CUBE7, F_CUBE8, F_CUBE9, F_CUBE10, F_CUBE11, F_CUBE12] if v]) if any([F_CUBE1, F_CUBE2, F_CUBE3, F_CUBE4, F_CUBE5, F_CUBE6, F_CUBE7, F_CUBE8, F_CUBE9, F_CUBE10, F_CUBE11, F_CUBE12]) else 0</field><field name="sequence">150</field></record>
+        <record id="crit_found_max_comp" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">أكبر مقاومة (MPa)</field><field name="code">F_MAX_COMP</field><field name="test_type">computed</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="computation_formula">result = max([v for v in [F_CUBE1, F_CUBE2, F_CUBE3, F_CUBE4, F_CUBE5, F_CUBE6, F_CUBE7, F_CUBE8, F_CUBE9, F_CUBE10, F_CUBE11, F_CUBE12] if v]) if any([F_CUBE1, F_CUBE2, F_CUBE3, F_CUBE4, F_CUBE5, F_CUBE6, F_CUBE7, F_CUBE8, F_CUBE9, F_CUBE10, F_CUBE11, F_CUBE12]) else 0</field><field name="sequence">160</field></record>
+        <record id="crit_found_stdev_comp" model="lab.test.criterion"><field name="template_id" ref="template_concrete_comp_foundation"/><field name="name">الانحراف المعيارى (MPa)</field><field name="code">F_STDEV_COMP</field><field name="test_type">computed</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="computation_formula">from math import sqrt; vals=[v for v in [F_CUBE1, F_CUBE2, F_CUBE3, F_CUBE4, F_CUBE5, F_CUBE6, F_CUBE7, F_CUBE8, F_CUBE9, F_CUBE10, F_CUBE11, F_CUBE12] if v]; result = (sqrt(sum((x - (sum(vals)/len(vals)))**2 for x in vals)/len(vals)) if vals else 0)</field><field name="sequence">170</field></record>
+
+
+        <record id="template_concrete_comp_bridge" model="lab.test.template">
+            <field name="name">فحص مقاومة الانضغاط – جسور (28 يوم)</field>
+            <field name="code">BRIDGE_COMP_28D</field>
+            <field name="description">فحص مكعبات خرسانة الجسور بعمر 28 يوم وفق IQS 348/2017</field>
+            <field name="standard_code">IQS 348/2017</field>
+            <field name="industry_type">bridge</field>
+            <field name="state">active</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <record id="crit_bridge_cube1" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_bridge"/>
+            <field name="name">مقاومة مكعب 1 (MPa)</field>
+            <field name="code">B_CUBE1</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">10</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_bridge_cube2" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_bridge"/>
+            <field name="name">مقاومة مكعب 2 (MPa)</field>
+            <field name="code">B_CUBE2</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">20</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_bridge_cube3" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_bridge"/>
+            <field name="name">مقاومة مكعب 3 (MPa)</field>
+            <field name="code">B_CUBE3</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="min_value">0</field>
+            <field name="sequence">30</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">True</field>
+        </record>
+
+        <record id="crit_bridge_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_comp_bridge"/>
+            <field name="name">متوسط المقاومة (MPa)</field>
+            <field name="code">B_AVG_COMP</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (B_CUBE1 + B_CUBE2 + B_CUBE3) / 3 if (B_CUBE1 and B_CUBE2 and B_CUBE3) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_bridge_cube1'), ref('crit_bridge_cube2'), ref('crit_bridge_cube3')])]"/>
+            <field name="min_value">35</field>
+            <field name="sequence">40</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+
+        <record id="concrete_cube_flow_template" model="lab.test.flow.template">
+            <field name="name">خطة فحص مكعبات الخرسانة</field>
+            <field name="description">مكعبات 28 يوم بحسب نوع المنشأ</field>
+        </record>
+
+        <record id="concrete_flow_stage_building" model="lab.test.flow.template.line">
+            <field name="template_id" ref="concrete_cube_flow_template"/>
+            <field name="sequence">10</field>
+            <field name="test_template_id" ref="template_concrete_comp_building"/>
+            <field name="sample_qty">1</field>
+        </record>
+
+        <record id="concrete_flow_stage_foundation" model="lab.test.flow.template.line">
+            <field name="template_id" ref="concrete_cube_flow_template"/>
+            <field name="sequence">20</field>
+            <field name="test_template_id" ref="template_concrete_comp_foundation"/>
+            <field name="sample_qty">1</field>
+        </record>
+
+        <record id="concrete_flow_stage_bridge" model="lab.test.flow.template.line">
+            <field name="template_id" ref="concrete_cube_flow_template"/>
+            <field name="sequence">30</field>
+            <field name="test_template_id" ref="template_concrete_comp_bridge"/>
+            <field name="sample_qty">1</field>
+        </record>
+
+        <record id="product_concrete_cube_sample" model="product.template">
+            <field name="name">عينات مكعبات - خرسانة</field>
+            <field name="type">consu</field>
+            <field name="is_sample_product">True</field>
+            <field name="tracking">serial</field>
+            <field name="test_flow_template_id" ref="concrete_cube_flow_template"/>
+            <field name="hole_count">1</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+        </record>
+        
+
+-->
+        <record id="masonry_type" model="lab.sample.type">
+            <field name="name">طابوق</field>
+            <field name="code">MASONRY</field>
+            <field name="description">أنواع الطابوق المختلفة</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="masonry_subtype_a" model="lab.sample.subtype">
+            <field name="name">طابوق نوع A</field>
+            <field name="code">A</field>
+            <field name="sample_type_id" ref="masonry_type"/>
+            <field name="description">طابوق من الدرجة الأولى</field>
+            <field name="efflorescence_level">light</field>
+            <field name="allowed_efflorescence_values">1,2</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="masonry_subtype_b" model="lab.sample.subtype">
+            <field name="name">طابوق نوع B</field>
+            <field name="code">B</field>
+            <field name="sample_type_id" ref="masonry_type"/>
+            <field name="description">طابوق من الدرجة الثانية</field>
+            <field name="efflorescence_level">medium</field>
+            <field name="allowed_efflorescence_values">1,2,3</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="masonry_subtype_c" model="lab.sample.subtype">
+            <field name="name">طابوق نوع C</field>
+            <field name="code">C</field>
+            <field name="sample_type_id" ref="masonry_type"/>
+            <field name="description">طابوق من الدرجة الممتازة</field>
+            <field name="efflorescence_level">none</field>
+            <field name="allowed_efflorescence_values">1</field>
+            <field name="sequence">30</field>
+        </record>
+
+
+    </data>
+</odoo> 

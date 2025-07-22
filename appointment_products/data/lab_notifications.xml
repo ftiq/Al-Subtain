@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="email_template_lab_assignment" model="mail.template">
+            <field name="name">إشعار تكليف فحص مخبري</field>
+            <field name="model_id" ref="model_lab_sample"/>
+            <field name="subject">🔬 تم تكليفك بفحص العينة: {{ object.name }}</field>
+            <field name="email_to">{{ object.assigned_emails }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>مرحباً {{ object.assigned_names }},</p>
+                    
+                    <p>تم تكليفك بفحص العينة التالية:</p>
+                    
+                    <div style="border: 1px solid #e3e3e3; border-radius: 4px; padding: 15px; margin: 15px 0px;">
+                        <h3 style="color: #875A7B; margin: 0px 0px 10px 0px;">📋 تفاصيل العينة</h3>
+                        <ul>
+                            <li><strong>رقم العينة:</strong> {{ object.name }}</li>
+                            <li><strong>نوع العينة:</strong> {{ object.sample_type_id.name or 'غير محدد' }}</li>
+                            <li><strong>النوع الفرعي:</strong> {{ object.sample_subtype_id.name or 'غير محدد' }}</li>
+                            <li><strong>تاريخ الاستلام:</strong> {{ object.received_date or 'غير محدد' }}</li>
+                            <li><strong>المشروع:</strong> {{ object.project_id.name or 'غير محدد' }}</li>
+                            <li><strong>العميل:</strong> {{ object.partner_id.name or 'غير محدد' }}</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="border: 1px solid #e3e3e3; border-radius: 4px; padding: 15px; margin: 15px 0px;">
+                        <h3 style="color: #875A7B; margin: 0px 0px 10px 0px;">🔬 قالب الفحص</h3>
+                        <ul>
+                            <li><strong>القالب المطلوب:</strong> {{ object.lab_test_template_id.name or 'غير محدد' }}</li>
+                            <li><strong>الحالة الحالية:</strong> {{ object.state }}</li>
+                        </ul>
+                    </div>
+                    
+                    <p style="margin: 20px 0px;">
+                        <a t-attf-href="/web?#id={{ object.id }}&amp;model=lab.sample&amp;view_type=form" 
+                           style="background-color: #875A7B; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                            🔗 افتح العينة
+                        </a>
+                    </p>
+                    
+                    <p>يرجى البدء في الفحص في أقرب وقت ممكن.</p>
+                    
+                    <p>شكراً لك،<br/>فريق إدارة المختبر</p>
+                </div>
+            </field>
+        </record>
+
+
+    </data>
+</odoo> 
