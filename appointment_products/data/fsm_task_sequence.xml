@@ -1,9 +1,0 @@
-<odoo>
-    <record id="seq_fsm_task_form_line_code" model="ir.sequence">
-        <field name="name">FSM Task Form Line Code</field>
-        <field name="code">fsm.task.form.line.code</field>
-        <field name="prefix">FTFL</field>
-        <field name="padding">6</field>
-        <field name="company_id" eval="False"/>
-    </record>
-</odoo> 
