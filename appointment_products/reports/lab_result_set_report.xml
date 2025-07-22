@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="action_report_lab_result_set" model="ir.actions.report">
+        <field name="name">تقرير نتائج الفحص</field>
+        <field name="model">lab.result.set</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">appointment_products.lab_result_set_pdf_template</field>
+        <field name="report_file">appointment_products.lab_result_set_pdf_template</field>
+        <field name="print_report_name">'تقرير فحص - ' + (object.sample_id.name if object.sample_id else object.name)</field>
+    </record>
+
+
+    <template id="lab_result_set_pdf_template">
+        <t t-call="web.external_layout">
+            <t t-set="doc" t-value="doc"/>
+            <t t-set="company" t-value="company"/>
+            <main>
+                <div class="page">
+
+                <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #2e86c1; padding-bottom: 15px;">
+                    <h1 style="color: #2e86c1; margin: 0; font-size: 24px; font-weight: bold;">
+                        🧱 تقرير فحص الطابوق الطيني المختبري
+                    </h1>
+                    <h2 style="color: #5d6d7e; margin: 5px 0 0 0; font-size: 16px;">
+                        <t t-if="doc and doc.sample_id and doc.sample_id.product_id" t-esc="doc.sample_id.product_id.name"/>
+                        <t t-else="">فحص المواد</t>
+                    </h2>
+                </div>
+
+
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #2e86c1; margin-top: 0; border-bottom: 2px solid #2e86c1; padding-bottom: 5px;">
+                        🔬 معلومات العينة
+                    </h3>
+                    <table class="table table-borderless" style="width: 100%; margin-bottom: 0;">
+                        <tbody>
+                            <tr>
+                                <td style="width: 25%; font-weight: bold;">رقم العينة:</td>
+                                <td style="width: 25%; color: #2e86c1;">
+                                    <t t-if="doc and doc.sample_id" t-esc="doc.sample_id.name"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                                <td style="width: 25%; font-weight: bold;">رقم المجموعة:</td>
+                                <td style="width: 25%; color: #2e86c1;">
+                                    <t t-if="doc" t-esc="doc.name"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">نوع المادة:</td>
+                                <td>
+                                    <t t-if="doc and doc.sample_id and doc.sample_id.product_id" t-esc="doc.sample_id.product_id.name"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                                <td style="font-weight: bold;">الرمز المختبري:</td>
+                                <td>
+                                    <t t-if="doc and doc.sample_id" t-esc="doc.sample_id.lab_code"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">تاريخ الجمع:</td>
+                                <td>
+                                    <t t-if="doc and doc.sample_id" t-esc="doc.sample_id.collection_date"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                                <td style="font-weight: bold;">تاريخ الاستلام:</td>
+                                <td>
+                                    <t t-if="doc and doc.sample_id" t-esc="doc.sample_id.received_date"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                            </tr>
+                            <tr t-if="doc and doc.sample_id and doc.sample_id.project_id">
+                                <td style="font-weight: bold;">المشروع:</td>
+                                <td t-esc="doc.sample_id.project_id.name"/>
+                                <td style="font-weight: bold;">العميل:</td>
+                                <td t-esc="doc.sample_id.customer_id.name if doc.sample_id.customer_id else ''"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div style="background: #eaf2f8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #2e86c1; margin-top: 0; border-bottom: 2px solid #2e86c1; padding-bottom: 5px;">
+                        ⚗️ معلومات الفحص
+                    </h3>
+                    <table class="table table-borderless" style="width: 100%; margin-bottom: 0;">
+                        <tbody>
+                            <tr>
+                                <td style="width: 25%; font-weight: bold;">قالب الفحص:</td>
+                                <td style="width: 25%;">
+                                    <t t-if="doc and doc.template_id" t-esc="doc.template_id.name"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                                <td style="width: 25%; font-weight: bold;">الفني المنفذ:</td>
+                                <td style="width: 25%;">
+                                    <t t-if="doc and doc.technician_id" t-esc="doc.technician_id.name"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">تاريخ البدء:</td>
+                                <td>
+                                    <t t-if="doc" t-esc="doc.start_date"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                                <td style="font-weight: bold;">تاريخ الانتهاء:</td>
+                                <td>
+                                    <t t-if="doc" t-esc="doc.end_date"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">المعيار المرجعي:</td>
+                                <td>
+                                    <t t-if="doc and doc.template_id" t-esc="doc.template_id.standard_code"/>
+                                    <t t-else="">غير محدد</t>
+                                </td>
+                                <td style="font-weight: bold;">عدد المعايير:</td>
+                                <td>
+                                    <t t-if="doc and doc.result_line_ids" t-esc="len(doc.result_line_ids)"/>
+                                    <t t-else="">0</t>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div style="margin-bottom: 25px;">
+                    <h3 style="color: #2e86c1; margin-bottom: 15px; border-bottom: 2px solid #2e86c1; padding-bottom: 5px;">
+                        📋 ملخص النتائج
+                    </h3>
+                    <p style="margin: 0; font-size: 16px; opacity: 0.9;">
+                        تم فحص العينة <strong>
+                            <t t-if="doc and doc.sample_id" t-esc="doc.sample_id.name"/>
+                            <t t-else="">غير محدد</t>
+                        </strong> بتاريخ <span t-if="doc" t-esc="doc.end_date"/><span t-if="not doc">غير محدد</span> 
+                        وفقاً لمعايير <strong>
+                            <t t-if="doc and doc.template_id" t-esc="doc.template_id.name"/>
+                            <t t-else="">غير محدد</t>
+                        </strong>
+                    </p>
+                </div>
+
+                <div style="display: flex; justify-content: space-around; margin-bottom: 30px; gap: 15px;">
+                    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 150px;">
+                        <h4 style="margin: 0; color: #2e86c1;">النتيجة العامة</h4>
+                        <div style="font-size: 24px; font-weight: bold; margin-top: 10px;">
+                            <t t-if="doc and doc.overall_result == 'pass'">
+                                <span style="color: #27ae60;">✅ نجح</span>
+                            </t>
+                            <t t-elif="doc and doc.overall_result == 'fail'">
+                                <span style="color: #e74c3c;">❌ فشل</span>
+                            </t>
+                            <t t-else="">
+                                <span style="color: #f39c12;">⏳ في الانتظار</span>
+                            </t>
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 150px;">
+                        <h4 style="margin: 0; color: #2e86c1;">المطابقة</h4>
+                        <div style="font-size: 24px; font-weight: bold; margin-top: 10px;">
+                            <t t-if="doc and doc.overall_conformity == 'pass'">
+                                <span style="color: #27ae60;">✅ مطابق</span>
+                            </t>
+                            <t t-elif="doc and doc.overall_conformity == 'fail'">
+                                <span style="color: #e74c3c;">❌ غير مطابق</span>
+                            </t>
+                            <t t-else="">
+                                <span style="color: #f39c12;">⏳ في الانتظار</span>
+                            </t>
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 150px;">
+                        <h4 style="margin: 0; color: #2e86c1;">نسبة الإنجاز</h4>
+                        <div style="font-size: 24px; font-weight: bold; margin-top: 10px; color: #2e86c1;">
+                            <t t-if="doc" t-esc="'%.1f %%' % doc.progress_percentage"/>
+                            <t t-else="">0.0 %</t>
+                        </div>
+                    </div>
+                </div>
+
+
+                <h3 style="color: #2e86c1; margin-top: 30px; border-bottom: 2px solid #2e86c1; padding-bottom: 5px;">
+                    📊 تفاصيل النتائج حسب نوع الفحص
+                </h3>
+                
+
+                <t t-set="input_criteria" t-value="doc.result_line_ids.filtered(lambda x: x.criterion_id.is_input_field != False and x.criterion_id.test_type == 'numeric') if doc and doc.result_line_ids else []"/>
+                <t t-if="input_criteria">
+                    <h4 style="color: #34495e; margin: 25px 0 15px 0; padding: 10px; background: #ecf0f1; border-left: 4px solid #34495e;">🔢 القياسات الفردية</h4>
+                    <table class="table table-bordered" style="width: 100%; font-size: 13px; margin-bottom: 30px; border-collapse: collapse;">
+                        <thead style="background-color: #34495e; color: white;">
+                            <tr>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">رقم العينة</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">المعيار</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">النتيجة</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">الوحدة</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">الحد المسموح</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">المطابقة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="input_criteria" t-as="line">
+                                <tr t-attf-style="background: #{line.pass_fail == 'pass' and '#eafaf1' or line.pass_fail == 'fail' and '#ffeaea' or '#fefbf3'};">
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;" t-esc="line.sample_no or '-'"/>
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;" t-esc="line.criterion_id.name"/>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold; font-size: 14px;" 
+                                        t-attf-style="color: #{line.pass_fail == 'pass' and '#27ae60' or line.pass_fail == 'fail' and '#e74c3c' or '#f39c12'};"
+                                        t-esc="line.result_value"/>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd;" t-esc="line.criterion_id.uom_id.name if line.criterion_id.uom_id else '-'"/>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-size: 12px;">
+                                        <t t-if="line.criterion_id.min_value and line.criterion_id.max_value">
+                                            <span t-esc="line.criterion_id.min_value"/> - <span t-esc="line.criterion_id.max_value"/>
+                                        </t>
+                                        <t t-elif="line.criterion_id.min_value">
+                                            ≥ <span t-esc="line.criterion_id.min_value"/>
+                                        </t>
+                                        <t t-elif="line.criterion_id.max_value">
+                                            ≤ <span t-esc="line.criterion_id.max_value"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
+                                        <t t-if="line.pass_fail == 'pass'">
+                                            <span style="background: #27ae60; color: white; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px;">✓ مطابق</span>
+                                        </t>
+                                        <t t-elif="line.pass_fail == 'fail'">
+                                            <span style="background: #e74c3c; color: white; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px;">✗ غير مطابق</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="background: #f39c12; color: white; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px;">⏳ قيد المراجعة</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+
+
+                <t t-set="computed_criteria" t-value="doc.result_line_ids.filtered(lambda x: x.criterion_id.is_computed_field == True or x.criterion_id.is_summary_field == True) if doc and doc.result_line_ids else []"/>
+                <t t-if="computed_criteria">
+                    <h4 style="color: #8e44ad; margin: 25px 0 15px 0; padding: 10px; background: #f4ecf7; border-left: 4px solid #8e44ad;">📈 النتائج المحسوبة والمتوسطات</h4>
+                    <table class="table table-bordered" style="width: 100%; font-size: 13px; margin-bottom: 30px; border-collapse: collapse;">
+                        <thead style="background-color: #8e44ad; color: white;">
+                            <tr>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">المعيار المحسوب</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">النتيجة</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">الوحدة</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">المتطلب</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">التقييم</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">الأهمية</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="computed_criteria" t-as="line">
+                                <tr t-attf-style="background: #{line.criterion_id.is_summary_field and '#f8f9fa' or '#ffffff'}; #{line.pass_fail == 'fail' and 'border-left: 4px solid #e74c3c;' or ''}">
+                                    <td style="padding: 10px; border: 1px solid #ddd;" 
+                                        t-attf-style="font-weight: #{line.criterion_id.is_summary_field and 'bold' or 'normal'}; color: #{line.criterion_id.is_summary_field and '#2e86c1' or '#34495e'};"
+                                        t-esc="line.criterion_id.name"/>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold; font-size: 14px;" 
+                                        t-attf-style="color: #{line.criterion_id.is_summary_field and '#2e86c1' or '#34495e'};"
+                                        t-esc="round(line.result_value, 2) if line.result_value else '-'"/>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd;" t-esc="line.criterion_id.uom_id.name if line.criterion_id.uom_id else ''"/>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-size: 12px;">
+                                        <t t-if="line.criterion_id.min_value and line.criterion_id.max_value">
+                                            <span t-esc="line.criterion_id.min_value"/> - <span t-esc="line.criterion_id.max_value"/>
+                                        </t>
+                                        <t t-elif="line.criterion_id.min_value">
+                                            ≥ <span t-esc="line.criterion_id.min_value"/>
+                                        </t>
+                                        <t t-elif="line.criterion_id.max_value">
+                                            ≤ <span t-esc="line.criterion_id.max_value"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
+                                        <t t-if="line.pass_fail == 'pass'">
+                                            <span style="color: #27ae60; font-weight: bold; font-size: 18px;">✓</span>
+                                        </t>
+                                        <t t-elif="line.pass_fail == 'fail'">
+                                            <span style="color: #e74c3c; font-weight: bold; font-size: 18px;">✗</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="color: #f39c12; font-weight: bold; font-size: 18px;">⏳</span>
+                                        </t>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-size: 11px;">
+                                        <t t-if="line.criterion_id.is_summary_field">
+                                            <span style="background: #3498db; color: white; padding: 2px 6px; border-radius: 10px;">ملخص</span>
+                                        </t>
+                                        <t t-elif="line.criterion_id.is_computed_field">
+                                            <span style="background: #95a5a6; color: white; padding: 2px 6px; border-radius: 10px;">محسوب</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+
+
+                <t t-set="critical_criteria" t-value="doc.result_line_ids.filtered(lambda x: x.criterion_id.is_critical == True) if doc and doc.result_line_ids else []"/>
+                <t t-if="critical_criteria">
+                    <h4 style="color: #e74c3c; margin: 25px 0 15px 0; padding: 10px; background: #fdf2f2; border-left: 4px solid #e74c3c;">⚠️ الفحوصات الحرجة والجودة</h4>
+                    <table class="table table-bordered" style="width: 100%; font-size: 13px; margin-bottom: 30px; border-collapse: collapse;">
+                        <thead style="background-color: #e74c3c; color: white;">
+                            <tr>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">المعيار الحرج</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">النتيجة</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">المعيار المطلوب</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">حالة المطابقة</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #bdc3c7;">تأثير الفشل</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="critical_criteria" t-as="line">
+                                <tr t-attf-style="background: #{line.pass_fail == 'fail' and '#ffeaea' or line.pass_fail == 'pass' and '#eafaf1' or '#fefbf3'};">
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;" t-esc="line.criterion_id.name"/>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold; font-size: 14px;" 
+                                        t-attf-style="color: #{line.pass_fail == 'pass' and '#27ae60' or line.pass_fail == 'fail' and '#e74c3c' or '#f39c12'};"
+                                        t-esc="line.result_value"/>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-size: 12px;">
+                                        <t t-if="line.criterion_id.min_value and line.criterion_id.max_value">
+                                            <span t-esc="line.criterion_id.min_value"/> - <span t-esc="line.criterion_id.max_value"/>
+                                        </t>
+                                        <t t-elif="line.criterion_id.min_value">
+                                            ≥ <span t-esc="line.criterion_id.min_value"/>
+                                        </t>
+                                        <t t-elif="line.criterion_id.max_value">
+                                            ≤ <span t-esc="line.criterion_id.max_value"/>
+                                        </t>
+                                        <t t-else="">حسب المعيار</t>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">
+                                        <t t-if="line.pass_fail == 'pass'">
+                                            <span style="background: #27ae60; color: white; padding: 8px 16px; border-radius: 25px;">✓ مطابق</span>
+                                        </t>
+                                        <t t-elif="line.pass_fail == 'fail'">
+                                            <span style="background: #e74c3c; color: white; padding: 8px 16px; border-radius: 25px;">✗ غير مطابق</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="background: #f39c12; color: white; padding: 8px 16px; border-radius: 25px;">⏳ قيد المراجعة</span>
+                                        </t>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-size: 11px;">
+                                        <t t-if="line.pass_fail == 'fail'">
+                                            <span style="color: #e74c3c; font-weight: bold;">🚫 رفض العينة</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="color: #27ae60;">✅ مقبول</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+
+
+                <t t-if="doc and doc.notes">
+                    <div style="background: #fff9e6; padding: 15px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #f39c12;">
+                        <h4 style="color: #f39c12; margin-top: 0;">📝 ملاحظات</h4>
+                        <div t-esc="doc.notes" style="margin: 0;"/>
+                    </div>
+                </t>
+
+
+                <div style="margin-top: 40px; page-break-inside: avoid;">
+                    <h3 style="color: #2e86c1; margin-bottom: 20px; text-align: center;">التوقيعات والاعتمادات</h3>
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 10px;">
+                        <tr>
+                            <td style="width: 33%; text-align: center; padding: 20px; border: 2px solid #e9ecef; border-radius: 8px; margin: 0 5px;">
+                                <div style="border-bottom: 2px solid #2e86c1; padding-bottom: 10px; margin-bottom: 15px;">
+                                    <strong style="color: #2e86c1; font-size: 14px;">🔬 الفني المنفذ</strong>
+                                </div>
+                                <div style="margin: 15px 0;">
+                                    <strong t-esc="doc.technician_id.name if doc and doc.technician_id else 'غير محدد'"/>
+                                </div>
+                                <div style="margin-top: 20px; color: #6c757d; font-size: 12px;">
+                                    التوقيع: _______________
+                                </div>
+                                <div style="color: #6c757d; font-size: 12px; margin-top: 5px;">
+                                    التاريخ: ___________
+                                </div>
+                            </td>
+                            <td style="width: 33%; text-align: center; padding: 20px; border: 2px solid #e9ecef; border-radius: 8px; margin: 0 5px;">
+                                <div style="border-bottom: 2px solid #2e86c1; padding-bottom: 10px; margin-bottom: 15px;">
+                                    <strong style="color: #2e86c1; font-size: 14px;">✅ مسؤول الجودة</strong>
+                                </div>
+                                <div style="margin: 15px 0;">
+                                    <strong>غير محدد</strong>
+                                </div>
+                                <div style="margin-top: 20px; color: #6c757d; font-size: 12px;">
+                                    التوقيع: _______________
+                                </div>
+                                <div style="color: #6c757d; font-size: 12px; margin-top: 5px;">
+                                    التاريخ: ___________
+                                </div>
+                            </td>
+                            <td style="width: 33%; text-align: center; padding: 20px; border: 2px solid #e9ecef; border-radius: 8px; margin: 0 5px;">
+                                <div style="border-bottom: 2px solid #2e86c1; padding-bottom: 10px; margin-bottom: 15px;">
+                                    <strong style="color: #2e86c1; font-size: 14px;">👥 العميل / مدير المشروع</strong>
+                                </div>
+                                <div style="margin: 15px 0;">
+                                    <strong t-esc="doc.sample_id.customer_id.name if doc and doc.sample_id and doc.sample_id.customer_id else 'غير محدد'"/>
+                                </div>
+                                <div style="margin-top: 20px; color: #6c757d; font-size: 12px;">
+                                    التوقيع: _______________
+                                </div>
+                                <div style="color: #6c757d; font-size: 12px; margin-top: 5px;">
+                                    التاريخ: ___________
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef; text-align: center; font-size: 12px; color: #6c757d;">
+                    <p style="margin: 0;">
+                        هذا التقرير تم إصداره بواسطة نظام إدارة المختبرات - <span t-if="company" t-esc="company.name"/><span t-if="not company">الشركة</span> - <span t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M')"/>
+                    </p>
+                </div>
+                </div>
+            </main>
+        </t>
+    </template>
+
+</odoo>
