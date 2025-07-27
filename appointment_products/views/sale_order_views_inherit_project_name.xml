@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_tree_inherit_project_name" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit.project.name</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="project_name" string="اسم المشروع" optional="show"/>
+                <field name="fsm_products_display" string="المنتجات" optional="show" widget="text"/>
+                <field name="appointment_datetime" string="موعد الحجز" optional="show"/>
+                <field name="appointment_status" string="حالة الموعد" optional="show"/>
+            </field>
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-success">appointment_status == 'future'</attribute>
+                <attribute name="decoration-danger">appointment_status == 'overdue'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_order_form_inherit_appointment_datetime" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.appointment.datetime</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='order_details']/field[@name='date_order']" position="after">
+                <field name="appointment_datetime" string="موعد الحجز" readonly="1"/>
+                <field name="appointment_status" string="حالة الموعد" widget="badge" readonly="1" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_order_form_inherit_assignment" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.assignment</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="after">
+                <field name="assigned_user_ids" string="المسند إليهم" widget="many2many_tags" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo> 
