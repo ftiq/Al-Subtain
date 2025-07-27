@@ -1,0 +1,49 @@
+.o_signature_field {
+    min-height: 200px;
+    border: 2px dashed #007cba;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.o_signature_field:hover {
+    border-color: #0056b3;
+    background-color: #e9f4ff;
+}
+
+.badge-success {
+    background-color: #28a745 !important;
+    color: white !important;
+    font-size: 0.9em;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+.badge-success i {
+    margin-right: 5px;
+}
+
+.alert-info {
+    border-color: #b8daff;
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert-info i {
+    color: #17a2b8;
+    margin-right: 8px;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    transform: translateY(-1px);
+}
