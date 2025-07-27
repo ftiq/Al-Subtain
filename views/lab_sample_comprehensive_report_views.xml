@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+
+        <record id="view_lab_sample_comprehensive_report_form" model="ir.ui.view">
+            <field name="name">lab.sample.comprehensive.report.form</field>
+            <field name="model">lab.sample.comprehensive.report</field>
+            <field name="arch" type="xml">
+                <form string="التقرير الشامل للعينة">
+                    <header>
+                        <button name="action_generate_comprehensive_report" 
+                                string="إنشاء التقرير PDF" 
+                                type="object" 
+                                class="btn-primary"
+                                icon="fa-file-pdf-o"/>
+                        <button name="action_preview_report" 
+                                string="معاينة التقرير" 
+                                type="object" 
+                                class="btn-secondary"
+                                icon="fa-eye"/>
+                        <button name="action_refresh_group_data" 
+                                string="إعادة تحميل البيانات" 
+                                type="object" 
+                                class="btn-warning"
+                                icon="fa-refresh"/>
+                        <button name="action_print_brick_report" 
+                                string="طباعة تقرير الطابوق" 
+                                type="object" 
+                                class="btn-success"
+                                icon="fa-print"
+                                invisible="sample_type != 'masonry'"/>
+                    </header>
+                    
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="sample_name" readonly="1"/>
+                            </h1>
+                            <h3>
+                                <field name="lab_number" readonly="1"/>
+                            </h3>
+                        </div>
+                        
+                        <group>
+                            <group string="معلومات المشروع">
+                                <field name="sample_id" invisible="1"/>
+                                <field name="project_name" readonly="1"/>
+                                <field name="company_name" readonly="1"/>
+                            </group>
+                            <group string="التواريخ">
+                                <field name="casting_date" readonly="1"/>
+                                <field name="testing_date" readonly="1"/>
+                                <field name="age_days" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <field name="sample_type" invisible="1"/>
+                        
+                        <group invisible="sample_type != 'concrete'">
+                            <group string="إحصائيات المجموعات">
+                                <field name="total_groups_count" readonly="1"/>
+                                <field name="tested_groups_28_count" readonly="1" widget="badge" decoration-info="True"/>
+                                <field name="total_cubes_count" readonly="1"/>
+                            </group>
+                            <group string="الإحصائيات العامة">
+                                <field name="overall_average" readonly="1" widget="float" digits="[5,2]"/>
+                                <field name="min_group_average" readonly="1" widget="float" digits="[5,2]"/>
+                                <field name="max_group_average" readonly="1" widget="float" digits="[5,2]"/>
+                                <field name="standard_deviation" readonly="1" widget="float" digits="[5,2]"/>
+                                <field name="uncertainty_value" readonly="1" widget="float" digits="[5,2]"/>
+                            </group>
+                        </group>
+                        
+                        <group invisible="sample_type != 'masonry'">
+                            <group string="إحصائيات الطابوق">
+                                <field name="brick_samples_count" readonly="1"/>
+                                <field name="brick_subtype_name" readonly="1"/>
+                            </group>
+                            <group string="الإحصائيات العامة">
+                                <field name="brick_compression_average" readonly="1" widget="float" digits="[5,2]"/>
+                                <field name="brick_absorption_average" readonly="1" widget="float" digits="[5,2]"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="تفاصيل المجموعات" name="groups_detail" invisible="sample_type != 'concrete'">
+                                <field name="group_data_ids" nolabel="1">
+                                    <list string="بيانات المجموعات التفصيلية" create="false" delete="false" edit="false">
+                                        <field name="group_number" string="المجموعة" widget="badge" decoration-info="True"/>
+                                        <field name="lab_code" string="الرمز المختبري"/>
+                                        <field name="field_code" string="الرمز الحقلي"/>
+                                        <field name="age_days" string="الأيام" widget="badge" decoration-success="age_days == '28'"/>
+                                        <field name="cube_count" string="عدد المكعبات"/>
+                                        <field name="casting_date" string="تاريخ الصب" optional="hide"/>
+                                        <field name="testing_date" string="تاريخ الفحص" optional="hide"/>
+                                        <field name="testing_temperature" string="درجة الحرارة" optional="hide"/>
+                                        <field name="weight_kg" string="الوزن (كغم)" widget="float" digits="[5,3]"/>
+                                        <field name="density" string="الكثافة" widget="float" digits="[6,1]"/>
+                                        <field name="load_kn" string="الحمل (kN)" widget="float" digits="[6,1]"/>
+                                        <field name="compressive_strength" string="قوة الضغط" widget="float" digits="[5,2]" decoration-danger="compressive_strength &lt; 20" decoration-success="compressive_strength &gt;= 30"/>
+                                        <field name="average_strength" string="المتوسط" widget="float" digits="[5,2]" decoration-danger="average_strength &lt; 20" decoration-success="average_strength &gt;= 30"/>
+                                    </list>
+                                </field>
+                            </page>
+                            
+                            <page string="تفاصيل الطابوق" name="brick_detail" invisible="sample_type != 'masonry'">
+                                <field name="brick_data_ids" nolabel="1">
+                                    <list string="بيانات الطابوق التفصيلية" create="false" delete="false" edit="false">
+                                        <field name="test_type" string="نوع الفحص" widget="badge"/>
+                                        <field name="sample_number" string="رقم العينة"/>
+                                        <field name="length_mm" string="الطول (mm)" optional="hide"/>
+                                        <field name="width_mm" string="العرض (mm)" optional="hide"/>
+                                        <field name="height_mm" string="الارتفاع (mm)" optional="hide"/>
+                                        <field name="area_mm2" string="المساحة (mm²)" optional="hide"/>
+                                        <field name="load_kn" string="الحمولة (KN)" optional="show"/>
+                                        <field name="compressive_strength" string="قوة الضغط (N/mm²)" widget="float" digits="[5,2]" optional="show"/>
+                                        <field name="dry_weight_gm" string="الوزن الجاف (gm)" optional="show"/>
+                                        <field name="wet_weight_gm" string="الوزن المبلل (gm)" optional="show"/>
+                                        <field name="absorption_rate" string="نسبة الامتصاص (%)" widget="float" digits="[5,2]" optional="show"/>
+                                        <field name="efflorescence_degree" string="درجة التزهر" optional="show"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                        
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_lab_sample_comprehensive_report" model="ir.actions.act_window">
+            <field name="name">التقرير الشامل للعينة</field>
+            <field name="res_model">lab.sample.comprehensive.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+            <field name="context">{'default_sample_id': active_id}</field>
+        </record>
+
+
+        <record id="view_lab_sample_form_comprehensive_report" model="ir.ui.view">
+            <field name="name">lab.sample.form.comprehensive.report</field>
+            <field name="model">lab.sample</field>
+            <field name="inherit_id" ref="view_lab_sample_form"/>
+            <field name="arch" type="xml">
+                <div class="oe_button_box" position="inside">
+                    <button name="%(action_lab_sample_comprehensive_report)d" 
+                            type="action"
+                            class="oe_stat_button" 
+                            icon="fa-file-text-o"
+                            invisible="not result_set_ids">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">التقرير الشامل</span>
+                        </div>
+                    </button>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

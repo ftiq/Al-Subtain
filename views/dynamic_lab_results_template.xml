@@ -1,0 +1,964 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- تقرير النتائج المختبرية الديناميكي -->
+    <template id="dynamic_lab_results_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- أنماط مخصصة للتقرير -->
+                        <style>
+                            @font-face {
+                                font-family: 'TraditionalArabic';
+                                src: url('/appointment_products/static/src/fonts/tradbdo.ttf') format('truetype');
+                                font-weight: normal;
+                                font-style: normal;
+                            }
+                            
+                            /* تطبيق الخط على كامل التقرير */
+                            .page {
+                                font-family: 'TraditionalArabic', Arial, sans-serif !important;
+                            }
+                            
+
+                            .table td, .table th {
+                                text-align: center !important;
+                                vertical-align: middle !important;
+                                font-family: 'TraditionalArabic', Arial, sans-serif !important;
+                            }
+                            
+
+                            .table td:first-child {
+                                text-align: center !important;
+                            }
+                            
+                            .table.table-sm td:first-child {
+                                text-align: right !important;
+                                font-weight: bold;
+                            }
+                            
+                            /* محاذاة يمين لرأس التقرير */
+                            .text-end {
+                                text-align: left !important;
+                            }
+                            
+                            /* عناوين المقاطع */
+                            h1, h2, h3, h4, h5, h6 {
+                                font-family: 'TraditionalArabic', Arial, sans-serif !important;
+                            }
+                            
+                            /* جميع النصوص */
+                            p, span, div, strong {
+                                font-family: 'TraditionalArabic', Arial, sans-serif !important;
+                            }
+                            
+                            /* شارات الحالة */
+                            .badge {
+                                font-family: 'TraditionalArabic', Arial, sans-serif !important;
+                            }
+                            
+                            /* تحسينات إضافية - زيادة حجم الخط */
+                            .table {
+                                font-size: 16px;
+                                line-height: 1.6;
+                            }
+                            
+                            /* ألوان جميلة للجداول */
+                            .table-active {
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                                color: white !important;
+                                font-weight: bold;
+                            }
+                            
+                            .table-light {
+                                background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important;
+                                color: #333 !important;
+                            }
+                            
+                            /* تحسين الشارات */
+                            .badge-success {
+                                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+                                color: #000 !important;
+                                font-size: 10px;
+                                padding: 2px 6px;
+                                border-radius: 4px;
+                            }
+
+                            .badge-danger {
+                                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+                                color: #000 !important;
+                                font-size: 10px;
+                                padding: 2px 6px;
+                                border-radius: 4px;
+                            }
+
+                            .badge-info {
+                                background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+                                color: #000 !important;
+                                font-size: 10px;
+                                padding: 2px 6px;
+                                border-radius: 4px;
+                            }
+
+                            .badge-warning {
+                                background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+                                color: #000 !important;
+                                font-size: 10px;
+                                padding: 2px 6px;
+                                border-radius: 4px;
+                            }
+                            
+                            .table th {
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                color: white;
+                                font-weight: bold;
+                                font-size: 12px;
+                                padding: 6px;
+                                text-align: center;
+                            }
+                            
+                            .table td {
+                                font-size: 12px;
+                                padding: 4px;
+                                text-align: center;
+                            }
+                            
+
+                            .badge {
+                                color: #000 !important;
+                            }
+
+
+                            .table td, .table th {
+                                color: #000 !important;
+                            }
+
+
+                            .text-muted {
+                                color: #667eea !important;
+                            }
+
+
+                            strong, .text-primary, .text-success, .text-danger {
+                                color: #000 !important;
+                            }
+                            
+
+                            h6.text-muted {
+                                font-size: 14px;
+                                color: #667eea !important;
+                                margin-bottom: 4px !important;
+                                margin-top: 8px !important;
+                            }
+
+                            h2, h4 {
+                                color: #667eea !important;
+                                text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+                                margin-bottom: 8px !important;
+                            }
+
+
+                            .mb16 {
+                                margin-bottom: 8px !important;
+                            }
+
+                            .mt-3 {
+                                margin-top: 4px !important;
+                            }
+
+                            .mb-3 {
+                                margin-bottom: 4px !important;
+                            }
+
+
+                            .table-sm {
+                                font-size: 10px !important;
+                            }
+
+                            .table-sm th {
+                                padding: 3px !important;
+                                font-size: 10px !important;
+                            }
+
+                            .table-sm td {
+                                padding: 2px !important;
+                                font-size: 10px !important;
+                                line-height: 1.2 !important;
+                            }
+
+
+                            .col-6 .table {
+                                font-size: 10px !important;
+                            }
+
+                            .col-6 .table td {
+                                padding: 2px 4px !important;
+                            }
+
+
+                            .table {
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                                border-radius: 8px;
+                                overflow: hidden;
+                            }
+                        </style>
+                        
+                        <div class="oe_structure"/>
+                        
+
+                        <div class="row mt32 mb32">
+                            <div class="col-8">
+                                <h2><strong>تقرير فحص طابوق (طيني)</strong></h2>
+                                <h4>Clay Brick Testing Report</h4>
+                            </div>
+                            <div class="col-4 text-end">
+                                <p><strong>رقم العينة:</strong> <span t-field="doc.name"/></p>
+                                <p><strong>تاريخ الاستلام:</strong> <span t-field="doc.received_date"/></p>
+                                <p><strong>الطلب:</strong> <span t-field="doc.task_id.name"/></p>
+                            </div>
+                        </div>
+
+
+                        <div class="row mb16">
+                            <div class="col-12">
+                                <table class="table table-bordered table-sm" style="font-size: 14px;">
+                                    <thead class="table-light">
+                                        <tr style="height: 50px;">
+                                            <th class="text-center" style="vertical-align: middle;">موقع النموذج</th>
+                                            <th class="text-center" style="vertical-align: middle;">عدد النماذج</th>
+                                            <th class="text-center" style="vertical-align: middle;">الرمز الحقلي</th>
+                                            <th class="text-center" style="vertical-align: middle;">تاريخ تسلم النموذج</th>
+                                            <th class="text-center" style="vertical-align: middle;">قائمة الطلب<br/><small>التاريخ</small></th>
+                                            <th class="text-center" style="vertical-align: middle;">قائمة الطلب<br/><small>رقم</small></th>
+                                            <th class="text-center" style="vertical-align: middle;">كتاب الفحص<br/><small>التاريخ</small></th>
+                                            <th class="text-center" style="vertical-align: middle;">كتاب الفحص<br/><small>رقم</small></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="height: 45px;">
+                                            <td class="text-center" style="vertical-align: middle; font-size: 14px;"></td>
+                                            <td class="text-center" style="vertical-align: middle; font-size: 14px;">1</td>
+                                            <td class="text-center" style="vertical-align: middle; font-size: 14px;"><span t-field="doc.field_serial"/></td>
+                                            <td class="text-center" style="vertical-align: middle; font-size: 14px;"></td>
+                                            <td class="text-center" style="vertical-align: middle; font-size: 14px;"></td>
+                                            <td class="text-center" style="vertical-align: middle; font-size: 14px;"></td>
+                                            <td class="text-center" style="vertical-align: middle; font-size: 14px;"></td>
+                                            <td class="text-center" style="vertical-align: middle; font-size: 14px;"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- خط فاصل -->
+                        <hr style="border: 1px solid #333; margin: 20px 0;"/>
+
+                        <!-- معلومات العينة الأساسية -->
+                        <div class="row mb16">
+                            <div class="col-6">
+                                <table class="table table-sm" style="font-size: 14px;">
+                                    <tr style="height: 35px;">
+                                        <td style="vertical-align: middle;"><strong>المنتج:</strong></td>
+                                        <td style="vertical-align: middle;"><span t-field="doc.product_id.name"/></td>
+                                    </tr>
+                                    <tr style="height: 35px;">
+                                        <td style="vertical-align: middle;"><strong>النوع الفرعي:</strong></td>
+                                        <td style="vertical-align: middle;"><span t-field="doc.sample_subtype_id.name"/></td>
+                                    </tr>
+                                    <tr style="height: 35px;">
+                                        <td style="vertical-align: middle;"><strong>الكمية:</strong></td>
+                                        <td style="vertical-align: middle;"><span t-esc="doc.task_id.total_samples_count or doc.quantity or 0"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm" style="font-size: 14px;">
+                                    <tr style="height: 35px;">
+                                        <td style="vertical-align: middle;"><strong>العميل:</strong></td>
+                                        <td style="vertical-align: middle;"><span t-field="doc.task_id.partner_id.name"/></td>
+                                    </tr>
+                                    <tr style="height: 35px;">
+                                        <td style="vertical-align: middle;"><strong>المشروع:</strong></td>
+                                        <td style="vertical-align: middle;">
+                                            <t t-set="first_answer" t-value="doc.task_id.fsm_question_ids[:1] if doc.task_id.fsm_question_ids else False"/>
+                                            <t t-if="first_answer">
+                                                <t t-if="first_answer.value_text_box">
+                                                    <span t-esc="first_answer.value_text_box"/>
+                                                </t>
+                                                <t t-elif="first_answer.value_answer_id">
+                                                    <span t-field="first_answer.value_answer_id.value"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="doc.task_id.project_id.name"/>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="doc.task_id.project_id.name"/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr style="height: 35px;">
+                                        <td style="vertical-align: middle;"><strong>الحالة:</strong></td>
+                                        <td style="vertical-align: middle;"><span t-field="doc.state"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+
+                        <t t-set="result_sets" t-value="doc.result_set_ids.sorted('name')"/>
+                        <t t-if="result_sets">
+                            <t t-foreach="result_sets" t-as="result_set">
+                                <div class="row mb32">
+                                    <div class="col-12">
+
+                                        <t t-if="result_set.result_line_ids">
+
+                                            <t t-if="'BRICK_DIMENS' in (result_set.template_id.code or '') or 'DIMENS_BRICK' in (result_set.template_id.code or '')">
+
+                                                <t t-set="sample_count" t-value="len(result_set.result_line_ids)"/>
+                                                <h4><span t-field="result_set.template_id.name"/> (<t t-esc="sample_count"/>) 
+                                                    <small class="text-muted">(<span t-field="result_set.template_id.code"/>)</small>
+                                                </h4>                              
+
+                                                <div class="mb16">
+                                                    <p class="text-muted">
+                                                        <strong>تاريخ الفحص:</strong> <span t-field="result_set.testing_date"/>
+                                                        <t t-if="result_set.technician_id">
+                                                            | <strong>الفني:</strong> <span t-field="result_set.technician_id.name"/>
+                                                        </t>
+                                                    </p>
+                                                </div>
+
+                                                
+
+                                                <t t-set="computed_lines" t-value="result_set.result_line_ids.filtered(lambda x: x.criterion_id.test_type == 'computed')"/>
+                                                <t t-if="computed_lines">
+                                                    <t t-set="computed_sample_count" t-value="len(computed_lines)"/>
+                                                    <h6 class="text-muted mb-2">القياسات المحسوبة (<t t-esc="computed_sample_count"/>):</h6>
+                                                    <table class="table table-bordered table-sm">
+                                                        <thead class="table-active">
+                                                             <tr>
+                                                                 <th class="text-center">المعيار</th>
+                                                                 <th class="text-center">الوحدة</th>
+                                                                 <th class="text-center">القيمة العليا</th>
+                                                                 <th class="text-center">القيمة الدنيا</th>
+                                                                 <th class="text-center">النتيجة</th>
+                                                                 <th class="text-center">الحالة</th>
+                                                             </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <t t-foreach="computed_lines.mapped('criterion_id').sorted('sequence')" t-as="criterion">
+                                                                <t t-set="criterion_lines" t-value="computed_lines.filtered(lambda x: x.criterion_id == criterion)"/>
+                                                                <t t-if="criterion_lines">
+
+                                                                     <t t-set="computed_values" t-value="[line.value_numeric for line in criterion_lines if line.value_numeric]"/>
+                                                                     <t t-set="current_value" t-value="computed_values[0] if computed_values else 0"/>
+                                                                     <t t-set="min_val" t-value="criterion.min_value if criterion.min_value else (current_value * 0.95)"/>
+                                                                     <t t-set="max_val" t-value="criterion.max_value if criterion.max_value else (current_value * 1.05)"/>
+                                                                     <t t-set="display_values" t-value="[min_val, current_value, max_val]"/>
+                                                                    <t t-if="display_values">
+                                                                     <t t-set="avg_value" t-value="current_value"/>
+                                                                     <t t-set="min_limit" t-value="criterion.min_value if criterion.min_value else (current_value * 0.95)"/>
+                                                                     <t t-set="max_limit" t-value="criterion.max_value if criterion.max_value else (current_value * 1.05)"/>
+
+                                                                     <t t-set="is_compliant" t-value="min_limit &lt;= avg_value and avg_value &lt;= max_limit"/>
+                                                                     <tr>
+                                                                         <td>
+                                                                             <strong><span t-esc="criterion.name"/></strong>
+                                                                             <br/>
+                                                                             <small class="text-muted">(<span t-esc="criterion.code"/>)</small>
+                                                                         </td>
+                                                                          <td class="text-center">
+                                                                              <t t-if="criterion.uom_id">
+                                                                                  <span t-esc="criterion.uom_id.name"/>
+                                                                              </t>
+                                                                              <t t-else="">-</t>
+                                                                          </td>
+                                                                           <td class="text-center">
+                                                                               <t t-if="criterion.max_value">
+                                                                                   <strong class="text-success"><span t-esc="round(criterion.max_value, 2)"/></strong>
+                                                                               </t>
+                                                                               <t t-else="">
+                                                                                   <strong class="text-success"><span t-esc="round(current_value * 1.05, 2)"/></strong>
+                                                                               </t>
+                                                                           </td>
+                                                                           <td class="text-center">
+                                                                               <t t-if="criterion.min_value">
+                                                                                   <strong class="text-danger"><span t-esc="round(criterion.min_value, 2)"/></strong>
+                                                                               </t>
+                                                                               <t t-else="">
+                                                                                   <strong class="text-danger"><span t-esc="round(current_value * 0.95, 2)"/></strong>
+                                                                               </t>
+                                                                           </td>
+                                                                          <td class="text-center">
+                                                                              <strong class="text-primary"><span t-esc="round(avg_value, 2)"/></strong>
+                                                                          </td>
+                                                                         <td class="text-center">
+                                                                             <t t-if="is_compliant">
+                                                                                 <span class="badge badge-success">مطابق</span>
+                                                                             </t>
+                                                                             <t t-else="">
+                                                                                 <span class="badge badge-danger">غير مطابق</span>
+                                                                             </t>
+                                                                          </td>
+                                                                     </tr>
+                                                                    </t>
+                                                                </t>
+                                                            </t>
+                                                            
+
+                                                            <t t-set="chipping_line" t-value="result_set.result_line_ids.filtered(lambda x: 'CHIPPING_PCT' in x.criterion_id.code)"/>
+                                                            <t t-if="chipping_line">
+                                                                <t t-set="chipping_value" t-value="chipping_line[0].value_numeric or 0"/>
+                                                                <t t-set="is_chipping_compliant" t-value="chipping_value &lt;= 10"/>
+                                                                <tr>
+                                                                    <td>
+                                                                        <strong><span t-esc="chipping_line[0].criterion_id.name"/></strong>
+                                                                        <br/>
+                                                                        <small class="text-muted">(<span t-esc="chipping_line[0].criterion_id.code"/>)</small>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="chipping_line[0].criterion_id.uom_id">
+                                                                            <span t-esc="chipping_line[0].criterion_id.uom_id.name"/>
+                                                                        </t>
+                                                                        <t t-else="">-</t>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-success">10.0</strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-danger">0.0</strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-primary"><span t-esc="round(chipping_value, 1)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="is_chipping_compliant">
+                                                                            <span class="badge badge-success">مطابق</span>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <span class="badge badge-danger">غير مطابق</span>
+                                                                        </t>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </tbody>
+                                                    </table>
+                                                </t>
+                                                <t t-else="">
+                                                    <div class="alert alert-info">
+                                                        <p>لا توجد حقول محسوبة لقالب أبعاد الطابوق</p>
+                                                    </div>
+                                                </t>
+                                                
+
+                                                <t t-set="appearance_lines" t-value="result_set.result_line_ids.filtered(lambda x: 'UNIFORMITY' in x.criterion_id.code or 'CORNERS' in x.criterion_id.code or 'SHAPE' in x.criterion_id.code)"/>
+                                                <t t-if="appearance_lines">
+                                                    <div class="mt-3 mb-3">
+                                                        <t t-set="appearance_sample_count" t-value="len(appearance_lines)"/>
+                                                        <div class="d-flex flex-wrap align-items-center">
+                                                            <h6 class="text-muted mb-0 me-3">الشكل العام (<t t-esc="appearance_sample_count"/>):</h6>
+                                                            <t t-foreach="appearance_lines" t-as="line">
+                                                                <t t-set="value" t-value="line.value_numeric or 0"/>
+                                                                <t t-set="criterion_code" t-value="line.criterion_id.code"/>
+                                                                <t t-set="is_compliant" t-value="value == 1"/>
+                                                                
+                                                                <div class="d-flex align-items-center me-4">
+                                                                    <span class="me-1">
+                                                                        <t t-if="'UNIFORMITY' in criterion_code">
+                                                                            <strong>التجانس:</strong>
+                                                                        </t>
+                                                                        <t t-elif="'CORNERS' in criterion_code">
+                                                                            <strong>الزوايا:</strong>
+                                                                        </t>
+                                                                        <t t-elif="'SHAPE' in criterion_code">
+                                                                            <strong>الشكل:</strong>
+                                                                        </t>
+                                                                    </span>
+                                                                    <span class="me-1">←</span>
+                                                                    <span>
+                                                                        <t t-if="is_compliant">
+                                                                            <t t-if="'UNIFORMITY' in criterion_code">
+                                                                                <span class="badge badge-success">متجانس</span>
+                                                                            </t>
+                                                                            <t t-elif="'CORNERS' in criterion_code">
+                                                                                <span class="badge badge-success">مطابقة</span>
+                                                                            </t>
+                                                                            <t t-elif="'SHAPE' in criterion_code">
+                                                                                <span class="badge badge-success">مطابق</span>
+                                                                            </t>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <t t-if="'UNIFORMITY' in criterion_code">
+                                                                                <span class="badge badge-danger">غير متجانس</span>
+                                                                            </t>
+                                                                            <t t-elif="'CORNERS' in criterion_code">
+                                                                                <span class="badge badge-danger">غير مطابقة</span>
+                                                                            </t>
+                                                                            <t t-elif="'SHAPE' in criterion_code">
+                                                                                <span class="badge badge-danger">غير مطابق</span>
+                                                                            </t>
+                                                                        </t>
+                                                                    </span>
+                                                                </div>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </t>
+
+                                            <t t-elif="'EFFLOR' in (result_set.template_id.code or '')">
+
+                                                <t t-set="sample_count" t-value="len(result_set.result_line_ids)"/>
+                                                <h4><span t-field="result_set.template_id.name"/> (<t t-esc="sample_count"/>) 
+                                                    <small class="text-muted">(<span t-field="result_set.template_id.code"/>)</small>
+                                                </h4>                              
+
+                                                <div class="mb16">
+                                                    <p class="text-muted">
+                                                        <strong>تاريخ الفحص:</strong> <span t-field="result_set.testing_date"/>
+                                                        <t t-if="result_set.technician_id">
+                                                            | <strong>الفني:</strong> <span t-field="result_set.technician_id.name"/>
+                                                        </t>
+                                                    </p>
+                                                </div>
+                                                <table class="table table-bordered table-sm">
+                                                    <thead class="table-active">
+                                                        <tr>
+                                                            <th class="text-center">المعيار</th>
+                                                            <th class="text-center">التقييم</th>
+                                                            <th class="text-center">المطابقة</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <t t-foreach="result_set.result_line_ids.sorted('id')" t-as="line">
+                                                            <t t-if="'EFFLOR_GRADE' in line.criterion_id.code">
+                                                                <t t-set="grade_value" t-value="int(line.value_numeric or 0)"/>
+                                                                <t t-set="sample_type" t-value="line.criterion_id.code.split('_')[-1] if '_' in line.criterion_id.code else 'A'"/>
+                                                                
+
+                                                                <t t-if="grade_value == 1">
+                                                                    <t t-set="assessment" t-value="'لا يوجد تزهر'"/>
+                                                                    <t t-set="is_compliant" t-value="True"/>
+                                                                </t>
+                                                                <t t-elif="grade_value == 2">
+                                                                    <t t-set="assessment" t-value="'تزهر خفيف'"/>
+                                                                    <t t-set="is_compliant" t-value="sample_type in ['A', 'B']"/>
+                                                                </t>
+                                                                <t t-elif="grade_value == 3">
+                                                                    <t t-set="assessment" t-value="'تزهر متوسط'"/>
+                                                                    <t t-set="is_compliant" t-value="sample_type == 'B'"/>
+                                                                </t>
+                                                                <t t-elif="grade_value == 4">
+                                                                    <t t-set="assessment" t-value="'تزهر عالي'"/>
+                                                                    <t t-set="is_compliant" t-value="False"/>
+                                                                </t>
+                                                                <t t-else="">
+                                                                    <t t-set="assessment" t-value="'غير محدد'"/>
+                                                                    <t t-set="is_compliant" t-value="False"/>
+                                                                </t>
+                                                                
+                                                                <tr>
+                                                                    <td class="text-center">
+                                                                        <strong><span t-esc="line.criterion_id.name"/></strong>
+                                                                        <br/>
+                                                                        <small class="text-muted">(<span t-esc="line.criterion_id.code"/>)</small>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="grade_value == 1">
+                                                                            <span class="badge badge-success"><span t-esc="assessment"/></span>
+                                                                        </t>
+                                                                        <t t-elif="grade_value == 2">
+                                                                            <span class="badge badge-info"><span t-esc="assessment"/></span>
+                                                                        </t>
+                                                                        <t t-elif="grade_value == 3">
+                                                                            <span class="badge badge-warning"><span t-esc="assessment"/></span>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <span class="badge badge-danger"><span t-esc="assessment"/></span>
+                                                                        </t>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="is_compliant">
+                                                                            <span class="badge badge-success">مطابق</span>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <span class="badge badge-danger">غير مطابق</span>
+                                                                        </t>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </t>
+
+                            <t t-elif="'ABSORB' in (result_set.template_id.code or '')">
+                                <div style="page-break-before: always;">
+
+                                    <t t-set="sample_count" t-value="len(result_set.result_line_ids)"/>
+                                    <h4><span t-field="result_set.template_id.name"/> (<t t-esc="sample_count"/>) 
+                                        <small class="text-muted">(<span t-field="result_set.template_id.code"/>)</small>
+                                    </h4>                              
+
+                                    <div class="mb16">
+                                        <p class="text-muted">
+                                            <strong>تاريخ الفحص:</strong> <span t-field="result_set.testing_date"/>
+                                            <t t-if="result_set.technician_id">
+                                                | <strong>الفني:</strong> <span t-field="result_set.technician_id.name"/>
+                                            </t>
+                                        </p>
+                                    </div>
+
+                                                <t t-set="non_computed_lines" t-value="result_set.result_line_ids.filtered(lambda x: x.criterion_id.test_type != 'computed')"/>
+                                                <t t-if="non_computed_lines">
+                                                    <t t-set="direct_sample_count" t-value="len(non_computed_lines)"/>
+                                                    <h6 class="text-muted mb-2">القياسات المباشرة (<t t-esc="direct_sample_count"/>):</h6>
+                                                    <table class="table table-bordered table-sm mb-3">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th class="text-center">المعيار</th>
+                                                                <th class="text-center">الوحدة</th>
+                                                                <th class="text-center">الحد الأعلى</th>
+                                                                <th class="text-center">الحد الأدنى</th>
+                                                                <th class="text-center">النتيجة</th>
+                                                                <th class="text-center">الحالة</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <t t-foreach="non_computed_lines.sorted('id')" t-as="line">
+                                                                <t t-set="min_limit" t-value="line.criterion_id.min_value if line.criterion_id.min_value else 0"/>
+                                                                <t t-set="max_limit" t-value="line.criterion_id.max_value if line.criterion_id.max_value else 9999"/>
+                                                                <t t-set="value" t-value="line.value_numeric or 0"/>
+                                                                <t t-set="is_compliant" t-value="min_limit &lt;= value and value &lt;= max_limit"/>
+                                                                <tr>
+                                                                    <td>
+                                                                        <strong><span t-esc="line.criterion_id.name"/></strong>
+                                                                        <br/>
+                                                                        <small class="text-muted">(<span t-esc="line.criterion_id.code"/>)</small>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="line.criterion_id.uom_id">
+                                                                            <span t-esc="line.criterion_id.uom_id.name"/>
+                                                                        </t>
+                                                                        <t t-else="">-</t>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-success"><span t-esc="round(max_limit, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-danger"><span t-esc="round(min_limit, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-primary"><span t-esc="round(value, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="is_compliant">
+                                                                            <span class="badge badge-success">مطابق</span>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <span class="badge badge-danger">غير مطابق</span>
+                                                                        </t>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </tbody>
+                                                    </table>
+                                                </t>
+                                                
+
+                                                <t t-set="computed_lines" t-value="result_set.result_line_ids.filtered(lambda x: x.criterion_id.test_type == 'computed')"/>
+                                                <t t-if="computed_lines">
+                                                    <t t-set="computed_sample_count" t-value="len(computed_lines)"/>
+                                                    <h6 class="text-muted mb-2">النتائج المحسوبة (<t t-esc="computed_sample_count"/>):</h6>
+                                                    <table class="table table-bordered table-sm">
+                                                        <thead class="table-active">
+                                                            <tr>
+                                                                <th class="text-center">المعيار</th>
+                                                                <th class="text-center">الوحدة</th>
+                                                                <th class="text-center">الحد الأعلى</th>
+                                                                <th class="text-center">الحد الأدنى</th>
+                                                                <th class="text-center">النتيجة</th>
+                                                                <th class="text-center">الحالة</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <t t-foreach="computed_lines.sorted('id')" t-as="line">
+                                                                <t t-set="min_limit" t-value="line.criterion_id.min_value if line.criterion_id.min_value else 0"/>
+                                                                <t t-set="max_limit" t-value="line.criterion_id.max_value if line.criterion_id.max_value else 100"/>
+                                                                <t t-set="value" t-value="line.value_numeric or 0"/>
+                                                                <t t-set="is_compliant" t-value="min_limit &lt;= value and value &lt;= max_limit"/>
+                                                                <tr>
+                                                                    <td>
+                                                                        <strong><span t-esc="line.criterion_id.name"/></strong>
+                                                                        <br/>
+                                                                        <small class="text-muted">(<span t-esc="line.criterion_id.code"/>)</small>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="line.criterion_id.uom_id">
+                                                                            <span t-esc="line.criterion_id.uom_id.name"/>
+                                                                        </t>
+                                                                        <t t-else="">-</t>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-success"><span t-esc="round(max_limit, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-danger"><span t-esc="round(min_limit, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-primary"><span t-esc="round(value, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="is_compliant">
+                                                                            <span class="badge badge-success">مطابق</span>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <span class="badge badge-danger">غير مطابق</span>
+                                                                        </t>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </tbody>
+                                                    </table>
+                                                </t>
+                                                </div>
+                                            </t>
+
+                                            <t t-elif="'COMP' in (result_set.template_id.code or '') and 'BRICK' in (result_set.template_id.code or '')">
+
+                                                <t t-set="sample_count" t-value="len(result_set.result_line_ids)"/>
+                                                <h4><span t-field="result_set.template_id.name"/> (<t t-esc="sample_count"/>) 
+                                                    <small class="text-muted">(<span t-field="result_set.template_id.code"/>)</small>
+                                                </h4>                              
+
+                                                <div class="mb16">
+                                                    <p class="text-muted">
+                                                        <strong>تاريخ الفحص:</strong> <span t-field="result_set.testing_date"/>
+                                                        <t t-if="result_set.technician_id">
+                                                            | <strong>الفني:</strong> <span t-field="result_set.technician_id.name"/>
+                                                        </t>
+                                                    </p>
+                                                </div>
+
+                                                <t t-set="non_computed_lines" t-value="result_set.result_line_ids.filtered(lambda x: x.criterion_id.test_type != 'computed')"/>
+                                                <t t-if="non_computed_lines">
+                                                    <t t-set="direct_sample_count" t-value="len(non_computed_lines)"/>
+                                                    <h6 class="text-muted mb-2">القياسات المباشرة (<t t-esc="direct_sample_count"/>):</h6>
+                                                    <table class="table table-bordered table-sm mb-3">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th class="text-center">المعيار</th>
+                                                                <th class="text-center">الوحدة</th>
+                                                                <th class="text-center">الحد الأعلى</th>
+                                                                <th class="text-center">الحد الأدنى</th>
+                                                                <th class="text-center">النتيجة</th>
+                                                                <th class="text-center">الحالة</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <t t-foreach="non_computed_lines.sorted('id')" t-as="line">
+                                                                <t t-set="min_limit" t-value="line.criterion_id.min_value if line.criterion_id.min_value else 0"/>
+                                                                <t t-set="max_limit" t-value="line.criterion_id.max_value if line.criterion_id.max_value else 9999"/>
+                                                                <t t-set="value" t-value="line.value_numeric or 0"/>
+                                                                <t t-set="is_compliant" t-value="min_limit &lt;= value and value &lt;= max_limit"/>
+                                                                <tr>
+                                                                    <td>
+                                                                        <strong><span t-esc="line.criterion_id.name"/></strong>
+                                                                        <br/>
+                                                                        <small class="text-muted">(<span t-esc="line.criterion_id.code"/>)</small>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="line.criterion_id.uom_id">
+                                                                            <span t-esc="line.criterion_id.uom_id.name"/>
+                                                                        </t>
+                                                                        <t t-else="">-</t>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-success"><span t-esc="round(max_limit, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-danger"><span t-esc="round(min_limit, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-primary"><span t-esc="round(value, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="is_compliant">
+                                                                            <span class="badge badge-success">مطابق</span>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <span class="badge badge-danger">غير مطابق</span>
+                                                                        </t>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </tbody>
+                                                    </table>
+                                                </t>
+                                                
+
+                                                <t t-set="computed_lines" t-value="result_set.result_line_ids.filtered(lambda x: x.criterion_id.test_type == 'computed')"/>
+                                                <t t-if="computed_lines">
+                                                    <t t-set="computed_sample_count" t-value="len(computed_lines)"/>
+                                                    <h6 class="text-muted mb-2">النتائج المحسوبة (<t t-esc="computed_sample_count"/>):</h6>
+                                                    <table class="table table-bordered table-sm">
+                                                        <thead class="table-active">
+                                                            <tr>
+                                                                <th class="text-center">المعيار</th>
+                                                                <th class="text-center">الوحدة</th>
+                                                                <th class="text-center">الحد الأعلى</th>
+                                                                <th class="text-center">الحد الأدنى</th>
+                                                                <th class="text-center">النتيجة</th>
+                                                                <th class="text-center">الحالة</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <t t-foreach="computed_lines.sorted('id')" t-as="line">
+                                                                <t t-set="min_limit" t-value="line.criterion_id.min_value if line.criterion_id.min_value else 0"/>
+                                                                <t t-set="max_limit" t-value="line.criterion_id.max_value if line.criterion_id.max_value else 100"/>
+                                                                <t t-set="value" t-value="line.value_numeric or 0"/>
+                                                                <t t-set="is_compliant" t-value="min_limit &lt;= value and value &lt;= max_limit"/>
+                                                                <tr>
+                                                                    <td>
+                                                                        <strong><span t-esc="line.criterion_id.name"/></strong>
+                                                                        <br/>
+                                                                        <small class="text-muted">(<span t-esc="line.criterion_id.code"/>)</small>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="line.criterion_id.uom_id">
+                                                                            <span t-esc="line.criterion_id.uom_id.name"/>
+                                                                        </t>
+                                                                        <t t-else="">-</t>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-success"><span t-esc="round(max_limit, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-danger"><span t-esc="round(min_limit, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <strong class="text-primary"><span t-esc="round(value, 2)"/></strong>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <t t-if="is_compliant">
+                                                                            <span class="badge badge-success">مطابق</span>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <span class="badge badge-danger">غير مطابق</span>
+                                                                        </t>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </tbody>
+                                                    </table>
+                                                </t>
+                                            </t>
+
+                                            <t t-else="">
+
+                                                <t t-set="sample_count" t-value="len(result_set.result_line_ids)"/>
+                                                <h4><span t-field="result_set.template_id.name"/> (<t t-esc="sample_count"/>) 
+                                                    <small class="text-muted">(<span t-field="result_set.template_id.code"/>)</small>
+                                                </h4>                              
+
+                                                <div class="mb16">
+                                                    <p class="text-muted">
+                                                        <strong>تاريخ الفحص:</strong> <span t-field="result_set.testing_date"/>
+                                                        <t t-if="result_set.technician_id">
+                                                            | <strong>الفني:</strong> <span t-field="result_set.technician_id.name"/>
+                                                        </t>
+                                                    </p>
+                                                </div>
+                                                <table class="table table-bordered table-sm">
+                                                    <thead class="table-active">
+                                                        <tr>
+                                                            <th class="text-center">المعيار</th>
+                                                            <th class="text-center">رقم العينة</th>
+                                                            <th class="text-center">القيمة الرقمية</th>
+                                                            <th class="text-center">القيمة النصية</th>
+                                                            <th class="text-center">الاختيار</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <t t-foreach="result_set.result_line_ids.sorted('id')" t-as="line">
+                                                        <tr>
+                                                            <td>
+                                                                <strong><span t-field="line.criterion_id.name"/></strong>
+                                                                <br/>
+                                                                <small class="text-muted">(<span t-field="line.criterion_id.code"/>)</small>
+                                                                <t t-if="line.criterion_id.uom_id">
+                                                                    <br/>
+                                                                    <small class="text-info">الوحدة: <span t-field="line.criterion_id.uom_id.name"/></small>
+                                                                </t>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <span t-field="line.sample_no"/>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <t t-if="line.value_numeric">
+                                                                    <span t-field="line.value_numeric"/>
+                                                                </t>
+                                                                <t t-else="">-</t>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <t t-if="line.value_text">
+                                                                    <span t-field="line.value_text"/>
+                                                                </t>
+                                                                <t t-else="">-</t>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <t t-if="line.value_selection">
+                                                                    <span t-field="line.value_selection"/>
+                                                                </t>
+                                                                <t t-else="">-</t>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                    </tbody>
+                                                </table>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="alert alert-info">
+                                                <p>لا توجد نتائج مدخلة لهذا الفحص</p>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                                
+
+                                <t t-if="not result_set_last">
+                                    <hr class="my-4"/>
+                                </t>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="alert alert-warning text-center">
+                                        <h4>لا توجد نتائج فحوصات لهذه العينة</h4>
+                                        <p>لم يتم إدخال أي نتائج فحوصات لهذه العينة حتى الآن.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+
+
+                        <div class="row mt32">
+                            <div class="col-12">
+                                <hr/>
+                                <p class="text-center text-muted">
+                                    <small>     </small>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
