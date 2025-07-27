@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_brick_comprehensive_report" model="ir.actions.report">
+            <field name="name">تقرير الطابوق الشامل</field>
+            <field name="model">lab.sample.comprehensive.report</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">appointment_products.brick_comprehensive_report_template</field>
+            <field name="report_file">appointment_products.brick_comprehensive_report_template</field>
+            <field name="binding_model_id" ref="model_lab_sample_comprehensive_report"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>
