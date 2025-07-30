@@ -1,0 +1,251 @@
+.o_mgt_documents_view {
+    
+    .o_field_html {
+        min-height: 450px;
+        max-height: 800px;
+        
+        border: 2px solid #e3f2fd;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(33, 150, 243, 0.1);
+        transition: all 0.3s ease;
+        
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        
+        &:focus-within {
+            border-color: #2196f3;
+            box-shadow: 0 6px 25px rgba(33, 150, 243, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .note-toolbar, .o_we_website_top_actions, .oe-toolbar {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-bottom: 2px solid #e1f5fe;
+            padding: 12px 16px;
+            border-radius: 12px 12px 0 0;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+            
+            overflow: visible;
+            white-space: nowrap;
+            
+            .note-toolbar-wrapper {
+                overflow-x: auto;
+                overflow-y: hidden;
+                max-width: 100%;
+            }
+            
+            .note-btn-group, .btn-group {
+                margin-left: 6px;
+                margin-right: 0;
+                border-radius: 8px;
+                overflow: hidden;
+                
+                .note-btn, .btn, button {
+                    border: 1px solid #b3e5fc;
+                    background: linear-gradient(135deg, #ffffff 0%, #f1f8ff 100%);
+                    color: #1565c0;
+                    font-size: 13px;
+                    padding: 6px 10px;
+                    border-radius: 6px;
+                    margin: 1px;
+                    transition: all 0.2s ease;
+                    
+                    &:hover {
+                        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+                        border-color: #2196f3;
+                        transform: translateY(-1px);
+                        box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+                    }
+                    
+                    &:active, &.active {
+                        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+                        color: white;
+                        transform: translateY(0);
+                    }
+                }
+            }
+        }
+        
+        .note-editing-area, .o_field_html_frame, .note-editable {
+            min-height: 300px;
+            padding: 15px;
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            border: none;
+            direction: rtl;
+            text-align: right;
+            
+            h1, h2, h3, h4, h5, h6 {
+                text-align: right;
+                margin: 0 0 8px 0;
+            }
+            
+            ul, ol {
+                padding-right: 20px;
+                padding-left: 0;
+            }
+            
+            blockquote {
+                border-right: 4px solid #007bff;
+                border-left: none;
+                padding-right: 12px;
+                margin-right: 0;
+            }
+        }
+    }
+    
+    .o_field_rich_text_widget {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        background: white;
+        overflow: hidden;
+
+        .rich-text-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .simple-toolbar {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            gap: 4px;
+            flex-wrap: wrap;
+
+            .toolbar-group {
+                display: flex;
+                gap: 2px;
+                align-items: center;
+                
+                .toolbar-btn {
+                    padding: 4px 8px;
+                    border: 1px solid #ced4da;
+                    background: white;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    color: #495057;
+                    
+                    &:hover {
+                        background: #e9ecef;
+                        border-color: #adb5bd;
+                        color: #212529;
+                    }
+                    
+                    &.active {
+                        background: #6c757d;
+                        border-color: #6c757d;
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.o_mgt_documents_view {
+    .o_document_state_draft {
+        color: #6c757d;
+        background-color: #f8f9fa;
+    }
+
+    .o_document_state_review {
+        color: #0d6efd;
+        background-color: #cfe2ff;
+    }
+
+    .o_document_state_approved {
+        color: #198754;
+        background-color: #d1e7dd;
+    }
+
+    .o_document_state_rejected {
+        color: #dc3545;
+        background-color: #f8d7da;
+    }
+
+    .o_document_state_archived {
+        color: #6f42c1;
+        background-color: #e2d9f3;
+    }
+}
+
+.o_mgt_documents_view .o_kanban_view.o_mgt_documents_kanban {
+    .o_kanban_record {
+        direction: rtl;
+        text-align: right;
+        
+        .o_kanban_card_header {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .o_kanban_card_content {
+            .o_field_widget {
+                margin-bottom: 5px;
+            }
+        }
+        
+        .o_kanban_card_footer {
+            border-top: 1px solid #dee2e6;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+    }
+}
+
+.o_mgt_documents_view .o_mgt_documents_actions {
+    .btn {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+    
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .btn-success {
+        background-color: #198754;
+        border-color: #198754;
+    }
+    
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+}
+
+.o_mgt_documents_view .o_mgt_documents_badge {
+    &.badge-draft {
+        background-color: #6c757d;
+    }
+    
+    &.badge-review {
+        background-color: #0d6efd;
+    }
+    
+    &.badge-approved {
+        background-color: #198754;
+    }
+    
+    &.badge-rejected {
+        background-color: #dc3545;
+    }
+    
+    &.badge-archived {
+        background-color: #6f42c1;
+    }
+}

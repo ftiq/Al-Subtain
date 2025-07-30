@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record id="view_document_copy_wizard_form" model="ir.ui.view">
+            <field name="name">document.copy.wizard.form</field>
+            <field name="model">document.copy.wizard</field>
+            <field name="arch" type="xml">
+                <form string="إرسال نسخة من الوثيقة" class="o_dialog_size_medium">
+                    <div class="text-center mb-3">
+                        <button name="action_preview_message" type="object" 
+                                string="معاينة الرسالة" class="btn btn-secondary me-2"
+                                icon="fa-eye"
+                                invisible="not copy_to_user_ids or not final_message"/>
+                        <button string="إلغاء" class="btn btn-light" special="cancel"/>
+                    </div>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-info-circle"/> 
+                        سيتم إرسال نسخة من هذه الوثيقة للمستخدمين المحددين للاطلاع والقراءة فقط
+                    </div>
+                    
+                    <group>
+                        <group string="معلومات الوثيقة">
+                            <field name="document_name" readonly="1"/>
+                            <field name="document_reference" readonly="1"/>
+                        </group>
+                        <group string="إعدادات النسخة">
+                            <field name="user_count" readonly="1" widget="integer"/>
+                            <field name="urgent" widget="boolean_toggle"/>
+                            <field name="require_acknowledgment" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <field name="copy_to_user_ids" widget="many2many_tags" 
+                               placeholder="اختر المستخدمين لإرسال النسخة إليهم..."
+                               options="{'no_create': True, 'no_create_edit': True}"
+                               class="o_field_many2many_tags"/>
+                    </group>
+                    
+                    <separator string="رسالة النسخة"/>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fa fa-exclamation-triangle"/> 
+                        الرسالة التالية ستُرسل مع إشعار النسخة للمستخدمين المحددين
+                    </div>
+                    
+                    <group string="رسالة النسخة">
+                        <field name="copy_message_id" 
+                               placeholder="اختر رسالة معدة مسبقاً"
+                               options="{'no_create': False}"/>
+                        <field name="custom_message" 
+                               placeholder="أو اكتب رسالة مخصصة..."
+                               widget="text"/>
+                    </group>
+                    
+                    <group string="الرسالة النهائية" invisible="not final_message">
+                        <field name="final_message" readonly="1" widget="text" nolabel="1"/>
+                    </group>
+                    
+                    <footer>
+                        <button name="action_send_copy" type="object" 
+                                string="إرسال النسخة" class="btn-primary"
+                                icon="fa-paper-plane"
+                                invisible="not copy_to_user_ids"/>
+                        <button string="إغلاق" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_document_copy_wizard" model="ir.actions.act_window">
+            <field name="name">إرسال اشعار</field>
+            <field name="res_model">document.copy.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{
+                'default_document_id': active_id,
+            }</field>
+        </record>
+
+    </data>
+</odoo>

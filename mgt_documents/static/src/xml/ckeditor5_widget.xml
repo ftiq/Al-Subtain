@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="mgt_documents.CKEditor5Widget" owl="1">
+        <div class="o_field_ckeditor5_widget" t-att-style="'min-height: ' + editorHeight">
+            <div t-if="state.isLoading" class="text-center p-4">
+                <i class="fa fa-spinner fa-spin fa-2x text-muted"></i>
+                <div class="mt-2 text-muted">جاري تحميل محرر النصوص المتقدم...</div>
+            </div>
+            
+            <div t-if="!state.isLoading" class="ckeditor5-container">
+                <div 
+                    t-ref="editor" 
+                    class="ckeditor5-editor"
+                    t-att-style="'min-height: ' + editorHeight"
+                />
+            </div>
+            
+            <div t-if="!state.isReady and !state.isLoading" class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle"></i>
+                فشل في تحميل محرر النصوص. يرجى إعادة تحديث الصفحة.
+            </div>
+        </div>
+    </t>
+</templates>
