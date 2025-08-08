@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="appointment_details_widget" xml:space="preserve">
+
+
+    <t t-name="appointment_details_widget.AppointmentDetailsWidget">
+
+        <button t-if="isVisible" 
+                class="btn btn-sm btn-info o_field_appointment_details_widget" 
+                t-on-click="onButtonClick"
+                title="عرض تفاصيل الموعد">
+            <i class="fa fa-calendar-check-o">📅</i>
+        </button>
+    </t>
+
+
+    <t t-name="appointment_details_widget.AppointmentDetailsPopover">
+        <div class="p-3" style="max-height: 500px; overflow-y: auto; min-width: 600px;">
+
+            <div class="mb-3 text-center bg-primary text-white p-3 rounded">
+                <h5 class="mb-0">
+                    <i class="fa fa-calendar-check me-2"/>
+                    تفاصيل الموعد
+                </h5>
+            </div>
+
+
+            <div class="card mb-3">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fa fa-info-circle me-2"/>
+                        ملخص الموعد والطلب
+                    </h6>
+                </div>
+                <div class="card-body p-3">
+
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa fa-user text-primary me-2"/>
+                                <div>
+                                    <strong class="text-primary">العميل:</strong>
+                                    <span class="ms-1" t-esc="appointmentData.customer_name"/>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center" t-if="appointmentData.customer_phone != 'غير محدد'">
+                                <i class="fa fa-phone text-success me-2"/>
+                                <small class="text-muted" t-esc="appointmentData.customer_phone"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa fa-clock text-warning me-2"/>
+                                <div>
+                                    <strong class="text-warning">الموعد:</strong>
+                                    <span class="badge bg-info ms-1" t-esc="appointmentData.appointment_datetime"/>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-check-circle me-2"/>
+                                <span class="badge fs-6" 
+                                      t-att-class="appointmentData.appointment_status === 'قادم' ? 'bg-success' : 
+                                                 appointmentData.appointment_status === 'مؤكد' ? 'bg-primary' : 'bg-danger'"
+                                      t-esc="appointmentData.appointment_status"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-2"/>
+                    
+
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa fa-project-diagram text-success me-2"/>
+                                <div>
+                                    <strong class="text-success">المشروع:</strong>
+                                    <span class="ms-1" t-esc="appointmentData.project_name"/>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-user-tie text-info me-2"/>
+                                <small class="text-muted">
+                                    <strong>المندوب:</strong> <span t-esc="appointmentData.salesperson"/>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa fa-shopping-cart text-danger me-2"/>
+                                <div>
+                                    <strong class="text-danger">حالة الطلب:</strong>
+                                    <span class="badge fs-6 ms-1"
+                                          t-att-class="appointmentData.state === 'مؤكد' ? 'bg-success' : 
+                                                     appointmentData.state === 'مسودة' ? 'bg-secondary' : 'bg-warning'"
+                                          t-esc="appointmentData.state"/>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-money-bill text-success me-2"/>
+                                <div>
+                                    <strong class="text-success">المبلغ:</strong>
+                                    <span class="fw-bold text-success ms-1" t-esc="appointmentData.total_amount"/>
+                                    <span class="fw-bold text-success ms-1" t-esc="appointmentData.currency_symbol"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card mb-3" t-if="appointmentData.fsm_tasks_count > 0">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fa fa-wrench text-warning me-2"/>
+                        مهام الخدمة الميدانية
+                        <span class="badge bg-info ms-2" t-esc="appointmentData.fsm_tasks_count"/>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div t-if="appointmentData.fsm_tasks.length > 0">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>اسم المهمة</th>
+                                        <th class="text-center">الحالة</th>
+                                        <th class="text-center">المكلف</th>
+                                        <th class="text-center">تاريخ البدء</th>
+                                        <th class="text-center">تاريخ الانتهاء</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="appointmentData.fsm_tasks" t-as="task" t-key="task_index">
+                                        <tr>
+                                            <td>
+                                                <span class="fw-bold" t-esc="task.name"/>
+                                                <br/>
+                                                <small class="text-muted" t-if="task.project_name != 'غير محدد'">
+                                                    <i class="fa fa-folder me-1"/>
+                                                    <span t-esc="task.project_name"/>
+                                                </small>
+                                                <small class="text-info d-block" t-if="task.helpdesk_ticket">
+                                                    <i class="fa fa-ticket me-1"/>
+                                                    <span t-esc="task.helpdesk_ticket"/>
+                                                </small>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge fs-6"
+                                                      t-att-class="task.state_text === 'منجزة' ? 'bg-success' : 
+                                                                 task.state_text === 'جارية' ? 'bg-primary' : 
+                                                                 task.state_text === 'ملغاة' ? 'bg-danger' : 'bg-warning'"
+                                                      t-esc="task.state_text"/>
+                                                <br/>
+                                                <small t-if="task.fsm_done" class="text-success">
+                                                    <i class="fa fa-check-circle me-1"/>
+                                                    منجزة ميدانياً
+                                                </small>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="task.user_id"/>
+                                                <br/>
+                                                <small class="text-muted" t-if="task.partner_id != 'غير محدد'">
+                                                    <i class="fa fa-user me-1"/>
+                                                    <span t-esc="task.partner_id"/>
+                                                </small>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-info" t-if="task.planned_date_begin != 'غير محدد'" t-esc="task.planned_date_begin"/>
+                                                <span t-else="" class="text-muted">غير محدد</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-warning" t-if="task.date_deadline != 'غير محدد'" t-esc="task.date_deadline"/>
+                                                <span t-else="" class="text-muted">غير محدد</span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div t-else="" class="text-muted text-center">
+                        <i class="fa fa-info-circle me-2"/>
+                        لا توجد مهام خدمة ميدانية
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card mb-3" t-if="appointmentData.lab_samples_count > 0">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fa fa-flask text-info me-2"/>
+                        عينات الفحص
+                        <span class="badge bg-info ms-2" t-esc="appointmentData.lab_samples_count"/>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div t-if="appointmentData.lab_samples.length > 0">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="70%">تفاصيل العينة</th>
+                                        <th width="30%" class="text-center">عدد الفحوصات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="appointmentData.lab_samples" t-as="sample" t-key="sample_index">
+                                        <tr>
+                                            <td>
+
+                                                <div class="row mb-2">
+                                                    <div class="col-4 fw-bold text-muted">رقم العينة:</div>
+                                                    <div class="col-8 fw-bold text-primary" t-esc="sample.name"/>
+                                                </div>
+                                                
+
+                                                <div class="row mb-2">
+                                                    <div class="col-4 fw-bold text-muted">نوع العينة:</div>
+                                                    <div class="col-8">
+                                                        <span t-esc="sample.product_name"/>
+                                                        <span t-if="sample.sample_subtype != 'غير محدد'" class="text-muted"> - <span t-esc="sample.sample_subtype"/></span>
+                                                    </div>
+                                                </div>
+                                                
+
+                                                <div class="row mb-2">
+                                                    <div class="col-4 fw-bold text-muted">حالة العينة:</div>
+                                                    <div class="col-8">
+                                                        <span class="badge"
+                                                              t-att-class="sample.state_text === 'مكتملة' ? 'bg-success' : 
+                                                                         sample.state_text === 'قيد الفحص' ? 'bg-primary' : 
+                                                                         sample.state_text === 'مرفوضة' ? 'bg-danger' : 
+                                                                         sample.state_text === 'مستلمة' ? 'bg-info' : 'bg-warning'"
+                                                              t-esc="sample.state_text"/>
+                                                    </div>
+                                                </div>
+                                                
+
+                                                <div class="row mb-2">
+                                                    <div class="col-4 fw-bold text-muted">نتيجة الفحص:</div>
+                                                    <div class="col-8">
+                                                        <span class="badge"
+                                                              t-att-class="sample.overall_result_text === 'ناجح' ? 'bg-success' : 
+                                                                         sample.overall_result_text === 'فاشل' ? 'bg-danger' : 'bg-warning'"
+                                                              t-esc="sample.overall_result_text"/>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- تاريخ الاستلام -->
+                                                <div class="row mb-2">
+                                                    <div class="col-4 fw-bold text-muted">تاريخ الاستلام:</div>
+                                                    <div class="col-8">
+                                                        <i class="fa fa-calendar text-info me-1"/>
+                                                        <span t-if="sample.received_date != 'غير محدد'" t-esc="sample.received_date"/>
+                                                        <span t-else="" class="text-muted">غير محدد</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- معلومات إضافية -->
+                                                <div t-if="sample.task_name" class="row">
+                                                    <div class="col-12">
+                                                        <small class="text-muted">
+                                                            <i class="fa fa-tasks me-1"/>
+                                                            المهمة: <span t-esc="sample.task_name"/>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            
+                                            <td class="text-center align-middle">
+                                                <!-- عدد الفحوصات -->
+                                                <div class="mb-2">
+                                                    <span class="badge bg-primary fs-6" t-esc="sample.result_sets_count"/>
+                                                </div>
+                                                
+                                                <!-- الكمية إذا كانت متوفرة -->
+                                                <div t-if="sample.quantity" class="mb-2">
+                                                    <small class="text-muted">
+                                                        <i class="fa fa-weight me-1"/>
+                                                        <span t-esc="sample.quantity"/>
+                                                    </small>
+                                                </div>
+                                                
+                                                <!-- عرض تفاصيل الفحوصات والفنيين -->
+                                                <div t-if="sample.result_sets.length > 0" class="mt-2">
+                                                    <t t-foreach="sample.result_sets" t-as="result_set" t-key="result_set_index">
+                                                        <div class="mb-2">
+                                                            <!-- اسم الفحص -->
+                                                            <span class="badge badge-sm"
+                                                                  t-att-class="result_set.overall_result_text === 'ناجح' ? 'bg-success' : 
+                                                                             result_set.overall_result_text === 'فاشل' ? 'bg-danger' : 'bg-warning'"
+                                                                  t-esc="result_set.template_name"/>
+                                                            <!-- اسم الفني -->
+                                                            <div class="mt-1">
+                                                                <small class="text-muted">
+                                                                    <i class="fa fa-user me-1"/>
+                                                                    <span t-esc="result_set.technician"/>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div t-else="" class="text-muted text-center">
+                        <i class="fa fa-info-circle me-2"/>
+                        لا توجد عينات فحص
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fa fa-cube text-primary me-2"/>
+                        النماذج المحجوزة
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div t-if="appointmentData.products.length > 0">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>النموذج</th>
+                                        <th class="text-center">العدد</th>
+                                        <th class="text-center">السعر</th>
+                                        <th class="text-center">المجموع</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="appointmentData.products" t-as="product" t-key="product_index">
+                                        <tr>
+                                            <td>
+                                                <span class="fw-bold" t-esc="product.name"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-info" t-esc="product.qty"/>
+                                                <small t-if="product.uom" class="text-muted ms-1" t-esc="product.uom"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-if="product.price_unit" t-esc="product.price_unit"/>
+                                                <span t-if="product.currency_symbol" class="ms-1" t-esc="product.currency_symbol"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="fw-bold text-success" t-if="product.price_subtotal" t-esc="product.price_subtotal"/>
+                                                <span t-if="product.currency_symbol" class="fw-bold text-success ms-1" t-esc="product.currency_symbol"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div t-else="" class="text-muted text-center">
+                        <i class="fa fa-info-circle me-2"/>
+                        لا توجد نماذج محجوزة
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates> 

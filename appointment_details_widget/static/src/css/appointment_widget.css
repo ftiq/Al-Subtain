@@ -1,0 +1,480 @@
+.o_field_appointment_details_widget {
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: 3px solid #fff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.o_field_appointment_details_widget:hover {
+    transform: scale(1.2);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    border-color: #f3f4f6;
+}
+
+.o_field_appointment_details_widget:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.5);
+}
+
+.o_field_appointment_details_widget .fa {
+    font-size: 16px;
+    display: inline-block !important;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+
+.o_field_appointment_details_widget .fa-calendar-check-o::before {
+    content: "\f274";
+    font-family: "FontAwesome";
+}
+
+.o_field_appointment_details_widget:empty::before {
+    content: "📅";
+    font-size: 18px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.o_field_appointment_details_widget::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.o_field_appointment_details_widget:hover::before {
+    opacity: 1;
+}
+
+
+.o_popover .card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+}
+
+.o_popover .card-header {
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 12px 12px 0 0 !important;
+    padding: 1rem 1.25rem;
+}
+
+.o_popover .badge {
+    font-size: 0.8em;
+}
+
+
+.o_popover .row {
+    margin-bottom: 0.5rem;
+}
+
+.o_popover .card-body {
+    padding: 1rem;
+}
+
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+
+.o_popover table {
+    font-size: 0.85rem;
+}
+
+.o_popover .table-bordered {
+    border: 1px solid #dee2e6;
+}
+
+.o_popover .table th, 
+.o_popover .table td {
+    border: 1px solid #dee2e6;
+    padding: 0.5rem;
+}
+
+
+.o_popover i {
+    margin-right: 0.25rem;
+}
+
+
+.o_popover .card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+
+.o_popover .alert {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+}
+
+.o_popover .alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+
+.o_popover .text-center {
+    text-align: center;
+}
+
+.o_popover .text-right {
+    text-align: right;
+}
+
+.o_popover .mb-0 {
+    margin-bottom: 0;
+}
+
+.o_popover .mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.o_popover .mb-3 {
+    margin-bottom: 1rem;
+}
+
+.o_popover .mt-2 {
+    margin-top: 0.5rem;
+}
+
+.o_popover .p-2 {
+    padding: 0.5rem;
+}
+
+.o_popover .p-3 {
+    padding: 1rem;
+}
+
+
+.o_popover .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
+.o_field_appointment_details_widget * {
+    pointer-events: none;
+}
+
+
+
+
+.appointment-popup .table-hover tbody tr:hover {
+    background-color: rgba(106, 90, 205, 0.05) !important;
+    transform: scale(1.01) !important;
+    transition: all 0.2s ease !important;
+}
+
+.appointment-popup .table th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    color: #495057 !important;
+    font-weight: 600 !important;
+    border: none !important;
+    padding: 12px 8px !important;
+    font-size: 0.85rem !important;
+}
+
+.appointment-popup .table td {
+    padding: 10px 8px !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    vertical-align: middle !important;
+}
+
+
+.appointment-popup .badge {
+    border-radius: 6px !important;
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+
+.appointment-popup .bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+
+.appointment-popup .bg-primary {
+    background: linear-gradient(135deg, #007bff 0%, #6f42c1 100%) !important;
+}
+
+.appointment-popup .bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%) !important;
+    color: #212529 !important;
+}
+
+.appointment-popup .bg-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%) !important;
+}
+
+.appointment-popup .bg-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #6610f2 100%) !important;
+}
+
+
+.appointment-popup .fa-wrench {
+    color: #ffc107 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.appointment-popup .fa-check-circle {
+    color: #28a745 !important;
+    animation: pulse 2s infinite !important;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+
+.appointment-popup .text-info {
+    color: #6f42c1 !important;
+    font-weight: 500 !important;
+}
+
+.appointment-popup .text-muted {
+    color: #6c757d !important;
+    font-size: 0.8rem !important;
+}
+
+
+.appointment-popup .bg-gradient-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+    border: none !important;
+}
+
+.appointment-popup .card-body .row {
+    margin: 0 !important;
+}
+
+.appointment-popup .card-body .col-md-6 {
+    padding: 0.25rem !important;
+}
+
+.appointment-popup .d-flex.align-items-center {
+    margin-bottom: 0.5rem !important;
+}
+
+.appointment-popup .d-flex.align-items-center:last-child {
+    margin-bottom: 0 !important;
+}
+
+.appointment-popup hr {
+    margin: 0.5rem 0 !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+
+.appointment-popup .fa-user {
+    color: #6366f1 !important;
+}
+
+.appointment-popup .fa-phone {
+    color: #10b981 !important;
+}
+
+.appointment-popup .fa-clock {
+    color: #f59e0b !important;
+}
+
+.appointment-popup .fa-check-circle {
+    color: #6b7280 !important;
+}
+
+.appointment-popup .fa-project-diagram {
+    color: #10b981 !important;
+}
+
+.appointment-popup .fa-user-tie {
+    color: #06b6d4 !important;
+}
+
+.appointment-popup .fa-shopping-cart {
+    color: #ef4444 !important;
+}
+
+.appointment-popup .fa-money-bill {
+    color: #10b981 !important;
+}
+
+.appointment-popup .fa-flask {
+    color: #06b6d4 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.appointment-popup .fa-tasks {
+    color: #8b5cf6 !important;
+}
+
+.appointment-popup .fa-tag {
+    color: #f59e0b !important;
+}
+
+.appointment-popup .fa-weight {
+    color: #6b7280 !important;
+}
+
+.appointment-popup .badge-sm {
+    font-size: 0.65rem !important;
+    padding: 2px 6px !important;
+    margin: 1px !important;
+}
+
+.appointment-popup .table tbody tr:hover {
+    background-color: rgba(6, 182, 212, 0.05) !important;
+}
+.appointment-popup .table td small {
+    line-height: 1.2 !important;
+    margin-top: 2px !important;
+}
+
+.appointment-popup .table td .mt-1 {
+    margin-top: 0.25rem !important;
+    padding: 2px 4px !important;
+    border-radius: 4px !important;
+    background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+.appointment-popup .table .row {
+    margin: 0 !important;
+    padding: 2px 0 !important;
+}
+
+.appointment-popup .table .row .col-4 {
+    padding: 0 8px 0 0 !important;
+    font-size: 0.85rem !important;
+}
+
+.appointment-popup .table .row .col-8 {
+    padding: 0 0 0 8px !important;
+    font-size: 0.9rem !important;
+}
+
+.appointment-popup .table .row .col-12 {
+    padding: 0 !important;
+    font-size: 0.8rem !important;
+}
+
+.appointment-popup .table .badge {
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+}
+
+.appointment-popup .table .badge.fs-6 {
+    font-size: 1rem !important;
+    padding: 6px 12px !important;
+}
+
+.appointment-popup .table td.align-middle {
+    vertical-align: middle !important;
+}
+.appointment-popup .table tbody tr {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.appointment-popup .table tbody tr:last-child {
+    border-bottom: none !important;
+}
+.o_popover {
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.o_popover .table thead th {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    font-weight: 600;
+    text-align: center;
+}
+
+.o_popover .table tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.05);
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+
+.o_popover .badge {
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.o_popover h5, .o_popover h6 {
+    font-weight: 700;
+}
+
+.o_popover .text-success {
+    color: #10b981 !important;
+}
+
+.o_popover .bg-info {
+    background: linear-gradient(135deg, #06b6d4, #0891b2) !important;
+}
+
+.o_popover .bg-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+}
+
+.o_popover .bg-success {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+.o_popover .bg-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+
+.o_popover .bg-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+} 
