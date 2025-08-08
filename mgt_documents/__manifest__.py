@@ -69,8 +69,8 @@
     'assets': {
         'web.assets_backend': [
             'mgt_documents/static/src/scss/mgt_documents_scoped.scss',
-            'mgt_documents/static/src/scss/document_html_editor.scss',
-            'mgt_documents/static/src/scss/ckeditor5_widget.scss',
+            #'mgt_documents/static/src/scss/document_html_editor.scss',
+            #'mgt_documents/static/src/scss/ckeditor5_widget.scss',
             'mgt_documents/static/src/scss/rich_text_widget.scss',
             'mgt_documents/static/src/scss/mgt_documents_scoped.scss',
             'mgt_documents/static/src/css/document_kanban.css',
