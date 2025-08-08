@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+
+        <record id="view_lab_sample_comprehensive_report_form" model="ir.ui.view">
+            <field name="name">lab.sample.comprehensive.report.form</field>
+            <field name="model">lab.sample.comprehensive.report</field>
+            <field name="arch" type="xml">
+                <form string="طباعة التقرير ">
+                    <header>
+
+                        <button name="action_refresh_group_data" 
+                                string="تحميل البيانات" 
+                                type="object" 
+                                class="btn-warning"
+                                icon="fa-refresh"/>
+
+                    </header>
+                    
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="sample_name" readonly="1"/>
+                            </h1>
+                            <h3>
+                                <field name="lab_number" readonly="1"/>
+                            </h3>
+                        </div>
+                        
+                        <group>
+                            <group string="معلومات المشروع">
+                                <field name="sample_id" invisible="1"/>
+                                <field name="project_name" readonly="1"/>
+                                <field name="company_name" readonly="1"/>
+                            </group>
+                            <group string="التواريخ">
+                                <field name="casting_date" readonly="1"/>
+                                <field name="testing_date" readonly="1"/>
+                                <field name="age_days" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <field name="sample_type" invisible="1"/>
+                        
+                        <group invisible="sample_type != 'concrete'">
+                            <group string="إحصائيات المجموعات">
+                                <field name="total_groups_count" readonly="1"/>
+                                <field name="tested_groups_28_count" readonly="1" widget="badge" decoration-info="True"/>
+                                <field name="total_cubes_count" readonly="1"/>
+                            </group>
+                            <group string="الإحصائيات العامة">
+                                <field name="overall_average" readonly="1" widget="float" digits="[5,2]"/>
+                                <field name="min_group_average" readonly="1" widget="float" digits="[5,2]"/>
+                                <field name="max_group_average" readonly="1" widget="float" digits="[5,2]"/>
+                                <field name="standard_deviation" readonly="1" widget="float" digits="[5,2]"/>
+                                <field name="uncertainty_value" readonly="1" widget="float" digits="[5,2]"/>
+                            </group>
+                        </group>
+
+                        
+                        <notebook>
+                            <page string="تفاصيل المجموعات" name="groups_detail" invisible="sample_type != 'concrete'">
+                                <field name="group_data_ids" nolabel="1">
+                                    <list string="بيانات المجموعات التفصيلية" create="false" delete="false" edit="false">
+                                        <field name="group_number" string="المجموعة" widget="badge" decoration-info="True"/>
+                                        <field name="lab_code" string="الرمز المختبري"/>
+                                        <field name="field_code" string="الرمز الحقلي"/>
+                                        <field name="age_days" string="الأيام" widget="badge" decoration-success="age_days == '28'"/>
+                                        <field name="cube_count" string="عدد المكعبات"/>
+                                        <field name="casting_date" string="تاريخ الصب" optional="hide"/>
+                                        <field name="testing_date" string="تاريخ الفحص" optional="hide"/>
+                                        <field name="testing_temperature" string="درجة الحرارة" optional="hide"/>
+                                        <field name="weight_kg" string="الوزن (كغم)" widget="float" digits="[5,3]"/>
+                                        <field name="density" string="الكثافة" widget="float" digits="[6,1]"/>
+                                        <field name="load_kn" string="الحمل (kN)" widget="float" digits="[6,1]"/>
+                                        <field name="compressive_strength" string="قوة الضغط" widget="float" digits="[5,2]" decoration-danger="compressive_strength &lt; 20" decoration-success="compressive_strength &gt;= 30"/>
+                                        <field name="average_strength" string="المتوسط" widget="float" digits="[5,2]" decoration-danger="average_strength &lt; 20" decoration-success="average_strength &gt;= 30"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                        </notebook>
+                        
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_lab_sample_comprehensive_report" model="ir.actions.act_window">
+            <field name="name">طباعة التقرير</field>
+            <field name="res_model">lab.sample.comprehensive.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+            <field name="context">{'default_sample_id': active_id}</field>
+        </record>
+
+
+        <record id="view_lab_sample_form_comprehensive_report" model="ir.ui.view">
+            <field name="name">lab.sample.form.comprehensive.report</field>
+            <field name="model">lab.sample</field>
+            <field name="inherit_id" ref="view_lab_sample_form"/>
+            <field name="arch" type="xml">
+                <div class="oe_button_box" position="inside">
+                    <button name="%(action_lab_sample_comprehensive_report)d" 
+                            type="action"
+                            class="oe_stat_button" 
+                            icon="fa-file-text-o">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text"> تقرير الخرسانة</span>
+                        </div>
+                    </button>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

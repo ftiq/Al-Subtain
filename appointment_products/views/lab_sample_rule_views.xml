@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+
+    <record id="view_lab_sample_rule_tree" model="ir.ui.view">
+        <field name="name">lab.sample.rule.tree</field>
+        <field name="model">lab.sample.rule</field>
+        <field name="arch" type="xml">
+            <list string="قواعد العينات">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="sample_type_id"/>
+                <field name="base_quantity"/>
+                <field name="base_groups"/>
+                <field name="repeat_step_qty"/>
+                <field name="repeat_groups"/>
+                <field name="cubes_per_group"/>
+                <field name="extra_cubes_per_group"/>
+                <field name="max_small_quantity"/>
+                <field name="active" widget="boolean_toggle"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_lab_sample_rule_form" model="ir.ui.view">
+        <field name="name">lab.sample.rule.form</field>
+        <field name="model">lab.sample.rule</field>
+        <field name="arch" type="xml">
+            <form string="قاعدة العينة">
+                <header>
+                    <button name="action_test_calculation" type="object" string="اختبار الحساب" class="oe_highlight" icon="fa-calculator"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
+                        </button>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="sample_type_id"/>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="قواعد الكمية والمجموعات">
+                            <group>
+                                <group string="الشريحة الأساسية">
+                                    <field name="base_quantity" widget="float"/>
+                                    <field name="base_groups"/>
+                                    <field name="max_small_quantity" widget="float"/>
+                                </group>
+                                <group string="التكرار">
+                                    <field name="repeat_step_qty" widget="float"/>
+                                    <field name="repeat_groups"/>
+                                </group>
+                            </group>
+                            
+                            <group>
+                                <group string="إعدادات المكعبات">
+                                    <field name="cubes_per_group"/>
+                                    <field name="extra_cubes_per_group"/>
+                                    <field name="test_ages"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="شرح القاعدة">
+                            <div class="alert alert-info">
+                                <h4>كيفية عمل القاعدة:</h4>
+                                <ul>
+                                    <li><strong>الكمية الأساسية:</strong> إذا كانت الكمية المخططة أقل من أو تساوي هذا الرقم، يتم أخذ عدد المجموعات الأساسية فقط</li>
+                                    <li><strong>المجموعات الأساسية:</strong> عدد المجموعات الثابت للشريحة الأولى</li>
+                                    <li><strong>كمية التكرار:</strong> كل هذه الكمية الإضافية تستلزم مجموعات إضافية</li>
+                                    <li><strong>مجموعات التكرار:</strong> عدد المجموعات الإضافية لكل تكرار</li>
+                                    <li><strong>حد الكمية الصغيرة:</strong> إذا كانت الكمية أقل من هذا الحد، تطبق القاعدة الأساسية فقط</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="alert alert-success">
+                                <h4>مثال:</h4>
+                                <p>إذا كانت الكمية المخططة 300 م³ والإعدادات كالتالي:</p>
+                                <ul>
+                                    <li>الكمية الأساسية: 80 م³</li>
+                                    <li>المجموعات الأساسية: 4</li>
+                                    <li>كمية التكرار: 50 م³</li>
+                                    <li>مجموعات التكرار: 1</li>
+                                </ul>
+                                <p><strong>الحساب:</strong></p>
+                                <ul>
+                                    <li>المجموعات الأساسية: 4</li>
+                                    <li>الكمية الإضافية: 300 - 80 = 220 م³</li>
+                                    <li>عدد التكرارات: ⌈220 ÷ 50⌉ = 5</li>
+                                    <li>مجموعات إضافية: 5 × 1 = 5</li>
+                                    <li><strong>المجموع الكلي: 4 + 5 = 9 مجموعات</strong></li>
+                                </ul>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_lab_sample_rule_search" model="ir.ui.view">
+        <field name="name">lab.sample.rule.search</field>
+        <field name="model">lab.sample.rule</field>
+        <field name="arch" type="xml">
+            <search string="بحث قواعد العينات">
+                <field name="name"/>
+                <field name="sample_type_id"/>
+                <field name="description"/>
+                
+                <filter string="نشط" name="active" domain="[('active', '=', True)]"/>
+                <filter string="غير نشط" name="inactive" domain="[('active', '=', False)]"/>
+                
+                <separator/>
+                <filter string="شركتي" name="my_company" domain="[('company_id', '=', current_company_id)]"/>
+                
+                <group expand="0" string="تجميع حسب">
+                    <filter string="نوع العينة" name="group_sample_type" context="{'group_by': 'sample_type_id'}"/>
+                    <filter string="الشركة" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_lab_sample_rule" model="ir.actions.act_window">
+        <field name="name">قواعد العينات</field>
+        <field name="res_model">lab.sample.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء قاعدة عينة جديدة
+            </p>
+            <p>
+                تحدد قواعد العينات كيفية حساب عدد المجموعات والمكعبات المطلوبة
+                بناءً على كمية الخرسانة المخططة ونوع المنشأ.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_lab_sample_rule"
+              name="⚙️ قواعد العينات"
+              parent="menu_lab_standards"
+              action="action_lab_sample_rule"
+              sequence="60"/>
+
+</odoo> 
