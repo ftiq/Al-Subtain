@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="action_lab_dashboard" model="ir.actions.client">
+        <field name="name">لوحة معلومات المختبر</field>
+        <field name="tag">lab_dashboard</field>
+    </record>
+
+
+    <menuitem id="menu_lab_dashboard_client" 
+              name="لوحة المعلومات" 
+              parent="menu_lab_root" 
+              action="action_lab_dashboard" 
+              groups="appointment_products.group_lab_manager"
+              sequence="5"/>
+
+
+    <record id="view_lab_sample_stats" model="ir.ui.view">
+        <field name="name">lab.sample.stats</field>
+        <field name="model">lab.sample</field>
+        <field name="arch" type="xml">
+            <graph string="إحصائيات العينات" type="bar">
+                <field name="state" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+
+    <record id="view_lab_result_set_stats" model="ir.ui.view">
+        <field name="name">lab.result.set.stats</field>
+        <field name="model">lab.result.set</field>
+        <field name="arch" type="xml">
+            <graph string="إحصائيات النتائج" type="pie">
+                <field name="overall_result" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+
+    <record id="view_lab_sample_trends" model="ir.ui.view">
+        <field name="name">lab.sample.trends</field>
+        <field name="model">lab.sample</field>
+        <field name="arch" type="xml">
+            <graph string="اتجاهات العينات الشهرية" type="line">
+                <field name="create_date" type="row" interval="month"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+
+    <record id="view_lab_dashboard_kanban" model="ir.ui.view">
+        <field name="name">lab.dashboard.kanban</field>
+        <field name="model">lab.sample</field>
+        <field name="arch" type="xml">
+            <kanban class="o_lab_dashboard_kanban">
+                <field name="state"/>
+                <field name="overall_result"/>
+                <field name="name"/>
+                <templates>
+
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click o_lab_kpi_card">
+                            <div class="o_lab_kpi_main">
+                                <div class="o_lab_kpi_title">
+                                    <t t-esc="record.state ? record.state.value : ''"/>
+                                </div>
+                                <div class="o_lab_kpi_value">
+                                    <span t-esc="record.name ? record.name.value : record.id.value"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="action_lab_sample_stats" model="ir.actions.act_window">
+        <field name="name">إحصائيات العينات</field>
+        <field name="res_model">lab.sample</field>
+        <field name="view_mode">graph,pivot</field>
+        <field name="view_id" ref="view_lab_sample_stats"/>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="action_lab_result_stats" model="ir.actions.act_window">
+        <field name="name">إحصائيات النتائج</field>
+        <field name="res_model">lab.result.set</field>
+        <field name="view_mode">graph,pivot</field>
+        <field name="view_id" ref="view_lab_result_set_stats"/>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="action_lab_sample_trends" model="ir.actions.act_window">
+        <field name="name">اتجاهات العينات</field>
+        <field name="res_model">lab.sample</field>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_lab_sample_trends"/>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo> 
