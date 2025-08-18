@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_product_subtype_test_plan_wizard_form" model="ir.ui.view">
+            <field name="name">product.subtype.test.plan.wizard.form</field>
+            <field name="model">product.subtype.test.plan.wizard</field>
+            <field name="arch" type="xml">
+                <form string="خطط فحص الأنواع الفرعية">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="product_id" readonly="1" 
+                                       options="{'no_open': True}"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="sample_type_id" readonly="1" 
+                                       options="{'no_open': True}"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="خطط فحص الأنواع الفرعية">
+                                <field name="line_ids">
+                                    <list string="الأنواع الفرعية وخطط الفحص" editable="bottom">
+                                        <field name="subtype_name" readonly="1"/>
+                                        <field name="subtype_code" readonly="1"/>
+                                        <field name="test_flow_template_id" 
+                                               options="{'no_create': True, 'no_edit': True}"
+                                               placeholder="اختر خطة فحص..."/>
+
+                                        <field name="subtype_id" column_invisible="1"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    
+                    <footer>
+                        <button string="حفظ" type="object" name="action_save" 
+                                class="btn-primary" data-hotkey="s"/>
+                        <button string="إلغاء" class="btn-secondary" 
+                                special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_product_subtype_test_plan_wizard" model="ir.actions.act_window">
+            <field name="name">خطط فحص الأنواع الفرعية</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.subtype.test.plan.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

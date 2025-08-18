@@ -1,0 +1,143 @@
+.o_dynamic_results_table {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
+.o_dynamic_results_table .o_input_required,
+.o_dynamic_results_table .o_data_cell[data-field-type="numeric"]:not([readonly]),
+.o_dynamic_results_table .o_data_cell[data-field-type="text"]:not([readonly]),
+.o_dynamic_results_table .o_data_cell[data-field-type="selection"]:not([readonly]),
+.o_dynamic_results_table .o_data_cell[data-field-type="boolean"]:not([readonly]),
+.o_dynamic_results_table .o_data_cell[data-field-type="date"]:not([readonly]) {
+    background-color: #e8f5e8 !important;
+    border: 2px solid #4CAF50 !important;
+    border-radius: 4px;
+}
+
+
+.o_dynamic_results_table .o_data_cell[data-field-type="computed"],
+.o_dynamic_results_table .o_readonly {
+    background-color: #e3f2fd !important;
+    border: 1px solid #2196F3 !important;
+    border-radius: 4px;
+}
+
+
+.o_dynamic_results_table .o_data_row[data-critical="true"] {
+    border-left: 4px solid #ff5722 !important;
+    font-weight: bold;
+}
+
+
+.o_dynamic_results_table .o_field_badge.badge-success {
+    background-color: #4CAF50 !important;
+    color: white !important;
+}
+
+.o_dynamic_results_table .o_field_badge.badge-danger {
+    background-color: #f44336 !important;
+    color: white !important;
+}
+
+.o_dynamic_results_table .o_field_badge.badge-warning {
+    background-color: #ff9800 !important;
+    color: white !important;
+}
+
+
+.o_dynamic_results_table .o_input_required:focus {
+    background-color: #c8e6c9 !important;
+    border-color: #2e7d32 !important;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+
+.o_dynamic_results_table thead th {
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #ddd;
+    font-weight: bold;
+    text-align: center;
+}
+
+
+.o_dynamic_results_table tbody tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+
+.o_dynamic_results_table .o_list_button {
+    margin: 2px;
+    border-radius: 4px;
+}
+
+.o_dynamic_results_table .o_list_button.btn-primary {
+    background-color: #2196F3;
+    border-color: #2196F3;
+}
+
+.o_dynamic_results_table .o_list_button.btn-success {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.o_dynamic_results_table .o_list_button.btn-danger {
+    background-color: #f44336;
+    border-color: #f44336;
+}
+
+
+.o_dynamic_results_table .o_field_percentage {
+    text-align: right;
+    font-weight: bold;
+}
+
+
+.o_dynamic_results_table .o_field_many2one_uom {
+    font-size: 0.9em;
+    color: #666;
+}
+
+
+.o_dynamic_results_table .o_field_text textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+
+.o_dynamic_results_table {
+    direction: rtl;
+    text-align: right;
+}
+
+.o_dynamic_results_table .o_data_cell {
+    text-align: right;
+}
+
+.o_dynamic_results_table .o_data_cell[data-field-type="numeric"] {
+    text-align: center;
+}
+
+
+.o_dynamic_results_table .o_field_widget[data-compliant="false"]::before {
+    content: "⚠️";
+    margin-left: 5px;
+}
+
+.o_dynamic_results_table .o_field_widget[data-compliant="true"]::before {
+    content: "✅";
+    margin-left: 5px;
+}
+
+
+@media print {
+    .o_dynamic_results_table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    .o_dynamic_results_table .o_input_required {
+        background-color: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+    }
+} 
