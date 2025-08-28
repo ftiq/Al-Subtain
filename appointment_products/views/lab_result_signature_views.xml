@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+
+    <record id="lab_result_set_form_signature_inherit" model="ir.ui.view">
+        <field name="name">lab.result.set.form.signature.inherit</field>
+        <field name="model">lab.result.set</field>
+        <field name="inherit_id" ref="lab_result_set_form_dynamic"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//page[last()]" position="after">
+                <page string="✍️ التوقيع الإلكتروني" name="signature">
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-info-circle"/> <strong>مطلوب:</strong> يجب عليك توقيع هذه النتائج إلكترونياً قبل اعتمادها.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="signer_name" string="اسم الموقع" readonly="1"/>
+                            <field name="is_signed" readonly="1" widget="boolean"/>
+                        </group>
+                        <group>
+                            <field name="signature" widget="signature" string="التوقيع الإلكتروني" 
+                                   readonly="state in ('approved', 'completed')"
+                                   class="o_signature_field"/>
+                        </group>
+                    </group>
+                    <div class="oe_button_box" invisible="not signature">
+                        <button name="action_clear_signature" 
+                                type="object" 
+                                string="مسح التوقيع" 
+                                class="btn-secondary"
+                                confirm="هل أنت متأكد من مسح التوقيع؟"
+                                invisible="state in ('approved', 'completed') or not signature"/>
+                    </div>
+                </page>
+            </xpath>
+            
+
+            <xpath expr="//field[@name='state']" position="after">
+                <div class="oe_signature_indicator" invisible="not is_signed">
+                    <span class="badge badge-success">
+                        <i class="fa fa-check-circle"/> موقع بواسطة: <field name="signer_name" readonly="1"/>
+                    </span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="lab_result_set_tree_signature_inherit" model="ir.ui.view">
+        <field name="name">lab.result.set.tree.signature.inherit</field>
+        <field name="model">lab.result.set</field>
+        <field name="inherit_id" ref="lab_result_set_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='overall_result']" position="after">
+                <field name="is_signed" string="موقع" widget="boolean" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="lab_result_set_search_signature_inherit" model="ir.ui.view">
+        <field name="name">lab.result.set.search.signature.inherit</field>
+        <field name="model">lab.result.set</field>
+        <field name="inherit_id" ref="lab_result_set_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='assigned_to_me']" position="after">
+                <separator/>
+                <filter name="signed" string="موقع" domain="[('is_signed', '=', True)]"/>
+                <filter name="not_signed" string="غير موقع" domain="[('is_signed', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
