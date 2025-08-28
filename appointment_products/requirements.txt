@@ -1,4 +1,0 @@
-# متطلبات وحدة appointment_products
-openpyxl>=3.1.0
-# python-dateutil
-# pytz

@@ -1,65 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    
-    <!-- معالج تصدير Excel للعينة المختبرية -->
-    <record id="view_lab_sample_excel_export_wizard_form" model="ir.ui.view">
-        <field name="name">lab.sample.excel.export.wizard.form</field>
-        <field name="model">lab.sample.excel.export.wizard</field>
-        <field name="arch" type="xml">
-            <form string="تصدير نتائج العينة إلى Excel">
-                <header>
-                    <button name="action_open_spreadsheet" 
-                            string="📝 فتح المحرّر" 
-                            type="object" 
-                            class="btn-secondary"/>
-                    <!-- أُزيلت أزرار القوالب والتصدير عبر Spreadsheet -->
-                    <button name="action_export_excel" 
-                            string="📊 تصدير إلى Excel" 
-                            type="object" 
-                            class="btn-primary"
-                            />
-                    <button name="action_reset" 
-                            string="🔄 إعادة تعيين" 
-                            type="object" 
-                            class="btn-secondary"
-                            />
-                </header>
-
-                <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="sample_id" readonly="1"/>
-                        </h1>
-                        <h3 class="text-muted">تصدير نتائج الفحوصات المختبرية</h3>
-                    </div>
-
-                    <group name="export_options" string="خيارات التصدير">
-                        <field name="include_summary"/>
-                        <field name="current_spreadsheet_attachment_id" readonly="1"/>
-                    </group>
-
-                    <div class="alert alert-success" role="alert" >
-                        <strong>✅ تم التصدير بنجاح!</strong>
-                        <br/>
-                        <field name="export_filename" readonly="1"/>
-                        <br/>
-                    </div>
-
-                    <!-- معاينة البيانات التي ستُصدر -->
-                    <group name="preview_data" string="معاينة البيانات" >
-                        <group string="معلومات العينة:">
-                            <field name="sample_lab_code" readonly="1" string="الرمز المختبري"/>
-                            <field name="sample_product_name" readonly="1" string="المنتج"/>
-                            <field name="result_sets_count" readonly="1" string="عدد مجموعات النتائج"/>
-                           
-                        </group>
-                    </group>
-
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-
-
-</odoo>
