@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_lab_technician" model="res.groups">
+        <field name="name">فني المختبر</field>
+        <field name="category_id" ref="base.module_category_services"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">يستطيع إدخال وتعديل نتائج الفحوصات المكلف بها فقط في حقل المكلفون بالفحص</field>
+    </record>
+
+    <record id="group_lab_manager" model="res.groups">
+        <field name="name">مدير المختبر</field>
+        <field name="category_id" ref="base.module_category_services"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">يستطيع إدارة جميع عمليات المختبر وإعداداته ورؤية جميع الفحوصات</field>
+    </record>
+
+    <data>
+        <record id="base.default_user" model="res.users">
+            <field name="groups_id" eval="[(4, ref('appointment_products.group_lab_manager'))]"/>
+        </record>
+    </data>
+</odoo> 

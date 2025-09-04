@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="appointment_products_template" inherit_id="appointment.appointment_form" name="Appointment Products">
+        <xpath expr="//form[contains(@class,'appointment_submit_form')]//div[contains(@class,'my-3')]" position="before">
+            <div t-if="appointment_type and appointment_type.product_ids" class="row mt-4">
+                <div class="col-12 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-12 col-md-6">
+                                    <input type="search" class="form-control js_appt_product_search" placeholder="بحث عن منتج..."/>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <select class="form-select js_appt_product_category">
+                                        <option value="">كل الفئات</option>
+                                        <t t-set="product_categories" t-value="appointment_type.product_ids.mapped('product_id.categ_id').filtered(lambda c: c)"></t>
+                                        <t t-foreach="product_categories" t-as="categ">
+                                            <option t-att-value="categ.id" t-esc="categ.display_name"/>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div t-if="appointment_type and appointment_type.product_ids" class="row">
+                        <t t-foreach="appointment_type.product_ids" t-as="appointment_product">
+                            <div class="col-md-4 col-sm-6 mb-4">
+                        <div class="appointment_product_card card h-100"
+                             t-att-data-product-id="appointment_product.product_id.id"
+                             t-att-data-categ-id="appointment_product.product_id.categ_id.id if appointment_product.product_id.categ_id else 0"
+                             t-att-data-name="appointment_product.product_id.name"
+                             t-att-data-default-code="appointment_product.product_id.default_code or ''">
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="product_image text-center mb-3">
+                                            <img t-att-src="'/web/image/product.product/%s/image_128' % appointment_product.product_id.id" 
+                                                 class="img-fluid" alt="Product Image"/>
+                                        </div>
+                                        <h5 class="card-title" t-esc="appointment_product.product_id.name"/>
+                                        <div class="product_price mt-2">
+                                            <span t-field="appointment_product.price" 
+                                                  t-options="{'widget': 'monetary', 'display_currency': appointment_product.currency_id}"/>
+                                            <span class="text-muted ms-2" t-field="appointment_product.uom_id.name"/>
+                                        </div>
+                                        <div class="quantity_selector input-group mt-3">
+                                            <a href="#" class="btn btn-link js_add_cart_json" aria-label="تقليل">
+                                                <i class="fa fa-minus"/>
+                                            </a>
+                                            <input type="number" class="form-control quantity text-center" min="0" max="1" value="0"
+                                                   t-att-name="'product_qty_%s' % appointment_product.product_id.id"
+                                                   t-att-data-price="appointment_product.price"/>
+                                    <a href="#" class="btn btn-link js_add_cart_json" aria-label="زيادة">
+                                                <i class="fa fa-plus"/>
+                                            </a>
+                                        </div>
+                                        <div class="product_total mt-2">المجموع: <span class="product_total_price" t-att-data-base-price="appointment_product.price">0.00</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="appointment_products_quote_button" inherit_id="appointment.appointment_form" name="Appointment Quote Button">
+        <xpath expr="//button[contains(@class,'o_appointment_form_confirm_btn')]" position="attributes">
+            <attribute name="class" add="d-none"/>
+        </xpath>
+
+        <xpath expr="//div[@class='my-3 pt-3']" position="before">
+            <div class="mb-3">
+                <label class="form-label fw-normal">مرفقات (اختياري)</label>
+                <input type="file" name="appointment_attachments" class="form-control o_appt_files" multiple="multiple"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[contains(@class,'o_not_editable') and contains(@class,'text-end')]" position="inside">
+            <button type="button" class="btn btn-primary ms-2 o_appointment_create_quote_btn d-none">اضافة المنتجات الى السلة</button>
+        </xpath>
+    </template>
+</odoo>

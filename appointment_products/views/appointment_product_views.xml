@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="appointment_type_product_view_list" model="ir.ui.view">
+        <field name="name">appointment.type.product.list</field>
+        <field name="model">appointment.type.product</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="product_id" options="{'no_create': True}" required="1"/>
+                <field name="uom_id" readonly="1"/>
+                <field name="price" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                <field name="currency_id" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="appointment_type_view_form_inherit" model="ir.ui.view">
+        <field name="name">appointment.type.form.inherit.products</field>
+        <field name="model">appointment.type</field>
+        <field name="inherit_id" ref="appointment.appointment_type_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="المنتجات" name="products">
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_product_selector" type="object" 
+                                string="إضافة عدة منتجات" class="btn btn-primary" 
+                                icon="fa-plus"/>
+
+                    </div>
+                    <field name="product_ids" widget="one2many">
+                        <list editable="bottom">
+                            <field name="product_id" options="{'no_create': True}" required="1"/>
+                            <field name="uom_id" readonly="1"/>
+                            <field name="price" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_appointment_product_selector" model="ir.ui.view">
+        <field name="name">appointment.product.selector.form</field>
+        <field name="model">appointment.product.selector</field>
+        <field name="arch" type="xml">
+            <form string="تحديد المنتجات">
+                <sheet>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <group string="فلاتر البحث">
+                                <field name="appointment_type_id" invisible="1"/>
+                                <field name="product_category_id" options="{'no_create': True}" placeholder="تصفية حسب الفئة..."/>
+                                <field name="name_search" placeholder="بحث عن منتج..." help="البحث بالاسم أو الرمز"/>
+                                <label for="min_price" string="نطاق السعر"/>
+                                <div class="d-flex">
+                                    <field name="min_price" class="oe_inline" placeholder="الحد الأدنى"/>
+                                    <span class="mx-2">-</span>
+                                    <field name="max_price" class="oe_inline" placeholder="الحد الأقصى"/>
+                                </div>
+                                <field name="tag_ids" widget="many2many_tags" placeholder="تصفية حسب العلامات..." options="{'no_create': True}"/>
+                                <field name="available_only"/>
+                            </group>
+                        </div>
+                        <div class="col-md-6">
+                            <group string="المنتجات المتاحة">
+                                <field name="product_ids" widget="many2many" options="{'no_create': True}" domain="[('sale_ok', '=', True)]" nolabel="1"/>
+                            </group>
+                        </div>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_add_products" string="إضافة المنتجات" type="object" class="btn-primary"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
