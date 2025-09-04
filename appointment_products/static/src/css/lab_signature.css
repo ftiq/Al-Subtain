@@ -1,0 +1,65 @@
+/* Lab signature field styles - properly scoped */
+.o_signature_field {
+    min-height: 200px;
+    border: 2px dashed #007cba;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.o_signature_field:hover {
+    border-color: #0056b3;
+    background-color: #e9f4ff;
+}
+
+
+.o_signature_container .badge-success,
+.o_form_view[data-model="lab.sample"] .o_signature_section .badge-success,
+.o_form_view[data-model="lab.result.set"] .o_signature_section .badge-success {
+    background-color: #28a745 !important;
+    color: white !important;
+    font-size: 0.9em;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+.o_signature_container .badge-success i,
+.o_form_view[data-model="lab.sample"] .o_signature_section .badge-success i,
+.o_form_view[data-model="lab.result.set"] .o_signature_section .badge-success i {
+    margin-right: 5px;
+}
+
+
+.o_signature_container .alert-info,
+.o_form_view[data-model="lab.sample"] .o_signature_section .alert-info,
+.o_form_view[data-model="lab.result.set"] .o_signature_section .alert-info {
+    border-color: #b8daff;
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.o_signature_container .alert-info i,
+.o_form_view[data-model="lab.sample"] .o_signature_section .alert-info i,
+.o_form_view[data-model="lab.result.set"] .o_signature_section .alert-info i {
+    color: #17a2b8;
+    margin-right: 8px;
+}
+
+
+.o_signature_container .btn-secondary,
+.o_form_view[data-model="lab.sample"] .o_signature_section .btn-secondary,
+.o_form_view[data-model="lab.result.set"] .o_signature_section .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.o_signature_container .btn-secondary:hover,
+.o_form_view[data-model="lab.sample"] .o_signature_section .btn-secondary:hover,
+.o_form_view[data-model="lab.result.set"] .o_signature_section .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    transform: translateY(-1px);
+}
