@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_task_form_mark_stock_done" model="ir.ui.view">
+        <field name="name">project.task.form.mark.stock.done</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_mark_stock_done" type="object" class="btn-primary"
+                        string="إنهاء المخزون"
+                        groups="stock.group_stock_user"
+                        invisible="1"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <div class="alert alert-info" role="alert" invisible="1">
+                    تم الانتهاء من المهمة المخزنية — بانتظار الفحص المختبري
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo> 
