@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="appointment_products.LabDashboard" owl="1">
+        <div class="o_lab_dashboard">
+
+            <div class="o_lab_dashboard_header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="o_lab_dashboard_title">
+                            <i class="fa fa-flask me-2"/>
+                            لوحة معلومات المختبر
+                        </h1>
+                        <p class="o_lab_dashboard_subtitle">
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+
+                        <button class="btn btn-outline-primary" t-on-click="refreshDashboard">
+                            <i class="fa fa-refresh me-1"/> تحديث
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+
+            <div t-if="state.loading" class="o_lab_dashboard_loading">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                    <p class="mt-3 text-muted">جاري تحميل بيانات المختبر...</p>
+                </div>
+            </div>
+
+
+            <div t-if="state.error" class="o_lab_dashboard_error">
+                <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-triangle me-2"/>
+                    <t t-esc="state.error"/>
+                </div>
+            </div>
+
+
+            <div t-if="!state.loading and !state.error" class="o_lab_dashboard_content">
+                
+                <div class="row o_lab_kpi_primary mb-4">
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="o_lab_kpi_card bg-gradient-primary" t-on-click="() => this.openSamples()">
+                            <div class="o_lab_kpi_icon">
+                                <i class="fa fa-flask"/>
+                            </div>
+                            <div class="o_lab_kpi_content">
+                                <div class="o_lab_kpi_value" t-esc="state.kpiData?.totalSamples || 0"/>
+                                <div class="o_lab_kpi_label">إجمالي الفحوصات</div>
+                                <div class="o_lab_kpi_trend">
+                                    <small class="text-light">
+                                        <i class="fa fa-arrow-up me-1"/>
+                                        <t t-esc="state.kpiData?.thisWeekSamples || 0"/> هذا الأسبوع
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="o_lab_kpi_card bg-gradient-warning" t-on-click="() => this.openSamples([['state', '=', 'received']])">
+                            <div class="o_lab_kpi_icon">
+                                <i class="fa fa-clock-o"/>
+                            </div>
+                            <div class="o_lab_kpi_content">
+                                <div class="o_lab_kpi_value" t-esc="state.kpiData?.pendingSamples || 0"/>
+                                <div class="o_lab_kpi_label">فحوصات معلقة</div>
+                                <div class="o_lab_kpi_trend">
+                                    <small class="text-light">
+                                        <i class="fa fa-exclamation-triangle me-1"/>
+                                        <t t-esc="state.kpiData?.overdueTests || 0"/> متأخرة
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="o_lab_kpi_card bg-gradient-info" t-on-click="() => this.openSamples([['state', '=', 'testing']])">
+                            <div class="o_lab_kpi_icon">
+                                <i class="fa fa-cogs"/>
+                            </div>
+                            <div class="o_lab_kpi_content">
+                                <div class="o_lab_kpi_value" t-esc="state.kpiData?.testingSamples || 0"/>
+                                <div class="o_lab_kpi_label">قيد الفحص</div>
+                                <div class="o_lab_kpi_trend">
+                                    <small class="text-light">
+                                        <i class="fa fa-calendar me-1"/>
+                                        <t t-esc="state.kpiData?.todayTests || 0"/> اليوم
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="o_lab_kpi_card bg-gradient-success" t-on-click="() => this.openSamples([['state', '=', 'completed']])">
+                            <div class="o_lab_kpi_icon">
+                                <i class="fa fa-check-circle"/>
+                            </div>
+                            <div class="o_lab_kpi_content">
+                                <div class="o_lab_kpi_value" t-esc="state.kpiData?.completedSamples || 0"/>
+                                <div class="o_lab_kpi_label">مكتملة</div>
+                                <div class="o_lab_kpi_trend">
+                                    <small class="text-light">
+                                        <i class="fa fa-calendar-check-o me-1"/>
+                                        <t t-esc="state.kpiData?.thisMonthSamples || 0"/> هذا الشهر
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates> 
