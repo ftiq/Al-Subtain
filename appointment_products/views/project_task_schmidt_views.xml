@@ -14,6 +14,7 @@
                             <field name="sch_points_count"/>
                             <field name="sch_a"/>
                             <field name="sch_b"/>
+                            <field name="sch_manual_override"/>
                             <button name="action_fill_schmidt_points" type="object" 
                                     string="تعبئة النقاط" class="btn btn-secondary"/>
                             <button name="action_generate_schmidt_sample_and_results" type="object"
@@ -27,6 +28,7 @@
                             <field name="point_no" string="ت"/>
                             <field name="point_name" string="رقم النقطة" readonly="1"/>
                             <field name="rn_avg" string="معدل R.N"/>
+                            <field name="comp_manual_mpa" string="مقاومة مدخلة (MPa)" invisible="not manual_input_enabled"/>
                             <field name="comp_est_mpa" string="مقاومة تقديرية (MPa)" readonly="1"/>
                         </list>
                     </field>
