@@ -24,6 +24,12 @@ class ProjectTask(models.Model):
         help='Coefficient B for converting R.N average to MPa (Simple: f = A*R + B)'
     )
 
+    sch_manual_override = fields.Boolean(
+        string='تمكين الإدخال اليدوي للمقاومة',
+        default=False,
+        help='عند التفعيل يمكنك إدخال مقاومة الانضغاط يدوياً لكل نقطة، وسيتم استخدام هذه القيم عند إنشاء العينة.'
+    )
+
     schmidt_point_ids = fields.One2many(
         'project.task.schmidt.point',
         'task_id',
@@ -149,6 +155,17 @@ class ProjectTask(models.Model):
         except Exception:
             rs._compute_calculated_criteria()
 
+        # إذا كان الإدخال اليدوي مفعلاً، نُسقط القيم اليدوية على معيار SCH_COMP_EST ثم نُحدث الملخصات
+        if task.sch_manual_override:
+            for p in points:
+                line_comp = rs.result_line_ids.filtered(lambda l: l.sample_no == p.point_no and l.criterion_id.code == 'SCH_COMP_EST')[:1]
+                if line_comp:
+                    line_comp.value_numeric = float(p.comp_manual_mpa or 0.0)
+            # تحديث الحقول الملخصة بعد التعديل اليدوي
+            try:
+                rs._compute_summary_criteria()
+            except Exception:
+                pass
 
         return {
             'type': 'ir.actions.client',
@@ -171,6 +188,17 @@ class ProjectTaskSchmidtPoint(models.Model):
     point_no = fields.Integer(string='رقم النقطة', required=True, help='P1..PN')
     point_name = fields.Char(string='النقطة', compute='_compute_point_name', store=True)
     rn_avg = fields.Float(string='معدل رقم الارتداد R.N', digits=(16, 2))
+
+    manual_input_enabled = fields.Boolean(
+        related='task_id.sch_manual_override',
+        string='تمكين الإدخال اليدوي',
+        store=False
+    )
+
+    comp_manual_mpa = fields.Float(
+        string='مقاومة مدخلة (MPa)',
+        digits=(16, 2)
+    )
 
     comp_est_mpa = fields.Float(
         string='مقاومة تقديرية (MPa)',
