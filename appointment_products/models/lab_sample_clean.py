@@ -246,6 +246,42 @@ class LabSample(models.Model):
         help='عرض جدولي لجميع نتائج متوسطات القير والمستويات المطبقة'
     )
     
+    bitumen_comparison_level = fields.Selection(
+        selection=[
+            ('1', 'المستوى الأول'),
+            ('2', 'المستوى الثاني'),
+            ('3', 'المستوى الثالث'),
+            ('4', 'المستوى الرابع'),
+        ],
+        string='مستوى المقارنة (قير)',
+        help='اختر مستوى المقارنة المطلوب تطبيقه على جميع فحوصات القير لهذه العينة.\nلقير التسطيح: 4 مستويات.\nلقير الأساس: 3 مستويات (يتم تجاهل الرابع).'
+    )
+
+    @api.onchange('bitumen_type')
+    def _onchange_bitumen_type_set_default_level(self):
+        for rec in self:
+            if not rec.bitumen_type:
+                rec.bitumen_comparison_level = False
+            else:
+                # اضبط افتراضياً على المستوى الأول إن لم يحدد
+                if not rec.bitumen_comparison_level:
+                    rec.bitumen_comparison_level = '1'
+                # منع اختيار المستوى الرابع لقير الأساس
+                if rec.bitumen_type == 'قير أساس' and rec.bitumen_comparison_level == '4':
+                    rec.bitumen_comparison_level = '3'
+
+    @api.onchange('bitumen_comparison_level')
+    def _onchange_bitumen_comparison_level(self):
+        for rec in self:
+            if rec.bitumen_type == 'قير أساس' and rec.bitumen_comparison_level == '4':
+                rec.bitumen_comparison_level = '3'
+                return {
+                    'warning': {
+                        'title': _('تنبيه'),
+                        'message': _('لقير الأساس توجد 3 مستويات فقط. تم تعيين المستوى الثالث تلقائياً.'),
+                    }
+                }
+    
     
     notes = fields.Html(
         string=_('Notes'),
@@ -702,28 +738,42 @@ class LabSample(models.Model):
             if not self.lab_test_template_id:
                 raise UserError(_('You must specify a test template or test flow first!'))
 
-            result_set = self.env['lab.result.set'].create({
-                'name': _("Results %s - %s") % (self.name, self.lab_test_template_id.name),
-                'sample_id': self.id,
-                'template_id': self.lab_test_template_id.id,
-                'state': 'draft'
-            })
+            # عند عدم استخدام خطة الفحص (Flow)، ننشئ عدة مجموعات نتائج بحسب عدد المجموعات في المهمة
+            try:
+                total_count = int(self.task_id.total_samples_count or 1)
+            except Exception:
+                total_count = 1
+            total_count = max(1, total_count)
 
-            result_set.action_generate_result_lines()
+            created_sets = self.env['lab.result.set']
+            for group_no in range(1, total_count + 1):
+                rs = self.env['lab.result.set'].create({
+                    'name': _("Results %s - %s (مجموعة %s)") % (self.name, self.lab_test_template_id.name, group_no),
+                    'sample_id': self.id,
+                    'template_id': self.lab_test_template_id.id,
+                    'test_group_no': group_no,
+                    'number_of_samples': 1,
+                    'state': 'draft'
+                })
+                rs.action_generate_result_lines()
+                created_sets |= rs
 
             self.state = 'testing'
 
+            first_name = created_sets and created_sets[0].name or ''
             self.message_post(body=_(
                 "<b>Testing started</b><br/>"
-                "Result set: <em>%s</em><br/>"
+                "Created result sets: <em>%s مجموعة</em><br/>"
+                "First: <em>%s</em><br/>"
                 "Test template: <em>%s</em>"
-            ) % (result_set.name, self.lab_test_template_id.name))
+            ) % (len(created_sets), first_name, self.lab_test_template_id.name))
 
+            # افتح أول مجموعة ناتجة
             return {
                 'type': 'ir.actions.act_window',
                 'name': _('Result Set'),
                 'res_model': 'lab.result.set',
-                'res_id': result_set.id,
+                'res_id': created_sets and created_sets[0].id or False,
                 'view_mode': 'form',
                 'target': 'current',
             }
@@ -1706,7 +1756,8 @@ class LabSample(models.Model):
         """
         
         return html
-            def unlink(self):
+    
+    def unlink(self):
         """منع حذف العينات في حالة الاختبار أو المكتملة أو المصادق عليها"""
         for sample in self:
             if sample.state in ('testing', 'completed', 'approved'):
