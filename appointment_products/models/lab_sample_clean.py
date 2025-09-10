@@ -1771,12 +1771,11 @@ class LabSample(models.Model):
         """
         
         return html
-    
-    def unlink(self):
-        """منع حذف العينات في حالة الاختبار أو المكتملة أو المصادق عليها"""
-        for sample in self:
-            if sample.state in ('testing', 'completed', 'approved'):
-                from odoo.exceptions import UserError
-                raise UserError(_('لا يمكن حذف العينة في حالة الاختبار أو بعد اكتمالها أو بعد المصادقة عليها.'))
-        return super().unlink()
- 
+      
+   # def unlink(self):
+   #     """منع حذف العينات في حالة الاختبار أو المكتملة أو المصادق عليها"""
+   #     for sample in self:
+   #         if sample.state in ('testing', 'completed', 'approved'):
+   #             from odoo.exceptions import UserError
+   #             raise UserError(_('لا يمكن حذف العينة في حالة الاختبار أو بعد اكتمالها أو بعد المصادقة عليها.'))
+   #     return super().unlink()
