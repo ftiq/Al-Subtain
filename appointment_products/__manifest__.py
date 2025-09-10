@@ -6,7 +6,7 @@
     'author': "Engineer / Salah Alhjany +967711778764",
     'website': "https://www.facebook.com/salh.alhjany/?rdid=plWVCqF0AkDERe3g",
     'category': 'Laboratory/AI',
-    'version': '18.0.2.2.0',
+    'version': '18.0.2.1.0',
     'depends': [
         'appointment', 
         'product', 
