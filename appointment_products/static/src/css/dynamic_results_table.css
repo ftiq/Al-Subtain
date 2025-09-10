@@ -1,0 +1,26 @@
+/* Lab-specific dynamic results table - properly scoped */
+.o_dynamic_results_table {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Ensure table styles only apply to lab results tables */
+.o_form_view[data-model="lab.sample"] .o_dynamic_results_table,
+.o_form_view[data-model="lab.result.set"] .o_dynamic_results_table,
+.o_list_view[data-model="lab.sample.result"] .o_dynamic_results_table {
+    direction: rtl;
+    text-align: right;
+}
+
+
+@media print {
+    .o_dynamic_results_table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    .o_dynamic_results_table .o_input_required {
+        background-color: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+    }
+} 

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="quality_check_form_lab_integration" model="ir.ui.view">
+        <field name="name">quality.check.form.lab.integration</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='test_type_id']" position="after">
+                <field name="lab_test_status" 
+                       invisible="not point_id or not point_id.is_lab_test"/>
+                <field name="lab_sample_id" 
+                       invisible="not point_id or not point_id.is_lab_test"/>
+            </xpath>
+
+            <xpath expr="//header" position="inside">
+                <button name="action_start_lab_test" 
+                        type="object" 
+                        class="btn-primary"
+                        string="بدء الفحص المختبري"
+                        invisible="not point_id or not point_id.is_lab_test or lab_test_status != 'pending'"
+                        groups="appointment_products.group_lab_manager"/>
+                
+                <button name="action_complete_lab_test" 
+                        type="object" 
+                        class="btn-success"
+                        string="إنهاء الفحص المختبري"
+                        invisible="not point_id or not point_id.is_lab_test or lab_test_status != 'in_progress'"
+                        groups="appointment_products.group_lab_manager"/>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="النتائج المختبرية" 
+                      invisible="not point_id or not point_id.is_lab_test">
+                    <field name="lab_result_set_ids">
+                        <list>
+                            <field name="name"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="quality_point_form_lab_integration" model="ir.ui.view">
+        <field name="name">quality.point.form.lab.integration</field>
+        <field name="model">quality.point</field>
+        <field name="inherit_id" ref="quality.quality_point_view_form"/>
+        <field name="arch" type="xml">  
+            <xpath expr="//field[@name='note']" position="before">
+                <field name="is_lab_test"/>
+                <field name="lab_test_template_id" 
+                       invisible="not is_lab_test"
+                       required="is_lab_test"/>
+                <field name="auto_create_lab_sample" 
+                       invisible="not is_lab_test"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+
+    <record id="quality_check_search_lab_integration" model="ir.ui.view">
+        <field name="name">quality.check.search.lab.integration</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='failed']" position="after">
+                <separator/>
+                <filter name="lab_tests_only" 
+                        string="الفحوصات المختبرية" 
+                        domain="[('point_id.is_lab_test', '=', True)]"/>
+                <filter name="lab_pending" 
+                        string="في الانتظار" 
+                        domain="[('point_id.is_lab_test', '=', True), ('lab_test_status', '=', 'pending')]"/>
+                <filter name="lab_in_progress" 
+                        string="قيد التنفيذ" 
+                        domain="[('point_id.is_lab_test', '=', True), ('lab_test_status', '=', 'in_progress')]"/>
+                <filter name="lab_completed" 
+                        string="مكتمل" 
+                        domain="[('point_id.is_lab_test', '=', True), ('lab_test_status', '=', 'completed')]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="quality_check_tree_lab_integration" model="ir.ui.view">
+        <field name="name">quality.check.tree.lab.integration</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='quality_state']" position="after">
+                <field name="lab_test_status" string="حالة الفحص المختبري" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+
+
+
+
+
+
+
+</odoo> 

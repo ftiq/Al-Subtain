@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_picking_form_lab_notify" model="ir.ui.view">
+        <field name="name">stock.picking.form.lab.notify</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_notify_lab" type="object" class="btn-primary"
+                        string="إشعار المختبر"
+                        groups="appointment_products.group_lab_manager"
+                        invisible="lab_notified or not is_task_related"/>
+
+                <button name="action_open_task_signature" type="object" class="btn-success"
+                        string=" التقرير"
+                        groups="appointment_products.group_lab_manager"
+                        invisible="not is_task_related"/>
+
+                <button name="action_do_nothing" type="object" class="btn-secondary"
+                        string="تم الإشعار"
+                        groups="appointment_products.group_lab_manager"
+                        invisible="not lab_notified or not is_task_related" disabled="1"/>
+            </xpath>
+
+            <xpath expr="//sheet" position="inside">
+                <field name="is_task_related" invisible="1"/>
+                <div class="alert alert-success" role="alert" invisible="state != 'done' or not lab_notified or not is_task_related">
+                    <i class="fa fa-check-circle"/> تم التصديق على السجل — العملية مكتملة.
+                </div>
+                <div class="alert alert-info" role="alert" invisible="state == 'done' or not lab_notified or not is_task_related">
+                    <i class="fa fa-bell"/> تم إشعار المختبر — بانتظار إجراءات الفحص.
+                </div>
+                <div class="alert alert-warning" role="alert" invisible="lab_notified or state == 'done' or not is_task_related">
+                    <i class="fa fa-exclamation-triangle"/> لم يتم إشعار المختبر بعد.
+                </div>
+            </xpath>
+
+
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="lab_notification_status" widget="badge" readonly="1" invisible="not is_task_related"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="stock_picking_tree_lab_notify" model="ir.ui.view">
+        <field name="name">stock.picking.tree.lab.notify</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="is_task_related" column_invisible="True"/>
+                <field name="lab_notification_status" string="حالة الإشعار" optional="show"/>
+                <field name="lab_notified" column_invisible="True"/>
+            </xpath>
+            
+
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-success">state == 'done'</attribute>
+                <attribute name="decoration-info">state != 'done' and lab_notified</attribute>
+                <attribute name="decoration-warning">state != 'done' and not lab_notified</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="stock_picking_search_lab_notify" model="ir.ui.view">
+        <field name="name">stock.picking.search.lab.notify</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='late']" position="after">
+                <separator/>
+                <filter name="lab_notified" string="تم الإشعار" domain="[('lab_notified', '=', True), ('state', '!=', 'done')]"/>
+                <filter name="lab_not_notified" string="لم يتم الإشعار" domain="[('lab_notified', '=', False), ('state', '!=', 'done')]"/>
+                <filter name="lab_validated" string="تم التصديق" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="needs_lab_attention" string="يحتاج انتباه المختبر" domain="[('lab_notified', '=', True), ('state', '!=', 'done')]"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="stock_picking_type_kanban_lab" model="ir.ui.view">
+        <field name="name">stock.picking.type.kanban.lab</field>
+        <field name="model">stock.picking.type</field>
+        <field name="inherit_id" ref="stock.stock_picking_type_kanban"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='count_move_ready']" position="after">
+                <field name="count_picking_lab_ready"/>
+            </xpath>
+            
+
+            <xpath expr="//button[@name='get_action_picking_tree_ready']" position="after">
+                <div t-if="record.code.raw_value == 'incoming'" class="col-6 mt-2" groups="appointment_products.group_lab_manager">
+                    <button class="btn btn-info w-100" 
+                            name="get_action_picking_tree_lab_ready" 
+                            type="object">
+                        <span t-if="record.count_picking_lab_ready.raw_value > 0">
+                            <field name="count_picking_lab_ready"/>
+                            للفحص
+                        </span>
+                        <span t-else="">للفحص</span>
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo> 
