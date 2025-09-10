@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Standardized Bitumen Test Report (QWeb PDF) -->
+
+
+    <template id="bitumen_standard_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="sample">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <style>
+                            * { font-family: Arial, sans-serif !important; }
+                            /* Compact style for detailed tables */
+                            .compact-table thead th { padding: 6px 4px; font-size: 13px; }
+                            .compact-table tbody td { padding: 3px 2px; font-size: 12px; line-height: 1.2; }
+                        </style>
+
+                        <div class="custom-main-title" style="background:#eef3ff;border:1px solid #cdd9ff;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center;font-size:24px;font-weight:700;">
+                            <span t-if="sample.bitumen_type == 'قير أساس'">تقرير فحوصات قير الأساس</span>
+                            <span t-elif="sample.bitumen_type == 'قير تسطيح'">تقرير فحوصات قير التسطيح</span>
+                            <span t-else="">تقرير فحوصات القير الإسفلتي</span>
+                        </div>
+
+                        <t t-set="product" t-value="sample.product_id or False"/>
+                        <t t-set="product_code" t-value="(product.default_code or '') if product else ''"/>
+                        <t t-set="product_name" t-value="(product.name or '') if product else ''"/>
+                        <t t-set="bt" t-value="sample.bitumen_type or ''"/>
+                        <t t-set="is_surface" t-value="('SURFACE' in product_code) or ('تسطيح' in product_name)"/>
+                        <t t-set="is_base" t-value="('BASE' in product_code) or ('أساس' in product_name)"/>
+                        <t t-set="is_surface_final" t-value="(bt == 'قير تسطيح') or is_surface"/>
+                        <t t-set="is_base_final" t-value="(bt == 'قير أساس') or is_base"/>
+
+                        <div style="text-align: right; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; border-right: 4px solid #17a2b8; font-size: 20px; line-height: 1.8;">
+                            <p style="margin: 0;">تحية طيبة ..</p>
+                            <p style="margin: 0;">ندرج نتائج فحص النماذج المبينة تفاصيلها ادناه. راجين الاطلاع ...مع التقدير</p>
+                        </div>
+                        <t t-set="task" t-value="sample.task_id or env['project.task'].search([('stock_receipt_id.move_line_ids.product_id', '=', sample.product_id.id)], limit=1)"/>
+                        <t t-set="result_sets" t-value="sample.result_set_ids.filtered(lambda rs: rs.template_id and rs.template_id.industry_type == 'asphalt')"/>
+                        <t t-set="total_samples_count" t-value="len(result_sets)"/>
+                        <t t-set="max_group_no" t-value="max([rs.test_group_no or 1 for rs in result_sets]) if result_sets else 1"/>
+                        <t t-set="group_nos" t-value="sorted(set([rs.test_group_no or 1 for rs in result_sets])) if result_sets else [1]"/>
+                        <t t-set="group_count" t-value="len(group_nos)"/>
+
+                        <div class="lab-section">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr style="background-color: #DDDDDD;">
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">رقم الكتاب</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">تاريخ الكتاب</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">رقم الطلب</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">تاريخ الطلب</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">تاريخ الاستلام</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">عدد النماذج</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="task.book_number if task and task.book_number else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="task.book_date.strftime('%Y-%m-%d') if task and task.book_date else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="sample.sale_order_id.name if sample.sale_order_id else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="sample.sale_order_id.date_order.strftime('%Y-%m-%d') if sample.sale_order_id and sample.sale_order_id.date_order else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="sample.create_date.strftime('%Y-%m-%d') if sample.create_date else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="group_count"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <t t-set="lines" t-value="sample.result_set_ids.mapped('result_line_ids')"/>
+                        <t t-set="softening_line_all" t-value="lines.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'SOFTENING_AVG')"/>
+                        <t t-set="softening_line" t-value="softening_line_all and softening_line_all[0] or False"/>
+                        <t t-set="duct_line_all" t-value="lines.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'DUCTILITY_TEST_AVG')"/>
+                        <t t-set="duct_line" t-value="duct_line_all and duct_line_all[0] or False"/>
+                        <t t-set="pen_line_all" t-value="lines.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'PENTEST_AVG')"/>
+                        <t t-set="pen_line" t-value="pen_line_all and pen_line_all[0] or False"/>
+                        <t t-set="flash_line_all" t-value="lines.filtered(lambda x: x.criterion_id and (x.criterion_id.code in ['FLASH_POINT','FLASH_IGNITION_POINT']))"/>
+                        <t t-set="flash_line" t-value="flash_line_all and flash_line_all[0] or False"/>
+
+                        <div class="lab-section" style="margin:8px 0;">
+                            <table class="table table-bordered" style="width:100%;border:1px solid #cfd9c9;border-collapse:collapse;font-size:12px;text-align:center;">
+                                <thead>
+                                    <tr style="background:#DDDDDD;">
+                                        <th rowspan="2" style="text-align:center;vertical-align:middle;width:30%;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">الفحص</th>
+                                        <th t-att-colspan="group_count" style="text-align:center;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">نتيجة الفحص</th>
+                                        <th rowspan="2" style="text-align:center;vertical-align:middle;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">حدود المواصفة</th>
+                                    </tr>
+                                    <tr style="background:#DDDDDD;">
+                                        <t t-foreach="range(0, group_count)" t-as="i">
+                                            <th style="text-align:center;padding:4px 3px;font-weight:bold;border:1px solid #bdbdbd;"><t t-esc="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i] if i &lt; 26 else str(i+1)"/></th>
+                                        </t>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Softening Point row -->
+                                    <tr>
+                                        <td style="font-weight:bold;padding:4px 3px;">نقطة الليونة °س</td>
+                                        <t t-foreach="range(0, group_count)" t-as="i">
+                                            <td style="text-align:center;padding:4px 3px;">
+                                                <t t-set="grpno" t-value="group_nos[i]"/>
+                                                <t t-set="rs" t-value="result_sets.filtered(lambda x: x.template_id and x.template_id.code == 'BITUMEN_SOFTENING' and (x.test_group_no or 1) == grpno)"/>
+                                                <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'SOFTENING_AVG')) or False"/>
+                                                <t t-if="line and line[0].value_numeric not in (None, False)">
+                                                    <t t-set="sv" t-value="line[0].value_numeric"/>
+                                                    <t t-set="level_str" t-value="sample.bitumen_comparison_level or '1'"/>
+                                                    <t t-set="level_idx" t-value="max(1, int(level_str))"/>
+                                                    <t t-if="is_surface_final">
+                                                        <t t-set="ranges" t-value="[(57,66),(70,80),(85,96),(99,107)]"/>
+                                                        <t t-set="idx" t-value="level_idx - 1 if (level_idx - 1) &lt; len(ranges) else len(ranges) - 1"/>
+                                                        <t t-set="rmin" t-value="ranges[idx][0]"/>
+                                                        <t t-set="rmax" t-value="ranges[idx][1]"/>
+                                                        <t t-set="pass_soft" t-value="(sv &gt;= rmin and sv &lt;= rmax)"/>
+                                                    </t>
+                                                    <t t-elif="is_base_final">
+                                                        <t t-set="ranges" t-value="[(46,60),(63,77),(83,93)]"/>
+                                                        <t t-set="idx" t-value="level_idx - 1 if (level_idx - 1) &lt; len(ranges) else len(ranges) - 1"/>
+                                                        <t t-set="rmin" t-value="ranges[idx][0]"/>
+                                                        <t t-set="rmax" t-value="ranges[idx][1]"/>
+                                                        <t t-set="pass_soft" t-value="(sv &gt;= rmin and sv &lt;= rmax)"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-set="pass_soft" t-value="True"/>
+                                                    </t>
+                                                    <t t-esc="'{:.0f}'.format(sv)"/><t t-if="not pass_soft"><sup style="font-size:0.8em;">*</sup></t>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                        </t>
+                                        <td rowspan="4" style="text-align:center;vertical-align:middle;border:1px solid #bdbdbd;font-weight:bold;">المتطلبات في خلف الصفحة</td>
+                                    </tr>
+
+                                    <!-- Flash Point row -->
+                                    <tr>
+                                        <td style="font-weight:bold;padding:4px 3px;">نقطة الوميض °س</td>
+                                        <t t-foreach="range(0, group_count)" t-as="i">
+                                            <td style="text-align:center;padding:4px 3px;">
+                                                <t t-set="grpno" t-value="group_nos[i]"/>
+                                                <t t-set="rs" t-value="result_sets.filtered(lambda x: x.template_id and x.template_id.code == 'BITUMEN_FLASH_FIRE' and (x.test_group_no or 1) == grpno)"/>
+                                                <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code in ['FLASH_POINT','FLASH_IGNITION_POINT'])) or False"/>
+                                                <t t-if="line and line[0].value_numeric not in (None, False)">
+                                                    <t t-set="fv" t-value="line[0].value_numeric"/>
+                                                    <t t-set="pass_flash" t-value="(is_surface_final and (fv &gt;= 302)) or (is_base_final and (fv &gt;= 232))"/>
+                                                    <t t-esc="'{:.0f}'.format(fv)"/><t t-if="not pass_flash"><sup style="font-size:0.8em;">*</sup></t>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                        </t>
+                                    </tr>
+
+                                    <!-- Penetration row -->
+                                    <tr>
+                                        <td style="font-weight:bold;padding:4px 3px;">النفاذية (الاختراق)</td>
+                                        <t t-foreach="range(0, group_count)" t-as="i">
+                                            <td style="text-align:center;padding:4px 3px;">
+                                                <t t-set="grpno" t-value="group_nos[i]"/>
+                                                <t t-set="rs" t-value="result_sets.filtered(lambda x: x.template_id and x.template_id.code == 'BITUMEN_PENETRATION' and (x.test_group_no or 1) == grpno)"/>
+                                                <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'PENTEST_AVG')) or False"/>
+                                                <t t-if="line and line[0].value_numeric not in (None, False)">
+                                                    <t t-set="pv" t-value="line[0].value_numeric"/>
+                                                    <t t-set="level_str" t-value="sample.bitumen_comparison_level or '1'"/>
+                                                    <t t-set="level_idx" t-value="max(1, int(level_str))"/>
+                                                    <t t-if="is_surface_final">
+                                                        <t t-set="ranges" t-value="[(18,60),(15,35),(12,25)]"/>
+                                                        <t t-set="idx" t-value="level_idx - 1 if (level_idx - 1) &lt; len(ranges) else len(ranges) - 1"/>
+                                                        <t t-set="rmin" t-value="ranges[idx][0]"/>
+                                                        <t t-set="rmax" t-value="ranges[idx][1]"/>
+                                                        <t t-set="pass_pen" t-value="(pv &gt;= rmin and pv &lt;= rmax)"/>
+                                                    </t>
+                                                    <t t-elif="is_base_final">
+                                                        <t t-set="ranges" t-value="[(50,100),(25,50),(20,40)]"/>
+                                                        <t t-set="idx" t-value="level_idx - 1 if (level_idx - 1) &lt; len(ranges) else len(ranges) - 1"/>
+                                                        <t t-set="rmin" t-value="ranges[idx][0]"/>
+                                                        <t t-set="rmax" t-value="ranges[idx][1]"/>
+                                                        <t t-set="pass_pen" t-value="(pv &gt;= rmin and pv &lt;= rmax)"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-set="pass_pen" t-value="True"/>
+                                                    </t>
+                                                    <t t-esc="'{:.0f}'.format(pv)"/><t t-if="not pass_pen"><sup style="font-size:0.8em;">*</sup></t>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                        </t>
+                                    </tr>
+
+                                    <!-- Ductility row -->
+                                    <tr>
+                                        <td style="font-weight:bold;padding:4px 3px;">اللدونة (قابلية السحب)</td>
+                                        <t t-foreach="range(0, group_count)" t-as="i">
+                                            <td style="text-align:center;padding:4px 3px;">
+                                                <t t-set="grpno" t-value="group_nos[i]"/>
+                                                <t t-set="rs" t-value="result_sets.filtered(lambda x: x.template_id and x.template_id.code == 'BITUMEN_DUCTILITY' and (x.test_group_no or 1) == grpno)"/>
+                                                <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'DUCTILITY_TEST_AVG')) or False"/>
+                                                <t t-if="line and line[0].value_numeric not in (None, False)">
+                                                    <t t-set="dv" t-value="line[0].value_numeric"/>
+                                                    <t t-set="level_str" t-value="sample.bitumen_comparison_level or '1'"/>
+                                                    <t t-set="level_idx" t-value="max(1, int(level_str))"/>
+                                                    <t t-if="is_surface_final">
+                                                        <t t-set="mins" t-value="[10, 3, 2.5, 1.5]"/>
+                                                        <t t-set="idx" t-value="level_idx - 1 if (level_idx - 1) &lt; len(mins) else len(mins) - 1"/>
+                                                        <t t-set="min_req" t-value="float(mins[idx])"/>
+                                                        <t t-set="pass_duct" t-value="dv &gt;= min_req"/>
+                                                    </t>
+                                                    <t t-elif="is_base_final">
+                                                        <t t-set="mins" t-value="[30, 10, 2]"/>
+                                                        <t t-set="idx" t-value="level_idx - 1 if (level_idx - 1) &lt; len(mins) else len(mins) - 1"/>
+                                                        <t t-set="min_req" t-value="float(mins[idx])"/>
+                                                        <t t-set="pass_duct" t-value="dv &gt;= min_req"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-set="pass_duct" t-value="True"/>
+                                                    </t>
+                                                    <t t-esc="'{:.1f}'.format(dv)"/><t t-if="not pass_duct"><sup style="font-size:0.8em;">*</sup></t>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <t t-if="sample.notes">
+                            <div class="lab-section" style="page-break-inside: avoid;">
+                                <h3>الملاحظات</h3>
+                                <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                                    <div style="font-size: 14px; line-height: 1.6;" t-field="sample.notes"/>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Signatures -->
+                        <div class="lab-section" style="page-break-inside: avoid; margin-top: 16px;">
+                            <table style="width:100%;border-collapse:collapse;direction:rtl;">
+                                <tr>
+                                    <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                                        <div style="margin-bottom:6px;font-weight:bold;">مسؤول الوحدة</div>
+                                        <t t-if="sample.exec_signature">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                                                <img t-att-src="image_data_uri(sample.exec_signature)" style="max-width:100%;max-height:100%;"/>
+                                            </div>
+                                            <div style="font-size:12px;" t-esc="sample.exec_signer_name or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                                            <div style="font-size:12px;">الاسم/ ____________</div>
+                                        </t>
+                                    </td>
+                                    <td style="width:10px;"/>
+                                    <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                                        <div style="margin-bottom:6px;font-weight:bold;">مسؤول الجودة</div>
+                                        <t t-if="sample.super_signature">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                                                <img t-att-src="image_data_uri(sample.super_signature)" style="max-width:100%;max-height:100%;"/>
+                                            </div>
+                                            <div style="font-size:12px;" t-esc="sample.super_signer_name or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                                            <div style="font-size:12px;">الاسم/ ____________</div>
+                                        </t>
+                                    </td>
+                                    <td style="width:10px;"/>
+                                    <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                                        <div style="margin-bottom:6px;font-weight:bold;">المدير التنفيذي</div>
+                                        <t t-if="sample.company_signature">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                                                <img t-att-src="image_data_uri(sample.company_signature)" style="max-width:100%;max-height:100%;"/>
+                                            </div>
+                                            <div style="font-size:12px;" t-esc="sample.company_signer_name or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                                            <div style="font-size:12px;">الاسم/ ____________</div>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
