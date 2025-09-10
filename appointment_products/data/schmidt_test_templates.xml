@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- نوع عينة مطرقة شميدت -->
+        <record id="schmidt_hammer_sample_type" model="lab.sample.type">
+            <field name="name">عينة فحص مطرقة شميدت</field>
+            <field name="code">SCHMIDT_HAMMER</field>
+            <field name="description">عينات فحص الانضغاط غير المتلف بمطرقة شميدت</field>
+            <field name="sequence">60</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- قالب فحص مطرقة شميدت -->
+        <record id="template_schmidt_hammer_test" model="lab.test.template">
+            <field name="name">فحص مطرقة شميدت</field>
+            <field name="code">SCHMIDT_HAMMER_TEST</field>
+            <field name="description">تحويل معدل رقم الارتداد R.N إلى مقاومة تقديرية باستخدام f = A*R + B</field>
+            <field name="standard_code">ASTM C805 / EN 12504-2</field>
+            <field name="industry_type">concrete</field>
+            <field name="state">active</field>
+            <field name="sequence">60</field>
+        </record>
+
+
+        <!-- معدل رقم الارتداد لكل نقطة -->
+        <record id="crit_sch_rn" model="lab.test.criterion">
+            <field name="template_id" ref="template_schmidt_hammer_test"/>
+            <field name="name">معدل رقم الارتداد R.N</field>
+            <field name="code">SCH_RN</field>
+            <field name="test_type">numeric</field>
+            <field name="sequence">10</field>
+            <field name="is_required">False</field>
+        </record>
+
+        <!-- مقاومة تقديرية (MPa) لكل نقطة: إدخال يدوي رقمياً -->
+        <record id="crit_sch_comp_est" model="lab.test.criterion">
+            <field name="template_id" ref="template_schmidt_hammer_test"/>
+            <field name="name">مقاومة الانضغاط التخمينية من فحص المطرقة (MPa)</field>
+            <field name="code">SCH_COMP_EST</field>
+            <field name="test_type">numeric</field>
+            <field name="is_input_field">True</field>
+            <field name="is_computed_field">False</field>
+            <field name="sequence">11</field>
+            <field name="is_required">False</field>
+        </record>
+
+        <record id="crit_sch_comp_est_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_schmidt_hammer_test"/>
+            <field name="name">معدل المقاومة التخمينية (MPa)</field>
+            <field name="code">SCH_COMP_EST_AVG</field>
+            <field name="test_type">numeric</field>
+            <field name="is_input_field">True</field>
+            <field name="is_computed_field">False</field>
+            <field name="is_summary_field">True</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <!-- منتج العينة الخاص بشميدت -->
+        <record id="product_schmidt_hammer_sample" model="product.template">
+            <field name="name">العينة - مطرقة شميدت</field>
+            <field name="type">consu</field>
+            <field name="is_sample_product">True</field>
+            <field name="tracking">serial</field>
+            <field name="sample_type_id" ref="schmidt_hammer_sample_type"/>
+            <field name="lab_test_template_id" eval="[(6,0,[ref('template_schmidt_hammer_test')])]"/>
+            <field name="categ_id" ref="product.product_category_all"/>
+        </record>
+    </data>
+</odoo>
