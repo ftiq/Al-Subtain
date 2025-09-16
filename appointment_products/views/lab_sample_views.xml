@@ -1,678 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-
-    <record id="view_lab_sample_form" model="ir.ui.view">
-        <field name="name">lab.sample.form</field>
-        <field name="model">lab.sample</field>
-        <field name="arch" type="xml">
-            <form string="العينة المختبرية" create="false">
-                <header>
-
-                    <field name="all_signatures_signed" invisible="1"/>
-                    
-                    <button name="action_start_testing" string="بدء الفحص" 
-                            type="object" class="btn-primary"
-                            invisible="1"/>
-                    <button name="action_complete" string="إكمال الفحص" 
-                            type="object" class="btn-success"
-                            invisible="state != 'testing' or not all_results_approved"/>
-                    <button name="action_approve_test" string="مصادقة على الفحص" 
-                            type="object" class="btn-warning"
-                            invisible="state != 'completed' or not all_signatures_signed"
-                            confirm="هل أنت متأكد من المصادقة على هذا الفحص؟ لن يمكن تعديله بعد المصادقة."/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,received,testing,completed,approved"/>
-                </header>
-                
-                <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="action_view_result_sets" type="object"
-                                class="oe_stat_button" icon="fa-flask"
-                                invisible="not result_set_ids">
-                            <field name="result_set_count" widget="statinfo" string="مجموعات النتائج"/>
-                        </button>
-                        <button name="action_export_to_excel" type="object"
-                                class="oe_stat_button" icon="fa-file-excel-o"
-                                invisible="not result_set_ids">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value">📊</span>
-                                <span class="o_stat_text">تصدير Excel</span>
-                            </div>
-                        </button>
-                    </div>
-                    
-                    <group>
-                        <group name="basic_info">
-                            <field name="name" readonly="1"/>
-                            <field name="product_id" readonly="1"/>
-                            <field name="sample_subtype_id" options="{'no_create_edit': True}" domain="[]" string="نوع العينة الفرعي" invisible="1"/>
-                            <field name="quantity" invisible="1"/>
-                            <field name="lab_code" placeholder="الرمز المختبري" readonly="1" string="الرمز المختبري"/>
-                            <field name="field_serial" placeholder="الرمز الحقلي" readonly="1" string="الرمز الحقلي"/>
-                            <field name="bitumen_type" readonly="1" invisible="not bitumen_type"/>
-                        </group>
-                        <group name="dates">
-                            <field name="collection_date" readonly="1"/>
-                            <field name="received_date" readonly="1"/>
-                            <field name="overall_result" widget="badge" 
-                                   decoration-success="overall_result == 'pass'"
-                                   decoration-danger="overall_result == 'fail'"
-                                   decoration-warning="overall_result == 'pending'"/>
-
-                            <field name="task_id" invisible="1"/>
-                            <field name="concrete_sample_type_id" invisible="1"/>
-                            <field name="is_concrete_sample" invisible="1"/>
-                            <field name="is_core_ui" invisible="1"/>
-                            <field name="reference_general_limit" string="المعدل" readonly="1" 
-                                   invisible="not concrete_sample_type_id"/>
-                            <!-- نسبة الحدل تظهر فقط عند عينة كور خرساني -->
-                            <field name="core_compaction_ratio" string="نسبة الحدل (%)" readonly="1"
-                                   invisible="not is_core_ui"/>
-                        </group>
-                    </group>
-                    
-                    <notebook>
-                        <page string="قالب الفحص" name="template" invisible="1">
-                            <group>
-                                <field name="lab_test_template_id" options="{'no_create_edit': True}"/>
-                            </group>
-                        </page>
-
-                        <page string="التوقيعات" name="signatures" invisible="state not in ['completed', 'approved']">
-
-                            <field name="exec_signature_locked" invisible="1"/>
-                            <field name="super_signature_locked" invisible="1"/>
-                            <field name="company_signature_locked" invisible="1"/>
-
-
-                            <div class="alert alert-info" invisible="state == 'approved' or all_signatures_signed">
-                                <strong>التوقيعات المطلوبة</strong><br/>
-                                <small>يجب إضافة التوقيعات الثلاثة أدناه لتتمكن من المصادقة على الفحص</small>
-                            </div>
-                            
-
-                            <div class="alert alert-success" invisible="not all_signatures_signed or state == 'approved'">
-                                <strong>تم إكمال جميع التوقيعات</strong><br/>
-                                <small>يمكنك الآن المصادقة على الفحص من خلال الزر في أعلى النموذج</small>
-                            </div>
-                            
-                            <separator string="مسؤول الوحدة"/>
-                            <group>
-                                <group>
-                                    <field name="exec_signer_id" string="اختيار المسؤول" options="{'no_create': True, 'no_edit': True}" readonly="state == 'approved' or exec_signature_locked"/>
-                                    <field name="exec_signer_name" string="اسم المسؤول" readonly="1"/>
-                                    <field name="exec_is_signed" readonly="1" string="تم التوقيع"/>
-                                </group>
-                                <group>
-                                    <field name="exec_signature" widget="signature" string="التوقيع الإلكتروني" readonly="state == 'approved' or exec_signature_locked"/>
-                                </group>
-                            </group>
-                            <div class="oe_button_box" invisible="not exec_signature or state == 'approved' or exec_signature_locked">
-                                <button name="action_clear_exec_signature"
-                                        type="object"
-                                        string="مسح التوقيع"
-                                        class="btn-secondary"
-                                        confirm="هل أنت متأكد من مسح التوقيع؟"/>
-                            </div>
-
-                            <separator string="مسؤول الجودة"/>
-                            <group>
-                                <group>
-                                    <field name="super_signer_id" string="اختيار المسؤول" options="{'no_create': True, 'no_edit': True}" readonly="state == 'approved' or super_signature_locked"/>
-                                    <field name="super_signer_name" string="اسم المسؤول" readonly="1"/>
-                                    <field name="super_is_signed" readonly="1" string="تم التوقيع"/>
-                                </group>
-                                <group>
-                                    <field name="super_signature" widget="signature" string="التوقيع الإلكتروني" readonly="state == 'approved' or super_signature_locked"/>
-                                </group>
-                            </group>
-                            <div class="oe_button_box" invisible="not super_signature or state == 'approved' or super_signature_locked">
-                                <button name="action_clear_super_signature"
-                                        type="object"
-                                        string="مسح التوقيع"
-                                        class="btn-secondary"
-                                        confirm="هل أنت متأكد من مسح التوقيع؟"/>
-                            </div>
-
-                            <separator string="المدير التنفيذي"/>
-                            <group>
-                                <group>
-                                    <field name="company_signer_id" string="اختيار المدير التنفيذي" options="{'no_create': True, 'no_edit': True}" readonly="state == 'approved' or company_signature_locked"/>
-                                    <field name="company_signer_name" string="اسم المدير التنفيذي" readonly="1"/>
-                                    <field name="company_is_signed" readonly="1" string="تم التوقيع"/>
-                                </group>
-                                <group>
-                                    <field name="company_signature" widget="signature" string="التوقيع الإلكتروني" readonly="state == 'approved' or company_signature_locked"/>
-                                </group>
-                            </group>
-                            <div class="oe_button_box" invisible="not company_signature or state == 'approved' or company_signature_locked">
-                                <button name="action_clear_company_signature"
-                                        type="object"
-                                        string="مسح التوقيع"
-                                        class="btn-secondary"
-                                        confirm="هل أنت متأكد من مسح التوقيع؟"/>
-                            </div>
-                        </page>
-                        
-
-                        
-                        <page string="مجموعات النتائج" name="result_sets">
-                            <field name="result_set_ids">
-                                <list string="مجموعات النتائج" editable="bottom" delete="false">
-                                    <field name="name" readonly="1"/>
-                                    <field name="template_id" readonly="1"/>
-                                    <field name="start_date" readonly="1"/>
-                                    <field name="overall_result" widget="badge" readonly="1"
-                                           decoration-success="overall_result == 'pass'"
-                                           decoration-danger="overall_result == 'fail'"
-                                           decoration-warning="overall_result == 'pending'"/>
-                                    <field name="state" widget="badge" readonly="1"/>
-                                    <field name="testers_ids" widget="many2many_tags"
-                                           groups="appointment_products.group_lab_manager"
-                                           placeholder="اختر المكلفين..."/>
-                                </list>
-                            </field>
-                        </page>
-                        
-
-                        <page string="المجموعات المتعاقبة" name="consecutive_groups" 
-                              invisible="not show_consecutive_groups">
-                            
-
-                            <field name="show_consecutive_groups" invisible="1"/>
-                            <field name="consecutive_groups_count" invisible="1"/>
-                            <field name="concrete_sample_type_id" invisible="1"/>
-                            
-                            <div class="row" invisible="consecutive_groups_count == 0">
-                                <div class="col-md-12">
-                                    <div class="card">
-                                        <div class="card-header text-white" style="background-color: #d1ecf1; color: #0c5460;">
-                                            <h5 class="mb-0">
-                                                 متوسطات المجموعات المتعاقبة 
-                                                <span class="badge badge-light ml-2">
-                                                    <field name="consecutive_groups_count"/> مجموعة
-                                                </span>
-                                            </h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <field name="consecutive_groups_data" nolabel="1"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="alert alert-warning" invisible="consecutive_groups_count > 0">
-                                <strong>لا توجد بيانات كافية</strong><br/>
-                                يحتاج حساب المجموعات المتعاقبة إلى وجود 4 مجموعات على الأقل من عينات الخرسانة (28 يوم).
-                            </div>
-                            
-                        </page>
-
-                        <page string="ملخص نتائج القير" name="bitumen_summary" 
-                              invisible="not bitumen_type">
-                            
-                            <field name="bitumen_type" invisible="1"/>
-                            
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <field name="bitumen_results_summary" widget="html" readonly="1" nolabel="1"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </page>
-
-
-                        <page string="ملخص نتائج الكور" name="core_summary"
-                              invisible="not is_core_ui">
-                            <field name="is_core_ui" invisible="1"/>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <field name="core_results_summary" widget="html" readonly="1" nolabel="1"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </page>
-                        
-                       <page string="بيانات مرتبطة" name="related_data" groups="base.group_system,appointment_products.group_lab_manager">
-                            <group>
-                                <group string="بيانات النظام">
-                                    <field name="company_id"/>
-                                    <field name="create_uid"/>
-                                    <field name="create_date"/>
-                                    <field name="write_uid"/>
-                                    <field name="write_date"/>
-                                </group>
-                                <group string="بيانات مرتبطة">
-                                    <field name="quality_check_id" invisible="1"/>
-                                    <field name="project_id"/>
-                                    <field name="sale_order_id"/>
-                                    <field name="partner_id"/>
-                                </group>
-                            </group>
-                        </page>
-                        <page string="الملاحظات" name="notes">
-                            <field name="notes" nolabel="1"/>
-                        </page>
-                    </notebook>
-                </sheet>
-                
-                <chatter/>
-            </form>
-        </field>
-    </record>
-
-
-    <record id="view_lab_sample_form_improve" model="ir.ui.view">
-        <field name="name">lab.sample.form.improve</field>
-        <field name="model">lab.sample</field>
-        <field name="inherit_id" ref="view_lab_sample_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//page[@name='result_sets']" position="attributes">
-                <attribute name="string">مجموعات النتائج</attribute>
-            </xpath>
-            
-            <xpath expr="//field[@name='result_set_ids']/list" position="replace">
-                <list string="مجموعات النتائج" editable="bottom" delete="false">
-                    <field name="name" readonly="1"/>
-                    <field name="template_id" readonly="1"/>
-                    <field name="test_group_no" string="المجموعة" readonly="1" optional="show" 
-                           column_invisible="not parent.bitumen_type"/>
-                    <field name="bitumen_type" readonly="1" optional="show" 
-                           column_invisible="not parent.bitumen_type"/>
-                    <field name="bitumen_comparison_level" string="مستوى المقارنة (قير)" optional="show" 
-                           column_invisible="not parent.bitumen_type"/>
-                    <field name="start_date" readonly="1"/>
-                    <field name="overall_result_with_avg" readonly="1"
-                           string="النتيجة العامة"
-                           widget="badge"
-                           optional="show"
-                           decoration-success="overall_result == 'pass'"
-                           decoration-danger="overall_result == 'fail'"
-                           decoration-warning="overall_result == 'pending'"/>
-                    <field name="state" widget="badge" readonly="1"/>
-                    <!-- إظهار أيام الخرسانة فقط لعينات الخرسانة -->
-                    <field name="concrete_age_days" string="أيام الخرسانة" widget="badge" readonly="1" 
-                           column_invisible="not parent.is_concrete_sample"/>
-                    
-                    <field name="testers_ids" widget="many2many_tags"
-                           groups="appointment_products.group_lab_manager"
-                           placeholder="اختر المكلفين..."/>
-                    
-                    <field name="testers_ids" widget="many2many_tags" readonly="1"
-                           groups="appointment_products.group_lab_technician"/>
-                </list>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="view_lab_sample_kanban" model="ir.ui.view">
-        <field name="name">lab.sample.kanban</field>
-        <field name="model">lab.sample</field>
-        <field name="arch" type="xml">
-            <kanban default_group_by="state" default_order="create_date desc, id desc"
-                     class="o_kanban_small_column o_lab_sample_kanban"
-                     sample="1" quick_create="false" create="false"
-                     records_draggable="false" groups_draggable="false"
-                     archivable="false" disable_linking="true">
-                <field name="id"/>
-                <field name="name"/>
-                <field name="product_id"/>
-                <field name="state"/>
-                <field name="overall_result"/>
-                <field name="progress_percentage"/>
-                <field name="collection_date"/>
-                <field name="received_date"/>
-                <field name="result_set_count"/>
-                <field name="lab_code"/>
-                <field name="field_serial"/>
-                <field name="activity_ids"/>
-                <field name="activity_state"/>
-                <field name="create_uid"/>
-                <field name="testers_with_states"/>
-
-                
-                <progressbar field="activity_state" 
-                           colors='{"planned": "success", "today": "warning", "overdue": "danger"}'
-                           help="شريط التقدم يظهر حالة الأنشطة المجدولة للعينات"/>
-                
-                <templates>
-                    <t t-name="card">
-                        <div class="oe_kanban_card oe_kanban_global_click o_lab_sample_card" 
-                             t-attf-class="#{record.state.raw_value == 'testing' ? 'o_kanban_card_pulse' : ''}"
-                             name="action_view_result_sets" type="object">
-                            <div class="o_kanban_card_header">
-                                <div class="o_kanban_card_header_title">
-                                    <div class="o_kanban_record_top">
-                                        <div class="o_kanban_top_left">
-                                            <strong class="o_kanban_record_title">
-                                                <field name="name"/>
-                                            </strong>
-                                            <div class="o_kanban_record_subtitle text-muted">
-                                                <i class="fa fa-cube me-1" title="المنتج"/>
-                                                <field name="product_id"/>
-                                            </div>
-                                        </div>
-                                        <div class="o_kanban_top_right">
-
-                                            <div class="o_dropdown_kanban dropdown">
-                                                <a role="button" class="dropdown-toggle o-no-caret btn" data-bs-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
-                                                    <span class="fa fa-ellipsis-v"/>
-                                                </a>
-                                                <div class="dropdown-menu" role="menu">
-                                                    <a role="menuitem" type="open" class="dropdown-item">
-                                                        <i class="fa fa-external-link me-2"/>عرض العينة
-                                                    </a>
-                                                    <a role="menuitem" type="edit" class="dropdown-item">
-                                                        <i class="fa fa-edit me-2"/>تحرير
-                                                    </a>
-                                                    <div class="dropdown-divider"/>
-                                                    <a role="menuitem" class="dropdown-item" name="action_duplicate">
-                                                        <i class="fa fa-copy me-2"/>نسخ
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="o_kanban_card_content">
-                                <div class="o_kanban_tags_section mb-2">
-                                    <div class="o_kanban_tag_row" t-if="record.lab_code.raw_value">
-                                            <span class="o_kanban_tag o_kanban_tag_lab">
-                                                <i class="fa fa-flask me-1" title="الرمز المختبري"/>
-                                            <field name="lab_code"/>
-                                        </span>
-                                    </div>
-                                    <div class="o_kanban_tag_row" t-if="record.field_serial.raw_value">
-                                            <span class="o_kanban_tag o_kanban_tag_field">
-                                                <i class="fa fa-map-marker me-1" title="الرمز الحقلي"/>
-                                            <field name="field_serial"/>
-                                        </span>
-                                    </div>
-                                    
-                                    <!-- عرض المكلفين والحالات بعد الرموز مباشرة -->
-                                    <div class="o_kanban_tag_row mt-2">
-                                        <div class="o_kanban_testers_compact">
-                                            <small class="text-muted d-block mb-1">المكلفون والحالات:</small>
-                                            <field name="testers_with_states" nolabel="1"/>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                
-                                <div class="o_kanban_details_section mb-2">
-                                    <div class="o_kanban_detail_row" t-if="record.collection_date.raw_value">
-                                        <span class="o_kanban_detail_label">
-                                            <i class="fa fa-calendar-plus-o me-1" title="تاريخ الجمع"/>
-                                            تاريخ الجمع:
-                                        </span>
-                                        <span class="o_kanban_detail_value">
-                                            <field name="collection_date" widget="date"/>
-                                        </span>
-                                    </div>
-                                    <div class="o_kanban_detail_row" t-if="record.received_date.raw_value">
-                                        <span class="o_kanban_detail_label">
-                                            <i class="fa fa-calendar-check-o me-1" title="تاريخ الاستلام"/>
-                                            تاريخ الاستلام:
-                                        </span>
-                                        <span class="o_kanban_detail_value">
-                                            <field name="received_date" widget="date"/>
-                                        </span>
-                                    </div>
-
-                                </div>
-                                
-                                <div class="o_kanban_progress_section mb-2" t-if="record.state.raw_value == 'testing'">
-                                    <div class="o_kanban_progress_header">
-                                        <span class="o_kanban_progress_label">
-                                            <i class="fa fa-tasks me-1" title="تقدم الاختبار"/>
-                                            تقدم الاختبار
-                                        </span>
-                                        <span class="o_kanban_progress_value">
-                                            <field name="progress_percentage" widget="percentage"/>
-                                        </span>
-                                    </div>
-                                    <div class="o_kanban_progress_bar">
-                                        <div class="progress" style="height: 10px; background: #e9ecef; border-radius: 5px;">
-                                            <div class="progress-bar" 
-                                                 t-attf-class="progress-bar-#{record.progress_percentage.raw_value > 0.8 ? 'success' : record.progress_percentage.raw_value > 0.5 ? 'warning' : 'info'}"
-                                                 role="progressbar" 
-                                                 t-attf-style="width: #{record.progress_percentage.raw_value * 100}%"
-                                                 t-attf-aria-valuenow="#{record.progress_percentage.raw_value * 100}"
-                                                 aria-valuemin="0" aria-valuemax="100">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="o_kanban_results_section mb-2">
-                                    <div class="o_kanban_results_row" t-if="record.overall_result.raw_value != 'pending'">
-                                        <span class="o_kanban_results_label">
-                                            <i class="fa fa-check-circle me-1" title="النتيجة النهائية"/>
-                                            النتيجة النهائية:
-                                        </span>
-                                        <span class="o_kanban_results_value">
-                                            <field name="overall_result" widget="badge" 
-                                                   decoration-success="overall_result == 'pass'"
-                                                   decoration-danger="overall_result == 'fail'"
-                                                   decoration-warning="overall_result == 'pending'"/>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="o_kanban_card_footer">
-                                <div class="o_kanban_footer_left">
-                                    <div class="o_kanban_footer_stats">
-                                        <span class="o_kanban_stats_item" t-if="record.result_set_count.raw_value > 0">
-                                            <i class="fa fa-flask me-1" title="عدد مجموعات النتائج"/>
-                                            <t t-esc="record.result_set_count.raw_value"/>
-                                            <small class="text-muted">نتائج</small>
-                                        </span>
-                                    </div>
-                                    <div class="o_kanban_footer_activity">
-                                        <field name="activity_ids" widget="kanban_activity"/>
-                                    </div>
-                                </div>
-                                <div class="o_kanban_footer_right">
-                                    <div class="o_kanban_action_buttons">
-                                        <button type="object" name="action_view_result_sets" 
-                                                class="btn btn-sm btn-outline-primary o_kanban_results_btn"
-                                                title="عرض نتائج الفحوصات">
-                                            <i class="fa fa-flask me-1" title="نتائج"/>
-                                            النتائج
-                                        </button>
-                                    </div>
-                                    <div class="o_kanban_click_indicator">
-                                        <i class="fa fa-arrow-right text-primary" title="اضغط لعرض نتائج الفحوصات"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
-
-
-    <record id="view_lab_sample_tree" model="ir.ui.view">
-        <field name="name">lab.sample.tree</field>
-        <field name="model">lab.sample</field>
-        <field name="arch" type="xml">
-            <list string="الفحوصات" sample="1" multi_edit="1" create="false">
-                <field name="name"/>
-                <field name="product_id"/>
-                <field name="lab_code" string="الرمز المختبري"/>
-                <field name="field_serial" string="الرمز الحقلي"/>
-                <field name="collection_date"/>
-                <field name="progress_percentage" widget="percentage"/>
-                <field name="overall_result" widget="badge" 
-                       decoration-success="overall_result == 'pass'"
-                       decoration-danger="overall_result == 'fail'"
-                       decoration-warning="overall_result == 'pending'"/>
-                <field name="state" widget="badge" 
-                       decoration-info="state == 'draft'"
-                       decoration-warning="state == 'received'"
-                       decoration-primary="state == 'testing'"
-                       decoration-success="state in ['completed', 'approved']"
-                       decoration-danger="state == 'rejected'"/>
-                <field name="activity_exception_decoration" widget="activity_exception"/>
-            </list>
-        </field>
-    </record>
-
-
-    <record id="view_lab_sample_search" model="ir.ui.view">
-        <field name="name">lab.sample.search</field>
-        <field name="model">lab.sample</field>
-        <field name="arch" type="xml">
-            <search>
-                <field name="lab_code" string="الرمز المختبري" filter_domain="[('lab_code', 'ilike', self)]"/>
-                <field name="name" string="رقم العينة" filter_domain="[('name', 'ilike', self)]"/>
-                <field name="product_id" string="المنتج (العينة)" filter_domain="[('product_id.name', 'ilike', self)]"/>
-                <field name="field_serial" string="الرمز الحقلي" filter_domain="[('field_serial', 'ilike', self)]"/>
-                <field name="lab_test_template_id" string="قالب الفحص" filter_domain="[('lab_test_template_id.name', 'ilike', self)]"/>
-                <field name="project_id" string="المشروع" filter_domain="[('project_id.name', 'ilike', self)]"/>
-                
-                <field name="id" string="" filter_domain="['|', '|', '|', '|', '|',
-                    ('name', 'ilike', self),
-                    ('product_id.name', 'ilike', self),
-                    ('lab_code', 'ilike', self),
-                    ('field_serial', 'ilike', self),
-                    ('project_id.name', 'ilike', self),
-                    ('lab_test_template_id.name', 'ilike', self)]"/>
-
-                <filter name="assigned_to_me" string="المكلف بي" domain="[('is_assigned_to_me', '=', True)]"/>
-                
-                <separator/>
-                
-                <filter name="draft" string="مسودة" domain="[('state', '=', 'draft')]"/>
-                <filter name="received" string="مستلمة" domain="[('state', '=', 'received')]"/>
-                <filter name="testing" string="قيد الفحص" domain="[('state', '=', 'testing')]"/>
-                <filter name="completed" string="مكتملة" domain="[('state', '=', 'completed')]"/>
-                <filter name="approved" string="مصادق علية" domain="[('state', '=', 'approved')]"/>
-                
-                <separator/>
-                <filter name="passed" string="نجح" domain="[('overall_result', '=', 'pass')]"/>
-                <filter name="failed" string="فشل" domain="[('overall_result', '=', 'fail')]"/>
-                
-                <separator/>
-                <filter name="overdue_activities" string="أنشطة متأخرة" domain="[('activity_state', '=', 'overdue')]"/>
-                <filter name="today_activities" string="أنشطة اليوم" domain="[('activity_state', '=', 'today')]"/>
-                
-                <separator/>
-                <filter name="this_week" string="هذا الأسبوع" domain="[('collection_date', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
-                <filter name="this_month" string="هذا الشهر" domain="[('collection_date', '&gt;=', (context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
-                
-                <group expand="0" string="تجميع حسب">
-                    <filter name="group_by_state" string="الحالة" context="{'group_by': 'state'}"/>
-                    <filter name="group_by_result" string="النتيجة" context="{'group_by': 'overall_result'}"/>
-                    <filter name="group_by_collection_date" string="تاريخ الجمع" context="{'group_by': 'collection_date'}"/>
-                    <filter name="group_by_lab_code" string="الرمز المختبري" context="{'group_by': 'lab_code'}"/>
-                    <filter name="group_by_field_serial" string="الرمز الحقلي" context="{'group_by': 'field_serial'}"/>
-                    <filter name="group_by_product" string="المنتج (العينة)" context="{'group_by': 'product_id'}"/>
-                    <filter name="group_by_project" string="المشروع" context="{'group_by': 'project_id'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
-
-    <record id="action_lab_sample" model="ir.actions.act_window">
-        <field name="name">الفحوصات والنتائج</field>
-        <field name="res_model">lab.sample</field>
-        <field name="view_mode">kanban,list,form,calendar,pivot,graph,activity</field>
-        <field name="context">{
-            'search_default_group_by_state': 1
-        }</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                أنشئ عينة مختبرية جديدة
-            </p>
-            <p>
-                إنشاء عينة مختبرية جديدة وربطها بمهمة للبدء في عملية الفحص.
-                يمكنك تتبع تقدم الفحوصات ومراجعة النتائج من خلال واجهة Kanban.
-            </p>
-        </field>
-    </record>
-
-
-    <record id="view_lab_sample_calendar" model="ir.ui.view">
-        <field name="name">lab.sample.calendar</field>
-        <field name="model">lab.sample</field>
-        <field name="arch" type="xml">
-            <calendar string="تقويم العينات" date_start="collection_date" 
-                     color="state" quick_create="0" event_limit="5">
-                <field name="name"/>
-                <field name="product_id"/>
-                <field name="state"/>
-                <field name="overall_result"/>
-            </calendar>
-        </field>
-    </record>
-
-
-    <record id="view_lab_sample_graph" model="ir.ui.view">
-        <field name="name">lab.sample.graph</field>
-        <field name="model">lab.sample</field>
-        <field name="arch" type="xml">
-            <graph string="إحصائيات العينات" sample="1">
-                <field name="state" type="row"/>
-                <field name="overall_result" type="col"/>
-                <field name="criteria_progress_percentage" type="measure" operator="+"/>
-            </graph>
-        </field>
-    </record>
-
-
-    <record id="view_lab_sample_pivot" model="ir.ui.view">
-        <field name="name">lab.sample.pivot</field>
-        <field name="model">lab.sample</field>
-        <field name="arch" type="xml">
-            <pivot string="تحليل العينات" sample="1">
-                <field name="state" type="row"/>
-                <field name="overall_result" type="col"/>
-                <field name="criteria_progress_percentage" type="measure" operator="+"/>
-                <field name="result_set_count" type="measure"/>
-            </pivot>
-        </field>
-    </record>
-
-
-    <record id="action_lab_result_sets_updated" model="ir.actions.act_window">
-        <field name="name">مجموعات النتائج المختبرية</field>
-        <field name="res_model">lab.result.set</field>
-        <field name="view_mode">kanban,list,form</field>
-        <field name="context">{'create': True}</field>
-    </record>
-
-
-    <record id="action_lab_result_sets_sample_filtered" model="ir.actions.act_window">
-        <field name="name">مجموعات نتائج العينة</field>
-        <field name="res_model">lab.result.set</field>
-        <field name="view_mode">kanban,list,form</field>
-        <field name="domain">[('sample_id', '=', active_id)]</field>
-        <field name="context">{
-            'default_sample_id': active_id,
-            'create': True,
-            'sample_name': context.get('sample_name', ''),
-            'breadcrumb_title': 'نتائج العينة: %(sample_name)s'
-        }</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                🧪 لا توجد مجموعات نتائج لهذه العينة
-            </p>
-            <p>
-                يمكنك إنشاء مجموعة نتائج جديدة أو العودة لبدء الفحص من العينة.
-            </p>
-        </field>
-    </record>
-
-</odoo> 
