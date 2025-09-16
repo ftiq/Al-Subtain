@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_task_view_form_inherit_forms" model="ir.ui.view">
+        <field name="name">project.task.form.inherit.fsm.forms</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]" position="before">
+                <page string="النماذج" name="fsm_forms" invisible="total_samples_count == 0" groups="industry_fsm.group_fsm_user">
+                    <field name="form_line_ids" nolabel="1" options="{'limit': 1}" invisible="stock_receipt_id and has_concrete_product">
+                        <list editable="bottom" string="النموذج">
+                            <field name="product_id" string="المنتج" 
+                                   options="{'no_create': True}" 
+                                   domain="[('is_sample_product', '=', True)]"/>
+
+                            <field name="quantity" string="الكمية"/>
+                            <button name="open_move" type="object" class="btn btn-link" icon="fa-bars" string="عرض الحركة"/>
+                        </list>
+                    </field>
+                    
+
+                    <div class="mt-4">
+                        <separator string="الأسئلة" class="mt-4"/>
+                        <button name="%(action_project_task_signature_wizard)d" type="action" string="التوقيع" class="btn btn-primary mb-2 oe_highlight" invisible="1"/>
+                        <field name="fsm_signature" widget="signature" readonly="1" class="mb-2" invisible="1"/>
+                        <field name="fsm_question_ids" nolabel="1">
+                            <list editable="bottom" string="الأسئلة">
+                                <field name="question_id" string="السؤال"/>
+                                <field name="value_answer_id" string="الإجابة المختارة"/>
+                                <field name="value_text_box" string="إجابة نصية"/>
+                            </list>
+                            <form string="سؤال">
+                                <group>
+                                    <field name="question_id" string="السؤال" readonly="1"/>
+                                    <field name="value_answer_id" string="الإجابة المختارة" readonly="1"/>
+                                    <field name="value_text_box" string="إجابة نصية" readonly="1"/>
+                                </group>
+                            </form>
+                        </field>
+                    </div>
+                    
+
+                    <div class="mt-4">
+                        <separator string="الخدمات" class="mt-4"/>
+                        <field name="service_line_ids" nolabel="1">
+                            <list editable="bottom" string="الخدمات">
+                                <field name="product_id" string="المنتج" options="{'no_create': True}"/>
+                                <field name="quantity" string="الكمية"/>
+                                <field name="price_unit" string="سعر الوحدة" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="price_subtotal" string="الإجمالي" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            </list>
+                        </field>
+                    </div>
+                    
+         
+
+                    <div class="mt-4" invisible="not stock_receipt_id or not has_concrete_product">
+                        <div class="alert alert-info" role="alert" invisible="stock_receipt_id">
+                            <p><strong>ملاحظة:</strong> يجب حفظ المهمة أولاً لإنشاء سجل العينات</p>
+                        </div>
+                        
+                        <div class="alert alert-warning" role="alert" invisible="stock_receipt_id or has_concrete_product">
+                            <p><strong>تنبيه:</strong> لم يتم اختيار أي منتج من نوع الخرسانة. قم بإضافة منتج خرسانة في جدول المنتجات أعلاه.</p>
+                        </div>
+                        
+                        <div invisible="not stock_receipt_id or not has_concrete_product">
+                            <separator string="عينات الخرسانة" class="mt-4"/>
+                            
+                            <div class="alert alert-warning" invisible="not is_signed">
+                                <strong>تم قفل إعدادات العينات</strong><br/>
+                                لا يمكن تعديل إعدادات عينات الخرسانة بعد التوقيع الإلكتروني على حركة المخزون.
+                            </div>
+                            
+                            <group>
+                                <group string="معلومات الخرسانة">
+                                    <field name="planned_concrete_m3" string="كمية الخرسانة (m³)" widget="float" readonly="is_signed"/>
+                                    <field name="concrete_sample_type_id" string="النوع" domain="[('code', 'in', ['CONCRETE_BUILDINGS', 'CONCRETE_FOUNDATIONS', 'CONCRETE_BRIDGES', 'CONCRETE_CORE'])]" readonly="is_signed"/>
+                                  <!--  <field name="sample_type_id" string="Sample Type" readonly="1" invisible="not sample_type_id"/>-->
+                                    <!--<field name="enable_reserve_samples" string="تفعيل العينات الاحتياطية" widget="boolean_toggle" readonly="is_signed"/>-->
+                                    <field name="concrete_sample_subtype_id" invisible="1"/>
+                                </group>
+                                    <group string="المعيار المرجعي">
+                                    <!-- إظهار تسمية بديلة عند النوع كور خرساني -->
+                                    <field name="reference_general_limit" string="الارتفاع المطلوب" readonly="is_signed"
+                                           invisible="not (is_concrete_core_type_selected or main_sample_is_concrete_core)"/>
+                                    <field name="reference_general_limit" string="المعيار" readonly="is_signed"
+                                           invisible="(is_concrete_core_type_selected or main_sample_is_concrete_core)"/>
+
+                                    <!-- نسبة الحدل تظهر فقط عند الكور الخرساني -->
+                                    <field name="core_compaction_ratio" string="نسبة الحدل (%)" readonly="is_signed"
+                                           invisible="not (is_concrete_core_type_selected or main_sample_is_concrete_core)"/>
+
+                                </group>
+                                <!--
+                                <group string="العينات المقدرة">
+                                    <field name="estimated_samples" string="العينات المقدرة" invisible="state in ['done', 'cancel']"/>
+                                    <field name="estimated_cubes" string="المكعبات المقدرة" invisible="state in ['done', 'cancel']"/>
+                                    <field name="enable_7_days_samples" string="تفعيل عينات 7 أيام" widget="boolean_toggle" readonly="is_signed"/>
+                                    <field name="seven_days_for_all_groups" string="7 أيام لكل المجموعات" widget="boolean_toggle" invisible="not enable_7_days_samples" readonly="is_signed"/>
+                                    <field name="reserve_for_all_groups" string="احتياط لكل المجموعات" widget="boolean_toggle" invisible="not enable_reserve_samples" readonly="is_signed"/>
+                                </group>
+                                -->
+                            </group>
+                            
+                            <group>
+
+                            </group>
+                            <!--
+                            
+                            <div class="text-center mb-3">
+
+                                <button name="action_recalculate_samples" type="object" 
+                                        string="حساب العينات تلقائياً" 
+                                        class="btn btn-primary me-2" 
+                                        icon="fa-refresh"
+                                        invisible="not auto_sample_generation or not planned_concrete_m3 or not concrete_sample_type_id or is_signed"/>
+                                
+
+                                <button name="action_add_manual_sample" type="object" 
+                                        string="إضافة عينة يدوياً" 
+                                        class="btn btn-success me-2" 
+                                        icon="fa-plus"
+                                        invisible="auto_sample_generation or is_signed"/>
+                                
+
+                                <button name="action_generate_codes" type="object" 
+                                        string="توليد رموز للعينات الموجودة" 
+                                        class="btn btn-info me-2" 
+                                        icon="fa-magic"
+                                        invisible="auto_sample_generation or not move_line_ids or is_signed"/>
+                                
+
+                                <button name="action_clear_samples" type="object" 
+                                        string="مسح جميع العينات" 
+                                        class="btn btn-warning" 
+                                        icon="fa-trash"
+                                        invisible="not move_line_ids or is_signed"
+                                        confirm="هل تريد حذف جميع العينات الموجودة؟"/>
+                            </div>
+                            -->
+                            <field name="move_line_ids" string="خطوط العينات"
+                                   context="{'default_picking_id': stock_receipt_id}"
+                                   options="{'no_open': True}">
+                                <list string="تفاصيل العينات"
+                                      editable="bottom"
+                                      create="not is_signed"
+                                      delete="not is_signed"
+                                      edit="not is_signed"
+                                      no_open="1">
+                                    <!-- الحقول المطلوبة المخفية -->
+                                    <field name="move_id" column_invisible="True"/>
+                                    <field name="product_id" column_invisible="True"/>
+                                    <field name="product_uom_id" column_invisible="True"/>
+                                    <field name="location_id" column_invisible="True"/>
+                                    <field name="location_dest_id" column_invisible="True"/>
+                                    
+                                    <!-- الحقول المرئية -->
+                                    <field name="group_no" string="المجموعة"/>
+                                    <field name="field_code" string="الرمز المختبري" 
+                                           placeholder="سيتم التوليد حسب الإعدادات"/>
+                                    <field name="field_serial" string="الرمز الحقلي" 
+                                           placeholder="سيتم التوليد حسب الإعدادات"/>
+                                    <field name="age_days" string="الأيام" optional="show"/>
+                                    <field name="cube_count" string="عدد المكعبات"/>
+                                </list>
+                            </field>
+                        </div>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    
+
+    <record id="project_task_view_form_samples_count" model="ir.ui.view">
+        <field name="name">project.task.form.samples.count</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_ids']" position="after">
+                <field name="total_samples_count" string="العدد الكلي للعينات" 
+                       invisible="not is_fsm" groups="industry_fsm.group_fsm_user"/>
+                <field name="main_sample_subtype_id" string="النوع الفرعي" 
+                       invisible="not is_fsm or not (main_sample_is_masonry or main_sample_is_concrete_core)"
+                       domain="[('sample_type_id.code', 'in', ['MASONRY', 'CONCRETE_CORE'])]" groups="industry_fsm.group_fsm_user"/>
+            </xpath>
+        </field>
+    </record>
+    
+
+    <record id="project_task_view_form_book_fields" model="ir.ui.view">
+        <field name="name">project.task.form.book.fields</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="book_number" string="رقم الكتاب" invisible="not is_fsm" groups="industry_fsm.group_fsm_user"/>
+                <field name="book_date" string="تاريخ الكتاب" invisible="not is_fsm" groups="industry_fsm.group_fsm_user"/>
+                <field name="modeling_date" string="تاريخ النمذجة" invisible="not is_fsm" groups="industry_fsm.group_fsm_user"/>
+                <field name="book_notes" string="الملاحظات" widget="html" placeholder="أدخل الملاحظات هنا..." nolabel="0" groups="industry_fsm.group_fsm_user"/>
+            </xpath>
+        </field>
+    </record>
+</odoo> 

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+
+    <record id="view_stock_picking_form_sampling" model="ir.ui.view">
+        <field name="name">stock.picking.form.sampling</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="sampling_status" widget="badge" 
+                       decoration-info="sampling_status == 'required'" 
+                       decoration-warning="sampling_status == 'calculated'"
+                       decoration-success="sampling_status == 'generated'"
+                       decoration-muted="sampling_status == 'none'"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_stock_picking_tree_sampling" model="ir.ui.view">
+        <field name="name">stock.picking.tree.sampling</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="sampling_status" widget="badge" optional="show"/>
+                <field name="planned_concrete_m3" optional="hide"/>
+                <field name="estimated_samples" optional="hide"/>
+                <field name="move_lines_with_codes_count" string="خطوط الحركة" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_stock_picking_search_sampling" model="ir.ui.view">
+        <field name="name">stock.picking.search.sampling</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="concrete_sample_type_id"/>
+                <field name="sampling_status"/>
+            </xpath>
+            
+            <xpath expr="//filter[@name='available']" position="after">
+                <separator/>
+                <filter string="يتطلب عينات" name="sampling_required" domain="[('sampling_status', '=', 'required')]"/>
+                <filter string="عينات محسوبة" name="sampling_calculated" domain="[('sampling_status', '=', 'calculated')]"/>
+                <filter string="عينات مُنشأة" name="sampling_generated" domain="[('sampling_status', '=', 'generated')]"/>
+                <filter string="عينات مكتملة" name="sampling_completed" domain="[('sampling_status', '=', 'completed')]"/>
+            </xpath>
+            
+            <xpath expr="//group[@expand='0']" position="inside">
+                <filter string="حالة العينات" name="group_sampling_status" context="{'group_by': 'sampling_status'}"/>
+                <filter string="نوع العينة" name="group_sample_type" context="{'group_by': 'concrete_sample_type_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_lab_sample_form_stock_picking" model="ir.ui.view">
+        <field name="name">lab.sample.form.stock.picking</field>
+        <field name="model">lab.sample</field>
+        <field name="inherit_id" ref="appointment_products.view_lab_sample_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                </xpath>
+        </field>
+    </record>
+
+
+    <record id="action_stock_picking_sampling" model="ir.actions.act_window">
+        <field name="name">حركات المخزون - العينات</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('sampling_status', '!=', 'none')]</field>
+        <field name="context">{
+            'search_default_sampling_required': 1,
+            'search_default_group_sampling_status': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                لا توجد حركات مخزون تتطلب عينات
+            </p>
+            <p>
+                يمكنك إضافة معلومات العينات إلى حركات المخزون من خلال تحديد:
+                <ul>
+                    <li>الكمية المخططة للخرسانة</li>
+                    <li>نوع العينة المطلوب</li>
+                </ul>
+            </p>
+        </field>
+    </record>
+
+</odoo> 
