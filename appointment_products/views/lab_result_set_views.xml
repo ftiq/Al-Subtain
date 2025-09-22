@@ -1,0 +1,971 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="lab_result_set_tree" model="ir.ui.view">
+        <field name="name">lab.result.set.tree</field>
+        <field name="model">lab.result.set</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="sample_id"/>
+                <field name="test_group_no" string="المجموعة"/>
+                <field name="concrete_field_code" string="الرمز المختبري"/>
+                <field name="concrete_field_serial" string="الرمز الحقلي"/>
+                <field name="concrete_age_days" string="الأيام" widget="badge"/>
+                <field name="template_id"/>
+                <field name="state"/>
+                <field name="overall_result" widget="badge" decoration-success="overall_result == 'pass'" decoration-danger="overall_result == 'fail'" decoration-muted="overall_result == 'pending'"/>
+                <field name="testing_temperature" string="درجة الحرارة" optional="hide"/>
+                <field name="testing_date" string="تاريخ الفحص" optional="hide"/>
+                <field name="uncertainty_stress_value" string="عدم التأكد" optional="hide"/>
+                <field name="is_concrete_sample" invisible="1"/>
+                <field name="bitumen_comparison_level" string="مستوى القير" optional="hide" invisible="not bitumen_type"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="lab_result_set_form_dynamic" model="ir.ui.view">
+        <field name="name">lab.result.set.form.dynamic</field>
+        <field name="model">lab.result.set</field>
+        <field name="arch" type="xml">
+            <form string="📊 جدول النتائج" create="false" edit="true" delete="false">
+                <header>
+                    <button name="action_start_timer" type="object" string="🕐 بدء المؤقت" 
+                            class="btn btn-primary" 
+                            invisible="timer_start or state != 'in_progress' or not has_timer_criteria"
+                            title="بدء المؤقت العام للمجموعة"/>
+                    <button name="action_start" type="object" string="بدء الفحص" 
+                            invisible="state != 'draft'" 
+                            class="btn btn-primary"/>
+                    <button name="action_calculate_results" type="object" string="حساب النتائج" 
+                            invisible="state not in ['in_progress'] or (has_timer_criteria and timer_status != 'completed')" 
+                            class="btn btn-success"/>
+
+                    <button name="action_show_test_details" type="object" string="📊 تفاصيل النتائج" 
+                            invisible="state in ['draft']" 
+                            class="btn btn-info"
+                            title="عرض تفاصيل شاملة عن نتائج الفحص والمعايير الحرجة"/>
+
+                    <button name="action_approve_results" type="object" string="اعتماد النتائج" 
+                            invisible="state not in ['calculated', 'review']" 
+                            class="btn btn-success"/>
+                    
+                    <button name="action_retest" type="object" string="🔄 إعادة الفحص" 
+                            invisible="overall_result != 'fail' or state not in ['calculated', 'review']" 
+                            class="btn btn-warning"
+                            title="إعادة الفحص في حال عدم المطابقة"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,calculated,approved"/>
+                </header>
+                <sheet>
+                    
+                    <div class="alert alert-primary d-flex align-items-center" role="status" invisible="not sample_id" style="margin-bottom: 15px;">
+                        <i class="fa fa-flask me-2" title="العينة" style="font-size: 18px;"/>
+                        <div class="flex-grow-1">
+                            <strong>🧪 العينة الأم:</strong> 
+                            <field name="sample_id" readonly="1" style="display: inline; font-weight: bold;"/>
+                        </div>
+                        <button name="action_return_to_sample_results" type="object" class="btn btn-outline-primary btn-sm">
+                            <i class="fa fa-arrow-left"/> عرض جميع نتائج العينة
+                        </button>
+                    </div>
+
+                    <div class="oe_title" invisible="1"/>
+                    
+                    <!-- تحذير فحص الليونة -->
+                    <div class="alert alert-warning d-flex align-items-center" role="alert" invisible="not softening_warning" style="margin-bottom: 15px;">
+                        <i class="fa fa-exclamation-triangle me-2" title="تحذير" style="font-size: 18px;"/>
+                        <div class="flex-grow-1">
+                            <field name="softening_warning" readonly="1" style="margin: 0; white-space: pre-line;"/>
+                        </div>
+                    </div>
+                    
+
+                    <div class="alert alert-info" role="status" invisible="not has_timer_criteria or all_timers_completed">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <i class="fa fa-info-circle" title="معلومة"/> 
+                                <strong></strong> يحتوي هذا القالب على معايير مرتبطة بالمؤقت. 
+                                يجب بدء الفحص أولاً ثم ادخال القيم غير المرتبطة بالمؤقت ثم اضغط على بدء المؤقت.
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="alert alert-info" role="status" invisible="not timer_start or not has_timer_criteria">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>بداية المؤقّت:</strong><br/>
+                                <field name="timer_start" readonly="1"/>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>نهاية المؤقّت:</strong><br/>
+                                <field name="timer_ready" readonly="1"/>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>حالة المؤقّت:</strong><br/>
+                                <field name="timer_status" readonly="1" widget="badge"/>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>الوقت المتبقي:</strong><br/>
+                                <field name="timer_remaining" widget="lab_timer" readonly="1"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="alert alert-warning" role="status" invisible="timer_status != 'running' or not has_timer_criteria">
+                        <i class="fa fa-exclamation-triangle" title="تحذير"/> 
+                        <strong>تحذير:</strong> المؤقت نشط - لا يمكن إدخال أو تعديل القيم حتى انتهاء المؤقت
+                    </div>
+                    
+                    <div class="alert alert-success" role="status" invisible="timer_status != 'completed' or not has_timer_criteria">
+                        <i class="fa fa-check-circle" title="تم"/> 
+                        <strong>تم:</strong> انتهى المؤقت - يمكن الآن إدخال وتعديل القيم
+                    </div>
+                    
+                    <group>
+                        <group string="معلومات أساسية">
+                            <field name="name" readonly="1"/>
+                            <field name="sample_id" readonly="1"/>
+                            <field name="template_id" readonly="1"/>
+                            <field name="bitumen_type" readonly="1" invisible="not bitumen_type"/>
+                            <field name="test_group_no" readonly="1"/>
+                            <field name="number_of_samples" readonly="1"/>
+                            <field name="is_concrete_sample" invisible="1"/>
+                            <field name="is_concrete_core" invisible="1"/>
+                            <field name="is_ignitability_sample" invisible="1"/>
+                            <!-- الكثافة الموقعية: الوزن والحجم -->
+                            <field name="is_field_density_sample" invisible="1"/>
+                            <field name="field_density_weight" string="الوزن"
+                                   readonly="1"
+                                   invisible="not is_field_density_sample"/>
+                            <field name="field_density_volume" string="الحجم"
+                                   readonly="1"
+                                   invisible="not is_field_density_sample"/>
+
+                            <field name="core_compaction_ratio_reference" string="حد أدنى نسبة الحدل (%)"
+                                   readonly="1"
+                                   invisible="not is_field_density_sample"/>
+                        </group>
+                        <group string="النتائج والإحصائيات">
+                            <field name="overall_result" widget="badge" readonly="1"/>
+                            <field name="overall_conformity" widget="badge" readonly="1"/>
+                            <field name="is_manager" invisible="1"/>
+                            <field name="testers_ids" widget="many2many_tags" 
+                                   groups="appointment_products.group_lab_manager"
+                                   string="المكلفون بالفحص"
+                                   help="هذا الحقل يحدد من يستطيع الوصول وتعديل هذا الفحص. الفنيون يرون فقط الفحوصات المكلفين بها هنا."/>
+                            <field name="has_timer_criteria" invisible="1"/>
+                            <field name="all_timers_completed" invisible="1"/>
+                        </group>
+                    </group>
+                    
+                    <group string="تفاصيل فحص الخرسانة" invisible="not is_concrete_sample">
+                        <group string="معلومات العينة">
+                            <field name="concrete_group_no" readonly="state != 'draft'" invisible="is_concrete_core"/>
+                            <field name="concrete_age_days" readonly="state != 'draft'" invisible="is_concrete_core"/>
+                            <field name="concrete_field_code" readonly="state != 'draft'"/>
+                            <field name="concrete_field_serial" readonly="state != 'draft'"/>
+                            <field name="reference_general_limit" readonly="1"/>
+                            <field name="core_compaction_ratio_reference" readonly="1"/>
+                        </group>
+                        <group string="تواريخ ودرجة الحرارة">
+                            <field name="casting_date" readonly="state != 'draft'" invisible="is_concrete_core"/>
+                            <field name="testing_date" readonly="state != 'draft'" invisible="is_concrete_core"/>
+                            <field name="required_age_days" readonly="state != 'draft'" invisible="is_concrete_core"/>
+                            <field name="days_remaining" readonly="1" invisible="is_concrete_core"
+                                   decoration-warning="days_remaining &lt;= 3 and days_remaining &gt; 0"
+                                   decoration-danger="days_remaining == 0"
+                                   decoration-info="days_remaining &gt; 3"/>
+                            <field name="factor" readonly="1" 
+                                   invisible="factor == 0"
+                                   decoration-danger="factor &gt; 0"
+                                   string="Factor (أيام متجاوزة)"/>
+                            <field name="testing_temperature" readonly="state != 'draft'" invisible="is_concrete_core"/>
+                            <field name="reference_min_limit" readonly="1" invisible="1"/>
+                        </group>
+                    </group>
+
+
+                    <group string="تفاصيل قابلية الاشتعال" invisible="not is_ignitability_sample" col="2">
+
+                        <field name="ign_show_second_table" string="إظهار Table (2)"/>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <group string="Table (1)" col="2">
+
+                                    <field name="ign_t1_sample_no" readonly="1"/>
+                                    <separator string="مدى انتشار اللهب"/>
+                                    <field name="ign_t1_flame_spread" widget="radio"/>
+                                    <separator string="الوقت اللازم لوصول اللهب إلى ارتفاع (150 ملم)"/>
+                                    <field name="ign_t1_time_to_150" placeholder="لم يصل"/>
+                                    <separator string="هل حدث الاشتعال"/>
+                                    <field name="ign_t1_ignition_happened" widget="radio"/>
+
+
+                                    <separator string="Test Flame Application Position: Surface of Specimen (سطح العينة: موقع تطبيق اللهب)"/>
+                                    <field name="ign_t1_surface_time_of_test"/>
+                                    <field name="ign_t1_surface_duration"/>
+                                </group>
+                            </div>
+                            <div class="col-md-6">
+                                <group string="Table (2)" col="2" invisible="not ign_show_second_table">
+                                    <field name="ign_t2_sample_no" readonly="1"/>
+                                    <separator string="مدى انتشار اللهب"/>
+                                    <field name="ign_t2_flame_spread" widget="radio"/>
+                                    <separator string="الوقت اللازم لوصول اللهب إلى ارتفاع (150 ملم)"/>
+                                    <field name="ign_t2_time_to_150" placeholder="لم يصل"/>
+                                    <separator string="هل حدث الاشتعال"/>
+                                    <field name="ign_t2_ignition_happened" widget="radio"/>
+
+                                    <separator string="Test Flame Application Position: Edge of Specimen (حافة العينة: موقع تطبيق اللهب)"/>
+                                    <group col="2">
+                                        <field name="ign_t2_edge_time_of_test"/>
+                                        <field name="ign_t2_edge_duration"/>
+                                        <field name="external_media_url" string="رابط وسائط الفحص" placeholder="www.instagram.com/saleh_alhjany.." style="min-width:380px;"/>
+                                    </group>
+                                </group>
+                            </div>
+                        </div>
+
+                    </group>
+
+                    <notebook>
+                        <page string="📊 جدول النتائج">
+                            <field name="result_line_ids" widget="dynamic_results_table" readonly="state != 'in_progress'" options="{'pager': true}">
+                                <list editable="bottom" decoration-bf="is_critical" class="o_dynamic_results_table" limit="10" options="{'pager': true}" open_form_view="false">
+                                    <control>
+                                        <create string="➕ إضافة معيار جديد"/>
+                                    </control>
+                                    
+
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="sample_no" string="المجموعة" readonly="1" optional="show"/>
+                                    <field name="criterion_id" 
+                                           options="{'no_create': False, 'no_edit': False}"
+                                           class="o_required_field"/>
+                                    <field name="criterion_code" readonly="1"/>
+                                    <field name="test_type" readonly="1"/>
+                                    
+
+                                    <field name="timer_scope" invisible="1"/>
+                                    <field name="waiting_unit" invisible="1"/>
+                                    <field name="waiting_value" invisible="1"/>
+                                    <field name="lock_during_wait" invisible="1"/>
+                                    <field name="is_timer_done" invisible="1"/>
+                                    <field name="line_timer_start" invisible="1"/>
+                                    <field name="line_timer_ready" invisible="1"/>
+                                    
+
+                                    <field name="value_numeric" 
+                                           string="القيمة الرقمية"
+                                           readonly="lock_during_wait and not is_timer_done"
+                                           class="o_field_numeric"
+                                           decoration-muted="lock_during_wait and not is_timer_done"
+                                           decoration-info="waiting_value and lock_during_wait and not is_timer_done"
+                                           help="القيمة الرقمية للمعيار"/>
+                                    <field name="value_text" 
+                                           string="القيمة النصية"
+                                           readonly="lock_during_wait and not is_timer_done"
+                                           decoration-muted="lock_during_wait and not is_timer_done"
+                                           decoration-info="waiting_value and lock_during_wait and not is_timer_done"
+                                           invisible="test_type != 'text'"/>
+                                    <field name="value_selection" 
+                                           string="الاختيار"
+                                           readonly="lock_during_wait and not is_timer_done"
+                                           decoration-muted="lock_during_wait and not is_timer_done"
+                                           decoration-info="waiting_value and lock_during_wait and not is_timer_done"
+                                           invisible="test_type != 'selection'"/>
+                                    <field name="value_boolean" 
+                                           string="صح/خطأ"
+                                           readonly="lock_during_wait and not is_timer_done"
+                                           decoration-muted="lock_during_wait and not is_timer_done"
+                                           decoration-info="waiting_value and lock_during_wait and not is_timer_done"
+                                           invisible="test_type != 'boolean'"/>
+                                    <field name="value_date" 
+                                           string="التاريخ"
+                                           readonly="lock_during_wait and not is_timer_done"
+                                           decoration-muted="lock_during_wait and not is_timer_done"
+                                           decoration-info="waiting_value and lock_during_wait and not is_timer_done"
+                                           invisible="test_type != 'date'"/>
+                                    <field name="value_computed" 
+                                           column_invisible="test_type != 'computed'"
+                                           string="النتائج"
+                                           readonly="1"
+                                           style="background-color: #e8f0ff;"/>
+                                    <field name="min_limit" readonly="1"/>
+                                    <field name="max_limit" readonly="1"/>
+                                    <field name="target_value" readonly="1"/>
+                                    <field name="uom_id" readonly="1"/>
+                                    
+
+                                    <field name="is_compliant" 
+                                           widget="boolean_toggle"
+                                           decoration-success="is_compliant == True"
+                                           decoration-danger="is_compliant == False"/>
+                                    <field name="deviation_percentage" 
+                                           widget="percentage"
+                                           decoration-warning="deviation_percentage > 5"
+                                           decoration-danger="deviation_percentage > 10"/>
+                                    <field name="conformity_status" 
+                                           widget="badge"
+                                           decoration-success="conformity_status == 'pass'"
+                                           decoration-danger="conformity_status == 'fail'"/>
+                                    
+
+                                    <field name="is_critical" readonly="1"/>
+                                    <field name="technician_id" readonly="1"/>
+                                    <field name="last_modified_date" readonly="1"/>
+                                    
+
+                                    <button name="action_start_line_timer" type="object" string="⏱️" 
+                                            class="btn btn-sm btn-secondary" 
+                                            invisible="timer_scope != 'per_line' or line_timer_start or not waiting_value"
+                                            title="بدء مؤقت السطر"/>
+                                    <field name="line_timer_ready" widget="lab_timer" 
+                                           invisible="timer_scope != 'per_line' or not line_timer_start or not waiting_value" 
+                                           readonly="1"/>
+                                    
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </page>                        
+                        <page string="📋 تفاصيل الفحص">
+                            <group>
+                                <group string="معلومات الفحص">
+                                    <field name="test_conditions"/>
+                                    <field name="environmental_conditions"/>
+                                    <field name="equipment_used"/>
+                                </group>
+                                <group string="ضمان الجودة">
+                                    <field name="calibration_date"/>
+                                    <field name="reference_standard"/>
+                                    <field name="uncertainty_analysis"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="lab_result_set_concrete_form" model="ir.ui.view">
+        <field name="name">lab.result.set.concrete.form</field>
+        <field name="model">lab.result.set</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <form string="نتائج فحص الخرسانة" class="o_concrete_results_form">
+                <header>
+                    <button name="action_calculate_results" string="🧮 حساب النتائج" type="object" 
+                            class="btn-primary" invisible="state not in ['draft', 'in_progress']"/>
+                    <button name="action_approve_results" string="✅ اعتماد النتائج" type="object"
+                            class="btn-success" invisible="state != 'calculated'"
+                            groups="appointment_products.group_lab_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,calculated,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <h3>
+                            <field name="template_id" readonly="1"/>
+                        </h3>
+                        <field name="is_concrete_core" invisible="1"/>
+                        <div class="mt-2" invisible="not bitumen_type">
+                            <span class="badge badge-info">
+                                <field name="bitumen_type" readonly="1"/>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <group>
+                        <group string="معلومات العينة">
+                            <field name="sample_id" readonly="1"/>
+                            <field name="concrete_group_no" readonly="state != 'draft'" widget="badge" decoration-info="True" invisible="is_concrete_core"/>
+                            <field name="concrete_age_days" readonly="state != 'draft'" widget="badge" invisible="is_concrete_core"/>
+                            <field name="concrete_field_code" readonly="state != 'draft'" string="الرمز المختبري"/>
+                            <field name="concrete_field_serial" readonly="state != 'draft'" string="الرمز الحقلي"/>
+                            <field name="batch_number" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="تفاصيل الفحص">
+                            <field name="casting_date" readonly="state != 'draft'" invisible="is_concrete_core"/>
+                            <field name="testing_date" readonly="state != 'draft'" invisible="is_concrete_core"/>
+                            <field name="required_age_days" readonly="state != 'draft'" invisible="is_concrete_core"/>
+                            <field name="days_remaining" readonly="1" invisible="is_concrete_core"
+                                   decoration-warning="days_remaining &lt;= 3 and days_remaining &gt; 0"
+                                   decoration-danger="days_remaining == 0"
+                                   decoration-info="days_remaining &gt; 3"/>
+                            <field name="factor" readonly="1" 
+                                   invisible="factor == 0"
+                                   decoration-danger="factor &gt; 0"
+                                   string="Factor (أيام متجاوزة)"/>
+                            <field name="testing_temperature" readonly="state != 'draft'" widget="float" digits="[5,1]" invisible="is_concrete_core"/>
+                            <field name="cube_factor" readonly="state != 'draft'" widget="float" digits="[3,2]"/>
+                            <field name="number_of_samples" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+
+
+                    <group string="النتائج والإحصائيات" class="o_concrete_stats_section">
+                        <group string="النتائج العامة">
+                            <field name="overall_result" widget="badge" readonly="1"/>
+                            <field name="overall_conformity" widget="badge" readonly="1"/>
+                            <field name="progress_percentage" widget="percentage" readonly="1"/>
+                        </group>
+                        <group string="التحليل الإحصائي">
+                            <field name="uncertainty_stress_value" readonly="1" string="قيمة عدم التأكد (N/mm²)" widget="float" digits="[5,3]"/>
+                            <field name="completed_criteria" readonly="1"/>
+                            <field name="sample_count" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="📊 نتائج الفحص التفصيلية">
+                            <field name="result_line_ids" readonly="state not in ['draft', 'in_progress']">
+                                <list editable="bottom" 
+                                      decoration-success="conformity_status == 'pass'"
+                                      decoration-danger="conformity_status == 'fail'"
+                                      decoration-muted="not result_value"
+                                      decoration-info="is_computed"
+                                      decoration-bf="criterion_id and criterion_id.is_summary_field"
+                                      default_order="summary_sort_key,criterion_sort_type,sequence,criterion_id">
+                                    
+                                    <field name="sample_no" string="رقم العينة" readonly="1" optional="show"/>
+                                    <field name="criterion_id" string="المعيار" readonly="1" optional="show"/>
+                                    <field name="value_numeric" string="القيمة" widget="float" digits="[16,2]" 
+                                           readonly="criterion_id and criterion_id.is_computed_field"
+                                           class="{'o_computed_field': criterion_id and criterion_id.is_computed_field}"/>
+                                    <field name="uom_id" string="الوحدة" readonly="1" optional="show"/>
+                                    <field name="min_limit" string="الحد الأدنى" readonly="1" optional="show"/>
+                                    <field name="max_limit" string="الحد الأعلى" readonly="1" optional="show"/>
+                                    <field name="target_value" string="القيمة المستهدفة" readonly="1" optional="hide"/>
+                                    <field name="conformity_status" string="المطابقة" readonly="1" widget="badge"
+                                           decoration-success="conformity_status == 'pass'"
+                                           decoration-danger="conformity_status == 'fail'" optional="show"/>
+                                    
+
+                                    <field name="is_computed" invisible="1"/>
+                                    <field name="criterion_sort_type" invisible="1"/>
+                                    <field name="summary_sort_key" invisible="1"/>
+                                    <field name="result_value" invisible="1"/>
+                                    <field name="data_type" invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <page string="📈 المتوسطات والتحليلات" class="o_concrete_analysis_page">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="o_group">
+                                        <div class="o_group_title">
+                                            <span><i class="fa fa-calculator"/> المتوسطات العامة</span>
+                                        </div>
+                                        <div class="o_group_content">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="o_group">
+                                        <div class="o_group_title">
+                                            <span><i class="fa fa-line-chart"/> التحليل الإحصائي</span>
+                                        </div>
+                                        <div class="o_group_content">
+                                            <field name="uncertainty_stress_value" string="عدم التأكد (N/mm²)" readonly="1" widget="float" digits="[5,3]"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </page>
+
+                        <page string="📝 ملاحظات ومتابعة">
+                            <field name="notes" placeholder="أضف ملاحظاتك هنا..."/>
+                            <group string="معلومات المتابعة">
+                                <field name="technician_id" readonly="state == 'approved'"/>
+                                <field name="start_date" readonly="1"/>
+                                <field name="end_date" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    
+
+                    
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="lab_result_set_search" model="ir.ui.view">
+        <field name="name">lab.result.set.search</field>
+        <field name="model">lab.result.set</field>
+        <field name="arch" type="xml">
+            <search string="البحث في مجموعات النتائج">
+                <field name="name" string="اسم المجموعة"/>
+                <field name="sample_id" string="العينة"/>
+                <field name="template_id" string="قالب الفحص"/>
+                <field name="test_group_no" string="رقم المجموعة"/>
+                <field name="technician_id" string="الفني"/>
+                <field name="concrete_field_code" string="الرمز المختبري"/>
+                <field name="concrete_field_serial" string="الرمز الحقلي"/>
+                <field name="concrete_age_days" string="أيام الخرسانة"/>
+                
+                <filter name="state_draft" string="مسودة" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_in_progress" string="قيد التنفيذ" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="state_calculated" string="محسوبة" domain="[('state', '=', 'calculated')]"/>
+                <filter name="state_approved" string="معتمدة" domain="[('state', '=', 'approved')]"/>
+                
+                <separator/>
+                <filter name="assigned_to_me" string="المكلف بي" domain="[('testers_ids', 'in', [uid])]"/>
+                
+                <separator/>
+                <filter name="result_pass" string="نجح" domain="[('overall_result', '=', 'pass')]"/>
+                <filter name="result_fail" string="فشل" domain="[('overall_result', '=', 'fail')]"/>
+                
+                <separator/>
+                <filter name="conformity_pass" string="مطابق" domain="[('overall_conformity', '=', 'pass')]"/>
+                <filter name="conformity_fail" string="غير مطابق" domain="[('overall_conformity', '=', 'fail')]"/>
+                
+                <separator/>
+                <filter name="has_timer" string="يحتوي على مؤقت" domain="[('has_timer_criteria', '=', True)]"/>
+                <filter name="no_timer" string="بدون مؤقت" domain="[('has_timer_criteria', '=', False)]"/>
+                <filter name="timers_completed" string="المؤقتات مكتملة" domain="[('all_timers_completed', '=', True)]"/>
+                
+                <group expand="0" string="تجميع حسب">
+                    <filter name="group_sample" string="العينة" context="{'group_by': 'sample_id'}"/>
+                    <filter name="group_template" string="قالب الفحص" context="{'group_by': 'template_id'}"/>
+                    <filter name="group_test_group_no" string="رقم المجموعة" context="{'group_by': 'test_group_no'}"/>
+                    <filter name="group_state" string="الحالة" context="{'group_by': 'state'}"/>
+                    <filter name="group_result" string="النتيجة" context="{'group_by': 'overall_result'}"/>
+                    <filter name="group_technician" string="الفني" context="{'group_by': 'technician_id'}"/>
+                    <filter name="group_timer" string="حالة المؤقت" context="{'group_by': 'has_timer_criteria'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_lab_result_set_kanban" model="ir.ui.view">
+        <field name="name">lab.result.set.kanban</field>
+        <field name="model">lab.result.set</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" 
+                    class="o_kanban_small_column o_lab_result_set_kanban"
+                    sample="1" quick_create="false" archivable="false" delete="false" create="false"
+                    records_draggable="false" groups_draggable="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="sample_id"/>
+                <field name="template_id"/>
+                <field name="test_group_no"/>
+                <field name="state"/>
+                <field name="overall_result"/>
+                <field name="overall_conformity"/>
+                <field name="progress_percentage"/>
+                <field name="technician_id"/>
+                <field name="total_criteria_count"/>
+                <field name="failed_criteria_count"/>
+                <field name="create_date"/>
+                <field name="write_date"/>
+                <field name="has_timer_criteria"/>
+                <field name="timer_start"/>
+                <field name="timer_ready"/>
+                <field name="timer_status"/>
+                <field name="timer_remaining"/>
+                <field name="timer_remaining_display"/>
+                <field name="is_concrete_sample"/>
+                <field name="concrete_group_no"/>
+                <field name="concrete_age_days"/>
+                <field name="concrete_field_code"/>
+                <field name="concrete_field_serial"/>
+                <field name="testers_ids"/>
+
+                <progressbar field="overall_result" 
+                           colors='{"pass": "success", "fail": "danger", "pending": "warning"}'
+                           help="شريط التقدم يظهر حالة نتائج الفحوصات"/>
+
+                <templates>
+                    <t t-name="kanban-menu">
+                        <a role="menuitem" type="open" class="dropdown-item">
+                            <i class="fa fa-pencil me-2"/> فتح للتحرير
+                        </a>
+                        <a role="menuitem" type="edit" class="dropdown-item">
+                            <i class="fa fa-edit me-2"/> تحرير سريع
+                        </a>
+                        <div class="dropdown-divider" t-if="record.sample_id.raw_value"/>
+                        <a role="menuitem" type="object" name="action_return_to_sample_results" class="dropdown-item" t-if="record.sample_id.raw_value">
+                            <i class="fa fa-flask me-2 text-primary"/> عرض جميع نتائج العينة
+                        </a>
+                        <div class="dropdown-divider"/>
+                        <a role="menuitem" type="delete" class="dropdown-item">
+                            <i class="fa fa-trash me-2"/> حذف
+                        </a>
+                    </t>
+
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click o_lab_result_set_card"
+                             t-attf-class="#{record.state.raw_value == 'in_progress' ? 'o_kanban_card_pulse' : ''} 
+                                          #{record.overall_result.raw_value == 'fail' ? 'border-danger' : record.overall_result.raw_value == 'pass' ? 'border-success' : 'border-warning'}">
+                            
+
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_top_left">
+                                            <div class="o_kanban_record_title">
+                            <strong>
+                                <i class="fa fa-flask me-2 text-primary" title="قالب الفحص"/>
+                                <field name="template_id"/>
+                                <t t-if="record.test_group_no.raw_value and record.test_group_no.raw_value &gt; 0">
+                                    <span class="badge badge-info ms-2">مجموعة <field name="test_group_no"/></span>
+                                </t>
+                            </strong>
+                        </div>
+                    <div class="o_kanban_record_subtitle text-muted">
+                                                <i class="fa fa-cube me-1"/>
+                                                <field name="sample_id"/>
+                                            </div>
+                                            
+
+                                            <div class="o_kanban_record_subtitle text-muted mt-1 d-flex align-items-center">
+                                                <i class="fa fa-user me-2"/>
+                                                <span class="me-2">المكلفون:</span>
+                                                <field name="testers_ids" widget="many2many_avatar_user"/>
+                                            </div>
+                                            
+
+                                            <div class="o_kanban_record_subtitle text-muted" 
+                                                 t-if="record.is_concrete_sample.raw_value">
+                                                <div class="d-flex flex-wrap gap-1 mt-1">
+
+                                                    <span class="badge bg-info text-dark" 
+                                                          t-if="record.concrete_group_no.raw_value">
+                                                        <i class="fa fa-users me-1"/>
+                                                        مجموعة <t t-esc="record.concrete_group_no.raw_value"/>
+                                                    </span>
+                                                    
+
+                                                    <span class="badge bg-secondary" 
+                                                          t-if="record.concrete_age_days.raw_value">
+                                                        <i class="fa fa-calendar me-1"/>
+                                                        <t t-if="record.concrete_age_days.raw_value == '7'">7 أيام</t>
+                                                        <t t-elif="record.concrete_age_days.raw_value == '28'">28 يوم</t>
+                                                        <t t-else="">احتياط</t>
+                                                    </span>
+                                                    
+
+                                                    <span class="badge o_lab_code_badge" 
+                                                          t-if="record.concrete_field_code.raw_value">
+                                                        <i class="fa fa-flask me-1"/>
+                                                        <strong><t t-esc="record.concrete_field_code.raw_value"/></strong>
+                                                    </span>
+                                                    
+
+                                                    <span class="badge bg-success" 
+                                                          t-if="record.concrete_field_serial.raw_value">
+                                                        <i class="fa fa-map-marker me-1"/>
+                                                        <t t-esc="record.concrete_field_serial.raw_value"/>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="o_kanban_top_right">
+                                            <div class="o_dropdown_kanban dropdown">
+                                                <a role="button" class="dropdown-toggle o-no-caret btn" data-bs-toggle="dropdown" 
+                                                   href="#" aria-label="Dropdown menu" title="القائمة">
+                                                    <span class="fa fa-ellipsis-v"/>
+                                                </a>
+                                                <div class="dropdown-menu" role="menu">
+                                                    <t t-call="kanban-menu"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
+                            <div class="o_kanban_card_content">
+
+                                <div class="o_kanban_tags_section mb-2">
+                                    <div class="o_kanban_tag_row" t-if="record.template_id.raw_value">
+                                        <span class="o_kanban_tag o_kanban_tag_template">
+                                            <i class="fa fa-list-alt me-1"/>
+                                            <field name="template_id"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="o_kanban_progress_section mb-3" t-if="record.progress_percentage.raw_value">
+                                    <div class="o_kanban_progress_header d-flex justify-content-between align-items-center">
+                                        <span class="o_kanban_progress_label">
+                                            <i class="fa fa-tasks me-1"/>
+                                            التقدم
+                                        </span>
+                                        <span class="o_kanban_progress_value">
+                                            <field name="progress_percentage" widget="percentage"/>
+                                        </span>
+                                    </div>
+                                    <div class="progress mt-1" style="height: 8px;">
+                                        <div class="progress-bar" 
+                                             t-attf-class="#{record.progress_percentage.raw_value >= 1.0 ? 'bg-success' : record.progress_percentage.raw_value >= 0.5 ? 'bg-warning' : 'bg-info'}"
+                                             role="progressbar" 
+                                             t-attf-style="width: #{record.progress_percentage.raw_value * 100}%"
+                                             t-attf-aria-valuenow="#{record.progress_percentage.raw_value * 100}"
+                                             aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="o_kanban_timer_section mb-2" t-if="record.has_timer_criteria.raw_value and record.timer_start.raw_value">
+                                    <div class="alert alert-info border-info p-2 mb-2" t-if="record.timer_status.raw_value == 'running'">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-clock-o me-2 text-info"/>
+                                            <div class="flex-grow-1">
+                                                <small class="d-block text-muted">🕐 المؤقت يعمل</small>
+                                                <strong class="text-info" t-if="record.timer_remaining_display.raw_value">
+                                                    <t t-esc="record.timer_remaining_display.raw_value"/>
+                                                </strong>
+                                                <small class="d-block text-muted">متبقي</small>
+                                            </div>
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fa fa-hourglass-half"/>
+                                                يعمل
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-success border-success p-2 mb-2" t-if="record.timer_status.raw_value == 'completed'">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-check-circle me-2 text-success"/>
+                                            <div class="flex-grow-1">
+                                                <small class="d-block text-muted">✅ المؤقت انتهى</small>
+                                                <small class="text-success">يمكن إدخال النتائج</small>
+                                            </div>
+                                            <span class="badge bg-success">
+                                                <i class="fa fa-check"/>
+                                                انتهى
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="o_kanban_results_section mb-2" t-if="record.overall_result.raw_value != 'pending'">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="text-center">
+                                                <small class="text-muted d-block">النتيجة النهائية</small>
+                                                <field name="overall_result" widget="badge"
+                                                       decoration-success="overall_result == 'pass'"
+                                                       decoration-danger="overall_result == 'fail'"
+                                                       decoration-warning="overall_result == 'pending'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="text-center">
+                                                <small class="text-muted d-block">المطابقة</small>
+                                                <field name="overall_conformity" widget="badge"
+                                                       decoration-success="overall_conformity == 'pass'"
+                                                       decoration-danger="overall_conformity == 'fail'"
+                                                       decoration-warning="overall_conformity == 'pending'"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="o_kanban_stats_section">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="o_kanban_stats_left">
+                                            <span class="badge bg-primary me-1" t-if="record.total_criteria_count.raw_value">
+                                                <i class="fa fa-list me-1"/>
+                                                <t t-esc="record.total_criteria_count.raw_value"/> معيار
+                                            </span>
+                                            <span class="badge bg-danger" t-if="record.failed_criteria_count.raw_value">
+                                                <i class="fa fa-times-circle me-1"/>
+                                                <t t-esc="record.failed_criteria_count.raw_value"/> فشل
+                                            </span>
+                                        </div>
+                                        <div class="o_kanban_stats_right">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
+                            <div class="o_kanban_card_footer">
+                                <div class="o_kanban_footer_left">
+                                    <small class="text-muted">
+                                        <i class="fa fa-calendar me-1"/>
+                                        <field name="write_date" widget="relative"/>
+                                    </small>
+                                </div>
+                                <div class="o_kanban_footer_right">
+                                    <div class="o_kanban_status_indicator">
+                                        <t t-if="record.state.raw_value == 'draft'">
+                                            <i class="fa fa-circle text-secondary" title="مسودة"/>
+                                        </t>
+                                        <t t-if="record.state.raw_value == 'in_progress'">
+                                            <i class="fa fa-circle text-warning" title="قيد التقدم"/>
+                                        </t>
+                                        <t t-if="record.state.raw_value == 'review'">
+                                            <i class="fa fa-circle text-info" title="قيد المراجعة"/>
+                                        </t>
+                                        <t t-if="record.state.raw_value == 'approved'">
+                                            <i class="fa fa-circle text-success" title="معتمد"/>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_lab_result_set" model="ir.actions.act_window">
+        <field name="name">مجموعات نتائج الفحص</field>
+        <field name="res_model">lab.result.set</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء مجموعة نتائج فحص جديدة
+            </p>
+            <p>
+                مجموعات النتائج تحتوي على نتائج فحص عدة عينات لنفس المعيار أو القالب
+            </p>
+        </field>
+    </record>
+
+
+    <record id="action_lab_result_set_concrete" model="ir.actions.act_window">
+        <field name="name">نتائج فحص الخرسانة</field>
+        <field name="res_model">lab.result.set</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                      (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_lab_result_set_kanban')}),
+                                      (0, 0, {'view_mode': 'list', 'view_id': ref('lab_result_set_tree')}),
+                                      (0, 0, {'view_mode': 'form', 'view_id': ref('lab_result_set_concrete_form')})]"/>
+        <field name="domain">[('is_concrete_sample', '=', True)]</field>
+        <field name="context">{'default_is_concrete_sample': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء فحص خرسانة جديد
+            </p>
+            <p>
+                فحوصات الخرسانة تتضمن اختبارات الانضغاط والكثافة والمتوسطات المتتابعة
+            </p>
+        </field>
+    </record>
+
+    <record id="action_lab_result_set_dynamic" model="ir.actions.act_window">
+        <field name="name">📊 جدول النتائج</field>
+        <field name="res_model">lab.result.set</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_lab_result_set_kanban')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('lab_result_set_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('lab_result_set_form_dynamic')})]"/>
+        <field name="search_view_id" ref="lab_result_set_search"/>
+        <field name="target">current</field>
+        <field name="context">{
+            'search_default_state_in_progress': 1,
+            'create': false
+        }</field>
+        <field name="groups_id" eval="[(4, ref('appointment_products.group_lab_technician')), (4, ref('appointment_products.group_lab_manager'))]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                عرض نتائج الفحوصات
+            </p>
+        </field>
+    </record>
+
+
+    <record id="view_lab_result_line_kanban" model="ir.ui.view">
+        <field name="name">lab.result.line.kanban</field>
+        <field name="model">lab.result.line</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column o_lab_result_line_kanban" archivable="false" delete="false" records_draggable="false" groups_draggable="false" default_group_by="criterion_id">
+                <field name="id"/>
+                <field name="criterion_id"/>
+                <field name="sample_no"/>
+                <field name="result_value"/>
+                <field name="is_compliant"/>
+                <field name="is_critical"/>
+                <field name="technician_id"/>
+                <field name="last_modified_date"/>
+                <field name="conformity_status"/>
+
+                <templates>
+                    <t t-name="card">
+                        <div class="o_kanban_record_top">
+                            <strong class="o_kanban_record_title">
+                                <t t-if="record.sample_no.raw_value">عينة <t t-esc="record.sample_no.raw_value"/> – </t>
+                                <field name="criterion_id"/>
+                            </strong>
+                        </div>
+                        <div class="o_kanban_record_body p-2">
+                            <div class="row">
+                                <div class="col-12">
+                                    <span class="fw-bold">القيمة:</span>
+                                    <t t-esc="record.result_value.raw_value or '-'"/>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="col-6">
+                                    <field name="conformity_status" widget="badge" decoration-success="conformity_status == 'pass'" decoration-danger="conformity_status == 'fail'"/>
+                                </div>
+                                <div class="col-6" t-if="record.is_critical.raw_value">
+                                    <span class="badge bg-danger">حرج</span>
+                                </div>
+                            </div>
+                            <div class="row mt-1" t-if="record.last_modified_date.raw_value">
+                                <div class="col-12">
+                                    <small class="text-muted">
+                                        <i class="fa fa-clock-o me-1"/>
+                                        <field name="last_modified_date" widget="datetime"/>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="o_kanban_record_bottom">
+                            <div class="oe_kanban_bottom_left">
+                                <t t-if="record.is_compliant.raw_value == True">
+                                    <i class="fa fa-check-circle text-success" title="مطابق"/>
+                                </t>
+                                <t t-if="record.is_compliant.raw_value == False">
+                                    <i class="fa fa-times-circle text-danger" title="غير مطابق"/>
+                                </t>
+                            </div>
+                            <div class="oe_kanban_bottom_right">
+                                <field name="technician_id" widget="many2one_avatar_user" class="oe_kanban_avatar" domain="[('share', '=', False)]"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="action_lab_result_lines_kanban" model="ir.actions.act_window">
+        <field name="name">📋 أسطر النتائج (Kanban)</field>
+        <field name="res_model">lab.result.line</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_ids" eval="[(5,0,0),
+            (0,0,{'view_mode':'kanban','view_id':ref('view_lab_result_line_kanban')})]"/>
+        <field name="target">current</field>
+        <field name="groups_id" eval="[(4, ref('appointment_products.group_lab_technician')), (4, ref('appointment_products.group_lab_manager'))]"/>
+    </record>
+</odoo> 
