@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="brick_standard_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="sample">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <style>
+                            * { font-family: Arial, sans-serif !important; }
+                            .custom-main-title {
+                                background:#eef3ff; border:1px solid #cdd9ff; border-radius:8px;
+                                padding:12px; margin-bottom:12px; text-align:center; font-size:22px; font-weight:700;
+                            }
+                            .lab-section { margin:8px 0; }
+                            .table { width:100%; border-collapse:collapse; }
+                            .table th, .table td { border:1px solid #bdbdbd; padding:6px 5px; font-size:12px; text-align:center; }
+                            .table thead th { background:#DDDDDD; color:#000; font-weight:bold; }
+                            .badge { padding:2px 6px; border-radius:4px; font-size:11px; }
+                            .badge-success { background:#c6efce; color:#000; }
+                            .badge-danger { background:#ffc7ce; color:#000; }
+                            .text-start { text-align:right; }
+                            .note-box { background:#f8f9fa; border-left:4px solid #17a2b8; padding:10px; border-radius:6px; margin:10px 0; }
+                        </style>
+
+                        <div class="custom-main-title">
+                            تقرير فحوصات الطابوق الطيني
+                        </div>
+
+                        <div class="lab-section">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>رقم العينة</th>
+                                        <th>المنتج</th>
+                                        <th>النوع الفرعي</th>
+                                        <th>الكمية</th>
+                                        <th>العميل</th>
+                                        <th>الرمز الحقلي</th>
+                                        <th>تاريخ الاستلام</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td t-esc="sample.name or ''"/>
+                                        <td t-esc="sample.product_id.name or ''"/>
+                                        <td t-esc="sample.sample_subtype_id.name or ''"/>
+                                        <td t-esc="sample.task_id.total_samples_count or sample.quantity or 0"/>
+                                        <td t-esc="sample.task_id.partner_id.name or ''"/>
+                                        <td t-esc="sample.field_serial or ''"/>
+                                        <td t-esc="(sample.create_date and sample.create_date.strftime('%Y-%m-%d')) or ''"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <t t-set="rs_all" t-value="sample.result_set_ids or []"/>
+                        <t t-set="lines_all" t-value="rs_all and rs_all.mapped('result_line_ids') or []"/>
+
+                        <t t-set="use_b" t-value="True if lines_all.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'LENGTH_B') else False"/>
+                        <t t-set="LENGTH_CODE" t-value="use_b and 'LENGTH_B' or 'LENGTH_A'"/>
+                        <t t-set="WIDTH_CODE" t-value="use_b and 'WIDTH_B' or 'WIDTH_A'"/>
+                        <t t-set="HEIGHT_CODE" t-value="use_b and 'HEIGHT_B' or 'HEIGHT_A'"/>
+                        <t t-set="HOLE_DIA_CODE" t-value="use_b and 'HOLE_DIA_B' or 'HOLE_DIA_A'"/>
+                        <t t-set="HOLE_COUNT_CODE" t-value="use_b and 'HOLE_COUNT_B' or 'HOLE_COUNT_A'"/>
+                        <t t-set="CHIPPING_CODE" t-value="use_b and 'CHIPPING_PCT_B' or 'CHIPPING_PCT_A'"/>
+                        <t t-set="UNIFORMITY_CODE" t-value="use_b and 'UNIFORMITY_B' or 'UNIFORMITY_A'"/>
+                        <t t-set="CORNERS_CODE" t-value="use_b and 'CORNERS_B' or 'CORNERS_A'"/>
+                        <t t-set="SHAPE_CODE" t-value="use_b and 'SHAPE_B' or 'SHAPE_A'"/>
+
+                        <t t-set="len_line_b" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'LENGTH_B')[:1] or [])"/>
+                        <t t-set="len_line_a" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'LENGTH_A')[:1] or [])"/>
+                        <t t-set="len_line" t-value="len_line_b or len_line_a"/>
+
+                        <t t-set="wid_line_b" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'WIDTH_B')[:1] or [])"/>
+                        <t t-set="wid_line_a" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'WIDTH_A')[:1] or [])"/>
+                        <t t-set="wid_line" t-value="wid_line_b or wid_line_a"/>
+
+                        <t t-set="hei_line_b" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'HEIGHT_B')[:1] or [])"/>
+                        <t t-set="hei_line_a" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'HEIGHT_A')[:1] or [])"/>
+                        <t t-set="hei_line" t-value="hei_line_b or hei_line_a"/>
+
+                        <t t-set="hole_dia_line_b" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'HOLE_DIA_B')[:1] or [])"/>
+                        <t t-set="hole_dia_line_a" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'HOLE_DIA_A')[:1] or [])"/>
+                        <t t-set="hole_dia_line" t-value="hole_dia_line_b or hole_dia_line_a"/>
+
+                        <t t-set="hole_cnt_line_b" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'HOLE_COUNT_B')[:1] or [])"/>
+                        <t t-set="hole_cnt_line_a" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'HOLE_COUNT_A')[:1] or [])"/>
+                        <t t-set="hole_cnt_line" t-value="hole_cnt_line_b or hole_cnt_line_a"/>
+
+                        <t t-set="chip_line_b" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'CHIPPING_PCT_B')[:1] or [])"/>
+                        <t t-set="chip_line_a" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'CHIPPING_PCT_A')[:1] or [])"/>
+                        <t t-set="chip_line" t-value="chip_line_b or chip_line_a"/>
+
+                        <t t-set="unif_line_b" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'UNIFORMITY_B')[:1] or [])"/>
+                        <t t-set="unif_line_a" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'UNIFORMITY_A')[:1] or [])"/>
+                        <t t-set="unif_line" t-value="unif_line_b or unif_line_a"/>
+
+                        <t t-set="corn_line_b" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'CORNERS_B')[:1] or [])"/>
+                        <t t-set="corn_line_a" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'CORNERS_A')[:1] or [])"/>
+                        <t t-set="corn_line" t-value="corn_line_b or corn_line_a"/>
+
+                        <t t-set="shape_line_b" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'SHAPE_B')[:1] or [])"/>
+                        <t t-set="shape_line_a" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'SHAPE_A')[:1] or [])"/>
+                        <t t-set="shape_line" t-value="shape_line_b or shape_line_a"/>
+                        <t t-set="void_ratio_line" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'VOID_RATIO_A')[:1] or [])"/>
+                        <t t-set="efflor_line" t-value="(lines_all.filtered(lambda x: x.criterion_id and x.criterion_id.code == 'EFFLOR_GRADE_A')[:1] or [])"/>
+
+                        <div class="lab-section">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:25%">البند</th>
+                                        <th style="width:35%">المواصفة</th>
+                                        <th style="width:20%">النتيجة</th>
+                                        <th style="width:20%">الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td class="text-start">الطول (مم)</td>
+                                        <td>
+                                            <t t-if="len_line">
+                                                <t t-set="tgt" t-value="len_line[0].criterion_id.target_value or 0"/>
+                                                <t t-set="mn" t-value="len_line[0].criterion_id.min_value or 0"/>
+                                                <t t-set="mx" t-value="len_line[0].criterion_id.max_value or 0"/>
+                                                <t t-set="tolp" t-value="(mx and tgt) and int(round((mx - tgt) / tgt * 100)) or 0"/>
+                                                <span t-esc="int(round(tgt))"/>
+                                                <span> (±</span>
+                                                <span t-esc="tolp"/>
+                                                <span>%)</span>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td>
+                                            <t t-esc="(len_line and len_line[0].value_numeric is not False) and ('{:.1f}'.format(len_line[0].value_numeric)) or '—'"/>
+                                            <t t-if="len_line and (not len_line[0].is_compliant)"><sup>*</sup></t>
+                                        </td>
+                                        <td>
+                                            <span t-if="len_line and len_line[0].is_compliant" class="badge badge-success">مطابق</span>
+                                            <span t-else="" class="badge badge-danger">غير مطابق</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="text-start">العرض (مم)</td>
+                                        <td>
+                                            <t t-if="wid_line">
+                                                <t t-set="tgt" t-value="wid_line[0].criterion_id.target_value or 0"/>
+                                                <t t-set="mn" t-value="wid_line[0].criterion_id.min_value or 0"/>
+                                                <t t-set="mx" t-value="wid_line[0].criterion_id.max_value or 0"/>
+                                                <t t-set="tolp" t-value="(mx and tgt) and int(round((mx - tgt) / tgt * 100)) or 0"/>
+                                                <span t-esc="int(round(tgt))"/>
+                                                <span> (±</span>
+                                                <span t-esc="tolp"/>
+                                                <span>%)</span>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td>
+                                            <t t-esc="(wid_line and wid_line[0].value_numeric is not False) and ('{:.1f}'.format(wid_line[0].value_numeric)) or '—'"/>
+                                            <t t-if="wid_line and (not wid_line[0].is_compliant)"><sup>*</sup></t>
+                                        </td>
+                                        <td>
+                                            <span t-if="wid_line and wid_line[0].is_compliant" class="badge badge-success">مطابق</span>
+                                            <span t-else="" class="badge badge-danger">غير مطابق</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="text-start">السُمك (مم)</td>
+                                        <td>
+                                            <t t-if="hei_line">
+                                                <t t-set="tgt" t-value="hei_line[0].criterion_id.target_value or 0"/>
+                                                <t t-set="mn" t-value="hei_line[0].criterion_id.min_value or 0"/>
+                                                <t t-set="mx" t-value="hei_line[0].criterion_id.max_value or 0"/>
+                                                <t t-set="tolp" t-value="(mx and tgt) and int(round((mx - tgt) / tgt * 100)) or 0"/>
+                                                <span t-esc="int(round(tgt))"/>
+                                                <span> (±</span>
+                                                <span t-esc="tolp"/>
+                                                <span>%)</span>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td>
+                                            <t t-esc="(hei_line and hei_line[0].value_numeric is not False) and ('{:.1f}'.format(hei_line[0].value_numeric)) or '—'"/>
+                                            <t t-if="hei_line and (not hei_line[0].is_compliant)"><sup>*</sup></t>
+                                        </td>
+                                        <td>
+                                            <span t-if="hei_line and hei_line[0].is_compliant" class="badge badge-success">مطابق</span>
+                                            <span t-else="" class="badge badge-danger">غير مطابق</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="text-start">الشكل</td>
+                                        <td>منتظم وفق المواصفة</td>
+                                        <td>
+                                            <t t-esc="(shape_line and shape_line[0].value_numeric == 1) and 'مطابق' or 'غير مطابق'"/>
+                                        </td>
+                                        <td>
+                                            <span t-if="shape_line and shape_line[0].value_numeric == 1" class="badge badge-success">مطابق</span>
+                                            <span t-else="" class="badge badge-danger">غير مطابق</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start">التجانس</td>
+                                        <td>متجانس</td>
+                                        <td>
+                                            <t t-esc="(unif_line and unif_line[0].value_numeric == 1) and 'متجانس' or 'غير متجانس'"/>
+                                        </td>
+                                        <td>
+                                            <span t-if="unif_line and unif_line[0].value_numeric == 1" class="badge badge-success">مطابق</span>
+                                            <span t-else="" class="badge badge-danger">غير مطابق</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start">الزوايا</td>
+                                        <td>مطابقة</td>
+                                        <td>
+                                            <t t-esc="(corn_line and corn_line[0].value_numeric == 1) and 'مطابقة' or 'غير مطابقة'"/>
+                                        </td>
+                                        <td>
+                                            <span t-if="corn_line and corn_line[0].value_numeric == 1" class="badge badge-success">مطابق</span>
+                                            <span t-else="" class="badge badge-danger">غير مطابق</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start">التزهر</td>
+                                        <td>لا يوجد/خفيف</td>
+                                        <td>
+                                            <t t-if="efflor_line">
+                                                <t t-set="ev" t-value="efflor_line[0].value_numeric"/>
+                                                <t t-esc="(ev == 1) and 'لا يوجد' or ((ev == 2) and 'خفيف' or 'متوسط/عالي')"/>
+                                                <t t-if="not efflor_line[0].is_compliant"><sup>*</sup></t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td>
+                                            <span t-if="efflor_line and efflor_line[0].is_compliant" class="badge badge-success">مطابق</span>
+                                            <span t-else="" class="badge badge-danger">غير مطابق</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start">نسبة التثلم %</td>
+                                        <td>≤ 10%</td>
+                                        <td>
+                                            <t t-if="chip_line and chip_line[0].value_numeric not in (None, False)">
+                                                <t t-set="cv" t-value="chip_line[0].value_numeric"/>
+                                                <t t-esc="'{:.1f}'.format(cv)"/>
+                                                <t t-if="not chip_line[0].is_compliant"><sup>*</sup></t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td>
+                                            <span t-if="chip_line and chip_line[0].is_compliant" class="badge badge-success">مطابق</span>
+                                            <span t-else="" class="badge badge-danger">غير مطابق</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start">نسبة الفتحات %</td>
+                                        <td>
+                                            <t t-if="void_ratio_line">
+                                                <t t-set="mn" t-value="void_ratio_line[0].criterion_id.min_value"/>
+                                                <t t-set="mx" t-value="void_ratio_line[0].criterion_id.max_value"/>
+                                                <t t-esc="'%s — %s' % (int(mn) if mn not in (None, False) else '-', int(mx) if mx not in (None, False) else '-')"/>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td>
+                                            <t t-if="void_ratio_line">
+                                                <t t-set="vv" t-value="void_ratio_line[0].value_numeric"/>
+                                                <t t-esc="(vv not in (None, False)) and '{:.1f}'.format(vv) or '—'"/>
+                                                <t t-if="not void_ratio_line[0].is_compliant"><sup>*</sup></t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td>
+                                            <span t-if="void_ratio_line and void_ratio_line[0].is_compliant" class="badge badge-success">مطابق</span>
+                                            <span t-else="" class="badge badge-danger">غير مطابق</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                        <t t-set="abs_lines" t-value="lines_all.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'INDIVIDUAL_ABSORB_PCT_A').sorted('sample_no')"/>
+                        <t t-set="abs_avg" t-value="(lines_all.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'ABSORB_PCT_A')[:1] or [])"/>
+                        <t t-set="comp_lines" t-value="lines_all.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'INDIVIDUAL_COMP_STRENGTH_A').sorted('sample_no')"/>
+                        <t t-set="comp_avg" t-value="(lines_all.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'COMP_STRENGTH_A')[:1] or [])"/>
+                        <t t-set="row_count" t-value="max(len(abs_lines), len(comp_lines))"/>
+
+                        <div class="lab-section">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10%">ت</th>
+                                        <th style="width:30%">تحمل الضغط لطابوقة واحدة (N/mm²)</th>
+                                        <th style="width:30%">امتصاص الماء لعشرة طابوقات خلال 24 ساعة (%)</th>
+                                        <th style="width:30%">ملاحظات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="range(0, row_count)" t-as="i">
+                                        <tr>
+                                            <td t-esc="i+1"/>
+                                            <td>
+                                                <t t-if="i &lt; len(comp_lines)">
+                                                    <t t-set="line" t-value="comp_lines[i]"/>
+                                                    <t t-esc="(line.value_numeric not in (None, False)) and '{:.1f}'.format(line.value_numeric) or '—'"/>
+                                                    <t t-if="not line.is_compliant"><sup>*</sup></t>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                            <td>
+                                                <t t-if="i &lt; len(abs_lines)">
+                                                    <t t-set="line" t-value="abs_lines[i]"/>
+                                                    <t t-esc="(line.value_numeric not in (None, False)) and '{:.1f}'.format(line.value_numeric) or '—'"/>
+                                                    <t t-if="not line.is_compliant"><sup>*</sup></t>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </t>
+
+                                    <tr>
+                                        <td><strong>متوسط</strong></td>
+                                        <td>
+                                            <t t-if="comp_avg">
+                                                <t t-esc="(comp_avg[0].value_numeric not in (None, False)) and '{:.1f}'.format(comp_avg[0].value_numeric) or '—'"/>
+                                                <t t-if="not comp_avg[0].is_compliant"><sup>*</sup></t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td>
+                                            <t t-if="abs_avg">
+                                                <t t-esc="(abs_avg[0].value_numeric not in (None, False)) and '{:.1f}'.format(abs_avg[0].value_numeric) or '—'"/>
+                                                <t t-if="not abs_avg[0].is_compliant"><sup>*</sup></t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><strong>حدود المواصفة</strong></td>
+                                        <td>
+                                            <t t-if="comp_avg">
+                                                <t t-set="mn" t-value="comp_avg[0].criterion_id.min_value"/>
+                                                <t t-set="mx" t-value="comp_avg[0].criterion_id.max_value"/>
+                                                <t t-esc="'%s — %s' % (int(mn) if mn not in (None, False) else '-', int(mx) if mx not in (None, False) else '-')"/>
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <t t-if="abs_avg">
+                                                <t t-set="mn" t-value="abs_avg[0].criterion_id.min_value"/>
+                                                <t t-set="mx" t-value="abs_avg[0].criterion_id.max_value"/>
+                                                <t t-esc="'%s — %s' % (int(mn) if mn not in (None, False) else '-', int(mx) if mx not in (None, False) else '-')"/>
+                                            </t>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <t t-if="sample.notes">
+                            <div class="lab-section">
+                                <div class="note-box" t-field="sample.notes"/>
+                            </div>
+                        </t>
+
+
+                        <div class="lab-section" style="page-break-inside: avoid; margin-top: 16px;">
+                            <table style="width:100%;border-collapse:collapse;direction:rtl;">
+                                <tr>
+                                    <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                                        <div style="margin-bottom:6px;font-weight:bold;">مسؤول الوحدة</div>
+                                        <t t-if="sample.exec_signature">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                                                <img t-att-src="image_data_uri(sample.exec_signature)" style="max-width:100%;max-height:100%;"/>
+                                            </div>
+                                            <div style="font-size:12px;" t-esc="sample.exec_signer_name or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                                            <div style="font-size:12px;">الاسم/ ____________</div>
+                                        </t>
+                                    </td>
+                                    <td style="width:10px;"/>
+                                    <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                                        <div style="margin-bottom:6px;font-weight:bold;">مسؤول الجودة</div>
+                                        <t t-if="sample.super_signature">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                                                <img t-att-src="image_data_uri(sample.super_signature)" style="max-width:100%;max-height:100%;"/>
+                                            </div>
+                                            <div style="font-size:12px;" t-esc="sample.super_signer_name or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                                            <div style="font-size:12px;">الاسم/ ____________</div>
+                                        </t>
+                                    </td>
+                                    <td style="width:10px;"/>
+                                    <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                                        <div style="margin-bottom:6px;font-weight:bold;">المدير التنفيذي</div>
+                                        <t t-if="sample.company_signature">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                                                <img t-att-src="image_data_uri(sample.company_signature)" style="max-width:100%;max-height:100%;"/>
+                                            </div>
+                                            <div style="font-size:12px;" t-esc="sample.company_signer_name or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                                            <div style="font-size:12px;">الاسم/ ____________</div>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

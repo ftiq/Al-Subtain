@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- وحدات القياس للكور -->
+        <record id="uom_categ_thickness_ap" model="uom.category">
+            <field name="name">السماكة</field>
+        </record>
+
+        <!-- أنواع العينات للكور الخرساني -->
+        <!-- كور خرساني عام -->
+        <record id="concrete_core_sample_type" model="lab.sample.type">
+            <field name="name">حدل الاسفلت</field>
+            <field name="code">CONCRETE_CORE</field>
+            <field name="description">عينات اللب الخرساني المستخرجة من الهياكل الموجودة</field>
+            <field name="sequence">40</field>
+            <field name="active">True</field>
+        </record>
+
+
+
+
+
+        <record id="concrete_core_subtype_surface" model="lab.sample.subtype">
+            <field name="name">تسطيح</field>
+            <field name="code">SURFACE</field>
+            <field name="sample_type_id" ref="concrete_core_sample_type"/>
+            <field name="description">كور خرساني مستخرج من الأسطح والبلاطات</field>
+            <field name="sequence">30</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="concrete_core_subtype_bond" model="lab.sample.subtype">
+            <field name="name">رابطة</field>
+            <field name="code">BOND</field>
+            <field name="sample_type_id" ref="concrete_core_sample_type"/>
+            <field name="description">كور خرساني مستخرج من العناصر الرابطة</field>
+            <field name="sequence">40</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="concrete_core_subtype_structural" model="lab.sample.subtype">
+            <field name="name">اساس</field>
+            <field name="code">STRUCTURAL</field>
+            <field name="sample_type_id" ref="concrete_core_sample_type"/>
+            <field name="description">كور خرساني مستخرج من العناصر الإنشائية</field>
+            <field name="sequence">50</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- قالب فحص الكور -->
+        <record id="template_concrete_core_test" model="lab.test.template">
+            <field name="name">فحص الكور الخرساني</field>
+            <field name="code">CONCRETE_CORE_TEST</field>
+            <field name="description">فحص شامل للكور الخرساني يشمل السماكة والكثافة ونسبة الحدل</field>
+            <field name="standard_code">IQS</field>
+            <field name="industry_type">concrete</field>
+            <field name="state">active</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- معايير السماكة - 4 قراءات -->
+        <record id="crit_core_thickness_1" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">السماكة قراءة 1 (سم)</field>
+            <field name="code">CORE_SIZE_1</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_centimeter_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="sequence">10</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <record id="crit_core_thickness_2" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">السماكة قراءة 2 (سم)</field>
+            <field name="code">CORE_SIZE_2</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_centimeter_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="sequence">11</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <record id="crit_core_thickness_3" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">السماكة قراءة 3 (سم)</field>
+            <field name="code">CORE_SIZE_3</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_centimeter_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="sequence">12</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <record id="crit_core_thickness_4" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">السماكة قراءة 4 (سم)</field>
+            <field name="code">CORE_SIZE_4</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_centimeter_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="sequence">13</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <!-- معدل السماكة لعينة واحدة (مجموع القراءات) -->
+        <record id="crit_core_thickness_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">معدل السماكة (سم)</field>
+            <field name="code">CORE_SIZE_AVG</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="appointment_products.uom_centimeter_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (CORE_SIZE_1 + CORE_SIZE_2 + CORE_SIZE_3 + CORE_SIZE_4) / 4 if all([CORE_SIZE_1, CORE_SIZE_2, CORE_SIZE_3, CORE_SIZE_4]) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_core_thickness_1'), ref('crit_core_thickness_2'), ref('crit_core_thickness_3'), ref('crit_core_thickness_4')])]"/>
+            <field name="sequence">14</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <!-- معدل السماكة العام للسلسلة -->
+        <record id="crit_core_thickness_overall_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">معدل السماكة العام (سم)</field>
+            <field name="code">CORE_THICKNESS_OVERALL_AVG</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="appointment_products.uom_centimeter_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('CORE_SIZE_AVG')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_core_thickness_avg')])]"/>
+            <field name="sequence">15</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <!-- الكثافة المختبرية -->
+        <record id="crit_laboratory_density" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">الكثافة المختبرية (كغم/م³)</field>
+            <field name="code">LABORATORY_DENSITY</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_kg_per_cubic_meter_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="sequence">16</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <!-- الوزن الجاف للكثافة الموقعية -->
+        <record id="crit_dry_weight" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">الوزن الجاف (غم)</field>
+            <field name="code">DRY_WEIGHT</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="sequence">17</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <!-- الوزن المشبع -->
+        <record id="crit_saturated_weight" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">الوزن المشبع (غم)</field>
+            <field name="code">SATURATED_WEIGHT</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="sequence">18</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <!-- الوزن المغمور -->
+        <record id="crit_submerged_weight" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">الوزن المغمور (غم)</field>
+            <field name="code">SUBMERGED_WEIGHT</field>
+            <field name="test_type">numeric</field>
+            <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="sequence">19</field>
+            <field name="is_required">True</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <!-- الكثافة الموقعية المحسوبة -->
+        <record id="crit_bulk_density" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">الكثافة الموقعية (كغم/م³)</field>
+            <field name="code">BULK_DENSITY</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="appointment_products.uom_kg_per_cubic_meter_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (DRY_WEIGHT / (SATURATED_WEIGHT - SUBMERGED_WEIGHT)) * 1000 if (SATURATED_WEIGHT and SUBMERGED_WEIGHT and (SATURATED_WEIGHT - SUBMERGED_WEIGHT) != 0) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_dry_weight'), ref('crit_saturated_weight'), ref('crit_submerged_weight')])]"/>
+            <field name="sequence">20</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <!-- معدل الكثافة الموقعية -->
+        <record id="crit_bulk_density_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">معدل الكثافة الموقعية (كغم/م³)</field>
+            <field name="code">BULK_DENSITY_AVG</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="appointment_products.uom_kg_per_cubic_meter_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('BULK_DENSITY')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_bulk_density')])]"/>
+            <field name="sequence">21</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">True</field>
+        </record>
+
+        <!-- نسبة الحدل (لكل عينة) -->
+        <record id="crit_compaction_ratio" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">نسبة الحدل (%)</field>
+            <field name="code">COMPACTION_RATIO</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = (BULK_DENSITY / (LABORATORY_DENSITY * 1000 if LABORATORY_DENSITY &lt; 100 else LABORATORY_DENSITY) * 100) if (LABORATORY_DENSITY and LABORATORY_DENSITY != 0) else 0</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_bulk_density'), ref('crit_laboratory_density')])]"/>
+            <field name="sequence">22</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">False</field>
+        </record>
+
+        <!-- معدل نسبة الحدل -->
+        <record id="crit_compaction_ratio_avg" model="lab.test.criterion">
+            <field name="template_id" ref="template_concrete_core_test"/>
+            <field name="name">معدل نسبة الحدل (%)</field>
+            <field name="code">COMPACTION_RATIO_AVG</field>
+            <field name="test_type">computed</field>
+            <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+            <field name="min_value">0</field>
+            <field name="max_value">0</field>
+            <field name="target_value">0</field>
+            <field name="is_input_field">False</field>
+            <field name="is_computed_field">True</field>
+            <field name="computation_formula">result = avg_series('COMPACTION_RATIO')</field>
+            <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_compaction_ratio')])]"/>
+            <field name="sequence">23</field>
+            <field name="is_required">False</field>
+            <field name="is_critical">False</field>
+            <field name="is_global">False</field>
+            <field name="is_summary_field">True</field>
+        </record>
+        
+        <!-- خطة فحص الكور -->
+        <record id="concrete_core_test_flow_template" model="lab.test.flow.template">
+            <field name="name">خطة فحص الكور الخرساني</field>
+            <field name="description">فحص شامل للكور الخرساني: السماكة، الكثافة، ونسبة الحدل</field>
+            <field name="allow_parallel_tests" eval="True"/>
+        </record>
+
+        <record id="concrete_core_test_flow_stage1" model="lab.test.flow.template.line">
+            <field name="template_id" ref="concrete_core_test_flow_template"/>
+            <field name="sequence">10</field>
+            <field name="test_template_id" ref="template_concrete_core_test"/>
+            <field name="sample_qty">2</field>
+        </record>
+
+        <!-- منتج عينة الكور -->
+        <record id="product_concrete_core_sample" model="product.template">
+            <field name="name">العينة - حدل الاسفلت</field>
+            <field name="type">consu</field>
+            <field name="is_sample_product">True</field>
+            <field name="tracking">serial</field>
+            <field name="sample_type_id" ref="concrete_core_sample_type"/>
+            <field name="lab_test_template_id" eval="[(6,0,[ref('template_concrete_core_test')])]"/>
+            <field name="categ_id" ref="product.product_category_all"/>
+        </record>
+
+    </data>
+</odoo>
