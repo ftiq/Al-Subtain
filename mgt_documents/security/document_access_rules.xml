@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        
+        
+        
+        <record id="rule_document_user_access" model="ir.rule">
+            <field name="name">موظف إدخال: وثائق القسم والمُكلف بها</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|',
+                ('create_uid', '=', user.id),
+                ('recipient_employee_id.user_id', '=', user.id),
+                ('department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('confidentiality_level', 'in', ['public', 'internal'])
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_user'))]"/>
+        </record>
+        
+        <record id="rule_document_processor_access" model="ir.rule">
+            <field name="name">موظف معالجة: وثائق القسم والمُحالة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|', '|',
+                ('create_uid', '=', user.id),
+                ('recipient_employee_id.user_id', '=', user.id),
+                ('department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('sender_employee_id.department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('confidentiality_level', 'in', ['public', 'internal'])
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_processor'))]"/>
+        </record>
+        
+        <record id="rule_document_supervisor_access" model="ir.rule">
+            <field name="name">مشرف: وثائق القسم بما فيها السرية</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|', '|', '|',
+                ('create_uid', '=', user.id),
+                ('recipient_employee_id.user_id', '=', user.id),
+                ('department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('sender_employee_id.department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                '&amp;', ('confidentiality_level', '=', 'confidential'), ('department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('confidentiality_level', 'in', ['public', 'internal'])
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_supervisor'))]"/>
+        </record>
+        
+        <record id="rule_document_manager_level_access" model="ir.rule">
+            <field name="name">مدير: وثائق قسمه والأقسام التابعة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|', '|', '|', '|',
+                ('create_uid', '=', user.id),
+                ('recipient_employee_id.user_id', '=', user.id),
+                ('department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('department_id', 'child_of', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('sender_employee_id.department_id', 'child_of', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                '&amp;', ('confidentiality_level', '=', 'confidential'), ('department_id', 'child_of', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('confidentiality_level', '!=', 'top_secret')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_manager'))]"/>
+        </record>
+        
+        <record id="rule_document_director_level_access" model="ir.rule">
+            <field name="name">مدير عام: وثائق إدارته وجميع المستويات</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|', '|', '|', '|', '|',
+                ('create_uid', '=', user.id),
+                ('recipient_employee_id.user_id', '=', user.id),
+                ('department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('department_id', 'child_of', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('sender_employee_id.department_id', 'child_of', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                '&amp;', ('confidentiality_level', '=', 'confidential'), ('department_id', 'child_of', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                '&amp;', ('confidentiality_level', '=', 'top_secret'), ('create_uid', '=', user.id),
+                ('confidentiality_level', '!=', 'top_secret')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_director'))]"/>
+        </record>
+        
+        <record id="rule_document_admin_level_access" model="ir.rule">
+            <field name="name">مدير النظام: جميع الوثائق حسب المستوى</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('confidentiality_level', '!=', 'top_secret'),
+                ('create_uid', '=', user.id),
+                ('recipient_employee_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_document_admin_full_access" model="ir.rule">
+            <field name="name">مدير النظام: وصول كامل</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_admin'))]"/>
+        </record>
+        
+        
+        <record id="rule_document_legal_reviewer" model="ir.rule">
+            <field name="name">المراجع القانوني: الوثائق القانونية</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|',
+                ('document_type', 'in', ['contract', 'legal']),
+                ('category_id.name', 'ilike', 'قانون'),
+                ('category_id.name', 'ilike', 'عقد'),
+                ('confidentiality_level', '!=', 'top_secret')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_legal_reviewer'))]"/>
+        </record>
+        
+        <record id="rule_document_financial_reviewer" model="ir.rule">
+            <field name="name">المراجع المالي: الوثائق المالية</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '|', '|', '|',
+                ('document_type', 'in', ['invoice', 'financial']),
+                ('category_id.name', 'ilike', 'مالي'),
+                ('category_id.name', 'ilike', 'فاتورة'),
+                ('confidentiality_level', '!=', 'top_secret')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_financial_reviewer'))]"/>
+        </record>
+        
+        <record id="rule_document_auditor_access" model="ir.rule">
+            <field name="name">المدقق الداخلي: وصول للمراجعة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                ('confidentiality_level', '!=', 'top_secret')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_auditor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="rule_category_public_read" model="ir.rule">
+            <field name="name">الفئات: قراءة عامة</field>
+            <field name="model_id" ref="model_document_category"/>
+            <field name="domain_force">[('is_active', '=', True)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="rule_category_management" model="ir.rule">
+            <field name="name">الفئات: إدارة للمديرين</field>
+            <field name="model_id" ref="model_document_category"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_history_document_based" model="ir.rule">
+            <field name="name">سجل التغييرات: حسب صلاحية الوثيقة</field>
+            <field name="model_id" ref="model_document_history"/>
+            <field name="domain_force">[
+                '|', '|', '|',
+                ('document_id.create_uid', '=', user.id),
+                ('document_id.recipient_employee_id.user_id', '=', user.id),
+                ('document_id.department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <record id="rule_history_manager_access" model="ir.rule">
+            <field name="name">سجل التغييرات: وصول المديرين</field>
+            <field name="model_id" ref="model_document_history"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_task_assignment_based" model="ir.rule">
+            <field name="name">المهام: المُكلف أو المسؤول</field>
+            <field name="model_id" ref="model_admin_task"/>
+            <field name="domain_force">[
+                '|', '|', '|',
+                ('assigned_employee_id.user_id', '=', user.id),
+                ('create_uid', '=', user.id),
+                ('assigned_department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False),
+                ('assigned_department_id', 'child_of', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <record id="rule_task_supervisor_management" model="ir.rule">
+            <field name="name">المهام: إدارة للمشرفين</field>
+            <field name="model_id" ref="model_admin_task"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_supervisor')), (4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_workflow_read_access" model="ir.rule">
+            <field name="name">سير العمل: قراءة عامة</field>
+            <field name="model_id" ref="model_workflow_process"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="rule_workflow_management" model="ir.rule">
+            <field name="name">سير العمل: إدارة للمديرين</field>
+            <field name="model_id" ref="model_workflow_process"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_router_read_access" model="ir.rule">
+            <field name="name">قواعد التوجيه: قراءة عامة</field>
+            <field name="model_id" ref="model_document_router"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="rule_router_management" model="ir.rule">
+            <field name="name">قواعد التوجيه: إدارة للمشرفين</field>
+            <field name="model_id" ref="model_document_router"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_supervisor')), (4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_business_process_read_access" model="ir.rule">
+            <field name="name">العمليات: قراءة عامة</field>
+            <field name="model_id" ref="model_workflow_process"/>
+            <field name="domain_force">[('state', 'in', ['active', 'testing'])]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="rule_business_process_management" model="ir.rule">
+            <field name="name">العمليات: إدارة للمديرين</field>
+            <field name="model_id" ref="model_workflow_process"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_business_process_owner" model="ir.rule">
+            <field name="name">العمليات: المالك</field>
+            <field name="model_id" ref="model_workflow_process"/>
+            <field name="domain_force">[('owner_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_document_supervisor'))]"/>
+        </record>
+        
+        <record id="rule_process_step_read_access" model="ir.rule">
+            <field name="name">خطوات العملية: قراءة عامة</field>
+            <field name="model_id" ref="model_process_step"/>
+            <field name="domain_force">[('process_id.state', 'in', ['active', 'testing'])]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="rule_process_step_management" model="ir.rule">
+            <field name="name">خطوات العملية: إدارة</field>
+            <field name="model_id" ref="model_process_step"/>
+            <field name="domain_force">[
+                '|', 
+                ('process_id.owner_id.user_id', '=', user.id),
+                '&amp;', ('process_id.manager_ids.user_id', 'in', [user.id]), ('process_id.state', '!=', 'archived')
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_supervisor')), (4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_workflow_instance_document_based" model="ir.rule">
+            <field name="name">نسخ سير العمل: حسب الوثيقة المرتبطة</field>
+            <field name="model_id" ref="model_document_workflow_instance"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('document_id.create_uid', '=', user.id),
+                ('document_id.recipient_employee_id.user_id', '=', user.id),
+                ('document_id.department_id', '=', user.employee_id.department_id.id if user.employee_id and user.employee_id.department_id else False)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <record id="rule_workflow_instance_management" model="ir.rule">
+            <field name="name">نسخ سير العمل: إدارة للمشرفين</field>
+            <field name="model_id" ref="model_document_workflow_instance"/>
+            <field name="domain_force">[
+                '|',
+                ('workflow_process_id.manager_ids.user_id', 'in', [user.id]),
+                ('workflow_process_id.owner_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_document_supervisor')), (4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_step_execution_instance_based" model="ir.rule">
+            <field name="name">تنفيذ الخطوات: حسب نسخة العملية</field>
+            <field name="model_id" ref="model_workflow_step_execution"/>
+            <field name="domain_force">[
+                '|',
+                ('instance_id.document_id.create_uid', '=', user.id),
+                ('assigned_user_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <record id="rule_step_execution_management" model="ir.rule">
+            <field name="name">تنفيذ الخطوات: إدارة للمشرفين</field>
+            <field name="model_id" ref="model_workflow_step_execution"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_document_supervisor')), (4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+        </record>
+        
+        <record id="rule_document_top_secret_restricted" model="ir.rule">
+            <field name="name">الوثائق عالية السرية: وصول محدود</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="domain_force">[
+                '&amp;', ('confidentiality_level', '=', 'top_secret'),
+                '|', ('create_uid', '=', user.id), ('recipient_employee_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <record id="rule_archived_processes_readonly" model="ir.rule">
+            <field name="name">العمليات المؤرشفة: قراءة فقط</field>
+            <field name="model_id" ref="model_workflow_process"/>
+            <field name="domain_force">[('state', '=', 'archived')]</field>
+            <field name="groups" eval="[(4, ref('group_document_manager')), (4, ref('group_document_director')), (4, ref('group_document_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>

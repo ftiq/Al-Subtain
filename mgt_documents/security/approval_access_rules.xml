@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="rule_approval_request_owner_or_approver" model="ir.rule">
+            <field name="name">طلبات الموافقة: المالك أو الموافق</field>
+            <field name="model_id" ref="model_approval_request"/>
+            <field name="domain_force">[
+                '|',
+                ('request_owner_id', '=', user.id),
+                ('approver_ids.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+
+        <record id="rule_approval_request_manager_all" model="ir.rule">
+            <field name="name">طلبات الموافقة: وصول كامل للمديرين</field>
+            <field name="model_id" ref="model_approval_request"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('mgt_documents.group_document_supervisor')),
+                                          (4, ref('mgt_documents.group_document_manager')),
+                                          (4, ref('mgt_documents.group_document_director')),
+                                          (4, ref('mgt_documents.group_document_admin'))]"/>
+        </record>
+
+        <record id="rule_approval_approver_self_or_owner" model="ir.rule">
+            <field name="name">الموافق: سجلاتي أو طلباتي</field>
+            <field name="model_id" ref="model_approval_approver"/>
+            <field name="domain_force">[
+                '|',
+                ('user_id', '=', user.id),
+                ('request_id.request_owner_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="rule_approval_approver_manager_all" model="ir.rule">
+            <field name="name">الموافق: وصول كامل للمديرين</field>
+            <field name="model_id" ref="model_approval_approver"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('mgt_documents.group_document_supervisor')),
+                                          (4, ref('mgt_documents.group_document_manager')),
+                                          (4, ref('mgt_documents.group_document_director')),
+                                          (4, ref('mgt_documents.group_document_admin'))]"/>
+        </record>
+    </data>
+</odoo>

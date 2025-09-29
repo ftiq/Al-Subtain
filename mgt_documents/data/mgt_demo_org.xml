@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    
+    <record id="demo_dept_management" model="hr.department">
+      <field name="name">الإدارة العامة</field>
+    </record>
+    <record id="demo_dept_legal" model="hr.department">
+      <field name="name">الشؤون القانونية</field>
+    </record>
+    <record id="demo_dept_finance" model="hr.department">
+      <field name="name">الشؤون المالية</field>
+    </record>
+    <record id="demo_dept_operations" model="hr.department">
+      <field name="name">العمليات</field>
+    </record>
+    <record id="demo_dept_archive" model="hr.department">
+      <field name="name">الأرشيف</field>
+    </record>
+    <record id="demo_dept_it" model="hr.department">
+      <field name="name">تقنية المعلومات</field>
+    </record>
+
+
+    
+    <record id="demo_job_data_entry" model="hr.job">
+      <field name="name">موظف إدخال بيانات</field>
+      <field name="department_id" ref="demo_dept_operations"/>
+    </record>
+    <record id="demo_job_processor" model="hr.job">
+      <field name="name">موظف معالجة وثائق</field>
+      <field name="department_id" ref="demo_dept_operations"/>
+    </record>
+    <record id="demo_job_supervisor" model="hr.job">
+      <field name="name">مشرف وثائق</field>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+    <record id="demo_job_approver" model="hr.job">
+      <field name="name">موافق إداري</field>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+    <record id="demo_job_manager" model="hr.job">
+      <field name="name">مدير إدارة الوثائق</field>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+    <record id="demo_job_director" model="hr.job">
+      <field name="name">مدير عام</field>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+    <record id="demo_job_legal" model="hr.job">
+      <field name="name">مراجع قانوني</field>
+      <field name="department_id" ref="demo_dept_legal"/>
+    </record>
+    <record id="demo_job_finance" model="hr.job">
+      <field name="name">مراجع مالي</field>
+      <field name="department_id" ref="demo_dept_finance"/>
+    </record>
+    <record id="demo_job_archivist" model="hr.job">
+      <field name="name">أمين أرشيف</field>
+      <field name="department_id" ref="demo_dept_archive"/>
+    </record>
+    <record id="demo_job_auditor" model="hr.job">
+      <field name="name">مدقق</field>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+
+    
+    <record id="demo_user_data_entry" model="res.users">
+      <field name="name">موظف إدخال</field>
+      <field name="login">de@mgt.local</field>
+      <field name="email">de@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_user'))]"/>
+    </record>
+    <record id="demo_user_processor" model="res.users">
+      <field name="name">موظف معالجة</field>
+      <field name="login">pr@mgt.local</field>
+      <field name="email">pr@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_processor'))]"/>
+    </record>
+    <record id="demo_user_supervisor" model="res.users">
+      <field name="name">مشرف</field>
+      <field name="login">sp@mgt.local</field>
+      <field name="email">sp@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_supervisor'))]"/>
+    </record>
+    <record id="demo_user_approver" model="res.users">
+      <field name="name">موافق</field>
+      <field name="login">ap@mgt.local</field>
+      <field name="email">ap@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_approver'))]"/>
+    </record>
+    <record id="demo_user_manager" model="res.users">
+      <field name="name">مدير وثائق</field>
+      <field name="login">dm@mgt.local</field>
+      <field name="email">dm@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_manager'))]"/>
+    </record>
+    <record id="demo_user_director" model="res.users">
+      <field name="name">مدير عام</field>
+      <field name="login">dr@mgt.local</field>
+      <field name="email">dr@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_director'))]"/>
+    </record>
+    <record id="demo_user_legal" model="res.users">
+      <field name="name">مراجع قانوني</field>
+      <field name="login">lg@mgt.local</field>
+      <field name="email">lg@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_legal_reviewer'))]"/>
+    </record>
+    <record id="demo_user_finance" model="res.users">
+      <field name="name">مراجع مالي</field>
+      <field name="login">fi@mgt.local</field>
+      <field name="email">fi@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_financial_reviewer'))]"/>
+    </record>
+    <record id="demo_user_archivist" model="res.users">
+      <field name="name">أمين أرشيف</field>
+      <field name="login">ar@mgt.local</field>
+      <field name="email">ar@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_archivist'))]"/>
+    </record>
+    <record id="demo_user_auditor" model="res.users">
+      <field name="name">مدقق</field>
+      <field name="login">au@mgt.local</field>
+      <field name="email">au@mgt.local</field>
+      <field name="password">11</field>
+      <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('mgt_documents.group_document_auditor'))]"/>
+    </record>
+
+
+    <record id="demo_emp_data_entry" model="hr.employee">
+      <field name="name">موظف إدخال</field>
+      <field name="user_id" ref="demo_user_data_entry"/>
+      <field name="job_id" ref="demo_job_data_entry"/>
+      <field name="department_id" ref="demo_dept_operations"/>
+    </record>
+    <record id="demo_emp_processor" model="hr.employee">
+      <field name="name">موظف معالجة</field>
+      <field name="user_id" ref="demo_user_processor"/>
+      <field name="job_id" ref="demo_job_processor"/>
+      <field name="department_id" ref="demo_dept_operations"/>
+    </record>
+    <record id="demo_emp_supervisor" model="hr.employee">
+      <field name="name">مشرف</field>
+      <field name="user_id" ref="demo_user_supervisor"/>
+      <field name="job_id" ref="demo_job_supervisor"/>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+    <record id="demo_emp_approver" model="hr.employee">
+      <field name="name">موافق</field>
+      <field name="user_id" ref="demo_user_approver"/>
+      <field name="job_id" ref="demo_job_approver"/>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+    <record id="demo_emp_manager" model="hr.employee">
+      <field name="name">مدير وثائق</field>
+      <field name="user_id" ref="demo_user_manager"/>
+      <field name="job_id" ref="demo_job_manager"/>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+    <record id="demo_emp_director" model="hr.employee">
+      <field name="name">مدير عام</field>
+      <field name="user_id" ref="demo_user_director"/>
+      <field name="job_id" ref="demo_job_director"/>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+    <record id="demo_emp_legal" model="hr.employee">
+      <field name="name">مراجع قانوني</field>
+      <field name="user_id" ref="demo_user_legal"/>
+      <field name="job_id" ref="demo_job_legal"/>
+      <field name="department_id" ref="demo_dept_legal"/>
+    </record>
+    <record id="demo_emp_finance" model="hr.employee">
+      <field name="name">مراجع مالي</field>
+      <field name="user_id" ref="demo_user_finance"/>
+      <field name="job_id" ref="demo_job_finance"/>
+      <field name="department_id" ref="demo_dept_finance"/>
+    </record>
+    <record id="demo_emp_archivist" model="hr.employee">
+      <field name="name">أمين أرشيف</field>
+      <field name="user_id" ref="demo_user_archivist"/>
+      <field name="job_id" ref="demo_job_archivist"/>
+      <field name="department_id" ref="demo_dept_archive"/>
+    </record>
+    <record id="demo_emp_auditor" model="hr.employee">
+      <field name="name">مدقق</field>
+      <field name="user_id" ref="demo_user_auditor"/>
+      <field name="job_id" ref="demo_job_auditor"/>
+      <field name="department_id" ref="demo_dept_management"/>
+    </record>
+
+    
+    <record id="demo_emp_manager" model="hr.employee">
+      <field name="parent_id" ref="demo_emp_director"/>
+    </record>
+    <record id="demo_emp_supervisor" model="hr.employee">
+      <field name="parent_id" ref="demo_emp_manager"/>
+    </record>
+    <record id="demo_emp_approver" model="hr.employee">
+      <field name="parent_id" ref="demo_emp_supervisor"/>
+    </record>
+    <record id="demo_emp_processor" model="hr.employee">
+      <field name="parent_id" ref="demo_emp_supervisor"/>
+    </record>
+    <record id="demo_emp_data_entry" model="hr.employee">
+      <field name="parent_id" ref="demo_emp_supervisor"/>
+    </record>
+    <record id="demo_emp_legal" model="hr.employee">
+      <field name="parent_id" ref="demo_emp_director"/>
+    </record>
+    <record id="demo_emp_finance" model="hr.employee">
+      <field name="parent_id" ref="demo_emp_director"/>
+    </record>
+    <record id="demo_emp_archivist" model="hr.employee">
+      <field name="parent_id" ref="demo_emp_director"/>
+    </record>
+    <record id="demo_emp_auditor" model="hr.employee">
+      <field name="parent_id" ref="demo_emp_director"/>
+    </record>
+
+  </data>
+</odoo>

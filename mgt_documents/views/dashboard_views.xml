@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+
+        <record id="action_document_dashboard" model="ir.actions.act_window">
+            <field name="name">لوحة تحكم الوثائق</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form,graph,pivot</field>
+            <field name="domain">[]</field>
+            <field name="context">{
+                'search_default_my_documents': 1,
+                'group_by': ['state', 'document_type']
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    مرحباً بك في نظام إدارة الوثائق
+                </p>
+                <p>
+                    ابدأ بإنشاء وثيقتك الأولى
+                </p>
+            </field>
+        </record>
+        
+        <record id="action_executive_dashboard" model="ir.actions.client">
+            <field name="name">لوحة المعلومات</field>
+            <field name="tag">mgt_documents_dashboard</field>
+            <field name="context">{}</field>
+        </record>
+        
+        
+        <record id="action_bpm_processes" model="ir.actions.act_window">
+            <field name="name">لوحة مراقبة العمليات</field>
+            <field name="res_model">workflow.process</field>
+            <field name="view_mode">kanban,list,form,graph,pivot</field>
+            <field name="context">{
+                'search_default_active_processes': 1,
+                'group_by': ['state', 'process_type', 'priority']
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    لوحة مراقبة شاملة لجميع العمليات
+                </p>
+                <p>
+                    مراقبة وإدارة جميع عملياتك من مكان واحد
+                </p>
+            </field>
+        </record>
+            
+
+        <record id="action_document_analytics" model="ir.actions.act_window">
+            <field name="name">تحليلات الوثائق</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">graph,pivot</field>
+            <field name="context">{
+                'search_default_this_month': 1,
+                'group_by': ['state', 'document_type', 'department_id']
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    لا توجد بيانات لعرضها!
+                </p>
+                <p>
+                    قم بإنشاء بعض الوثائق لعرض التحليلات.
+                </p>
+            </field>
+        </record>
+        
+
+        <record id="action_bpm_analytics" model="ir.actions.act_window">
+            <field name="name">تحليلات العمليات</field>
+            <field name="res_model">workflow.process</field>
+            <field name="view_mode">graph,pivot</field>
+            <field name="context">{
+                'search_default_active_processes': 1,
+                'group_by': ['state', 'process_type', 'priority']
+            }</field>
+        </record>
+        
+
+        <record id="action_workflow_instances_analytics" model="ir.actions.act_window">
+            <field name="name">تحليلات نسخ سير العمل</field>
+            <field name="res_model">document.workflow.instance</field>
+            <field name="view_mode">graph,pivot</field>
+            <field name="context">{
+                'search_default_running': 1,
+                'group_by': ['state', 'priority', 'workflow_process_id']
+            }</field>
+        </record>
+        
+
+        <record id="action_tasks_analytics" model="ir.actions.act_window">
+            <field name="name">تحليلات المهام</field>
+            <field name="res_model">admin.task</field>
+            <field name="view_mode">graph,pivot</field>
+            <field name="context">{
+                'search_default_active_tasks': 1,
+                'group_by': ['state', 'task_type', 'assigned_department_id']
+            }</field>
+        </record>
+        
+
+        <record id="view_document_performance_graph" model="ir.ui.view">
+            <field name="name">document.document.graph</field>
+            <field name="model">document.document</field>
+            <field name="arch" type="xml">
+                <graph string="أداء الوثائق" type="line" stacked="False">
+                    <field name="create_date" type="row" interval="month"/>
+                    <field name="state" type="col"/>
+                </graph>
+            </field>
+        </record>
+        
+        <record id="view_document_performance_pivot" model="ir.ui.view">
+            <field name="name">document.document.pivot</field>
+            <field name="model">document.document</field>
+            <field name="arch" type="xml">
+                <pivot string="تحليل الوثائق">
+                    <field name="department_id" type="row"/>
+                    <field name="document_type" type="col"/>
+                    <field name="id" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+        
+
+        <record id="view_business_process_performance_graph" model="ir.ui.view">
+            <field name="name">workflow.process.graph</field>
+            <field name="model">workflow.process</field>
+            <field name="arch" type="xml">
+                <graph string="أداء العمليات" type="bar">
+                    <field name="process_type" type="row"/>
+                    <field name="success_rate" type="measure"/>
+                    <field name="average_completion_time" type="measure" sum="Average Duration"/>
+                </graph>
+            </field>
+        </record>
+        
+        <record id="view_workflow_instance_performance_graph" model="ir.ui.view">
+            <field name="name">document.workflow.instance.graph</field>
+            <field name="model">document.workflow.instance</field>
+            <field name="arch" type="xml">
+                <graph string="أداء نسخ سير العمل" type="pie">
+                    <field name="state" type="row"/>
+                </graph>
+            </field>
+        </record>
+        
+        <menuitem id="menu_document_dashboard"
+                  name="الوثائق"
+                  parent="menu_document_main"
+                  action="action_document_dashboard"
+                  sequence="2"
+                  groups=""/>
+        
+
+        <menuitem id="menu_executive_dashboard"
+                  name="لوحة المعلومات"
+                  parent="menu_document_main"
+                  action="action_executive_dashboard"
+                  sequence="1"
+                  groups="mgt_documents.group_document_admin,mgt_documents.group_document_director,mgt_documents.group_document_manager"/>
+        
+        <menuitem id="menu_analytics"
+                  name="التحليلات والتقارير"
+                  parent="menu_document_main"
+                  sequence="70"/>
+        
+        <menuitem id="menu_document_analytics"
+                  name="تحليلات الوثائق"
+                  parent="menu_analytics"
+                  action="action_document_analytics"
+                  sequence="10"/>
+        
+        
+        <menuitem id="menu_bmp_analytics"
+                  name="تحليلات العمليات"
+                  parent="menu_analytics"
+                  action="action_bpm_analytics"
+                  sequence="30"/>
+        
+        <menuitem id="menu_workflow_analytics"
+                  name="تحليلات نسخ سير العمل"
+                  parent="menu_analytics"
+                  action="action_workflow_instances_analytics"
+                  sequence="40"/>
+        
+        <menuitem id="menu_tasks_analytics"
+                  name="تحليلات المهام"
+                  parent="menu_analytics"
+                  action="action_tasks_analytics"
+                  sequence="50"/>
+
+    </data>
+</odoo>
