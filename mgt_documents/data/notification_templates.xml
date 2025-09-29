@@ -1,53 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <!-- قوالب الإشعارات للنسخ -->
-    
-    <!-- قالب إشعار النسخة -->
-    <record id="mail_template_document_copy" model="mail.template">
-        <field name="name">إشعار نسخة الوثيقة</field>
-        <field name="model_id" ref="model_document_document"/>
-        <field name="subject">نسخة من الوثيقة: {{ object.name }}</field>
-        <field name="body_html" type="html">
-<div style="font-family: Arial, sans-serif; direction: rtl; text-align: right; margin: 0; padding: 20px;">
-    <h2 style="color: #1f2937; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
-        📎 نسخة من الوثيقة
-    </h2>
-    
-    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0;">
-        <p><strong>عنوان الوثيقة:</strong> {{ object.name }}</p>
-        <p><strong>الرقم المرجعي:</strong> {{ object.reference_number or 'غير محدد' }}</p>
-        <p><strong>النوع:</strong> {{ dict(object._fields['document_type'].selection).get(object.document_type, object.document_type) }}</p>
-        <p><strong>التاريخ:</strong> {{ object.date.strftime('%Y-%m-%d %H:%M') if object.date else 'غير محدد' }}</p>
-    </div>
-    
-    <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 15px 0;">
-        <h4 style="color: #856404; margin-top: 0;">💬 رسالة النسخة:</h4>
-        <p>{{ object.copy_message_id.message if object.copy_message_id else 'يرجى الاطلاع على الوثيقة المرفقة للعلم والمتابعة اللازمة.' }}</p>
-    </div>
-    
-    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 15px 0;">
-        <p style="color: #1565c0; margin: 0;">
-            <strong>🔒 ملاحظة:</strong> هذه نسخة للقراءة فقط
-        </p>
-    </div>
-    
-    % if object.id:
-    <div style="text-align: center; margin: 20px 0;">
-        <a href="/web#id={{ object.id }}&amp;view_type=form&amp;model=document.document" 
-           style="background: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-            عرض الوثيقة
-        </a>
-    </div>
-    % endif
-    
-    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;"/>
-    <p style="color: #6b7280; font-size: 12px;">
-        هذا إشعار تلقائي من نظام إدارة الوثائق والمراسلات
-    </p>
-</div>
-        </field>
-        <field name="auto_delete" eval="False"/>
-        <field name="email_from">{{ (object.create_uid.email_formatted or user.email_formatted) }}</field>
-    </record>
-
-</odoo>
