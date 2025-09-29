@@ -33,7 +33,6 @@
         'data/document_type_defaults.xml',
         'data/email_templates.xml',
         'data/mail_templates.xml',
-        'data/mgt_demo_org.xml',
                 
         'views/mgt_documents_actions.xml',
         'views/mgt_documents_menus.xml',
@@ -67,6 +66,7 @@
         ],
     },
     'demo': [
+        'data/mgt_demo_org.xml',
     ],
     'installable': True,
     'auto_install': False,
