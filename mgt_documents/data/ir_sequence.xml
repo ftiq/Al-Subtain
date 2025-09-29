@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+
+        
+
+        <record id="seq_document_incoming" model="ir.sequence">
+            <field name="name">تسلسل المخاطبات الواردة</field>
+            <field name="code">document.incoming</field>
+            <field name="prefix">وارد/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_document_outgoing" model="ir.sequence">
+            <field name="name">تسلسل المخاطبات الصادرة</field>
+            <field name="code">document.outgoing</field>
+            <field name="prefix">صادر/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_document_internal" model="ir.sequence">
+            <field name="name">تسلسل المخاطبات الداخلية</field>
+            <field name="code">document.internal</field>
+            <field name="prefix">داخلي/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+
+
+
+        <record id="seq_document_circular" model="ir.sequence">
+            <field name="name">تسلسل التعاميم</field>
+            <field name="code">document.circular</field>
+            <field name="prefix">تعميم/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_document_memo" model="ir.sequence">
+            <field name="name">تسلسل المذكرات</field>
+            <field name="code">document.memo</field>
+            <field name="prefix">مذكرة/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_document_report" model="ir.sequence">
+            <field name="name">تسلسل التقارير</field>
+            <field name="code">document.report</field>
+            <field name="prefix">تقرير/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_document_letter" model="ir.sequence">
+            <field name="name">تسلسل الرسائل</field>
+            <field name="code">document.letter</field>
+            <field name="prefix">رسالة/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_document_contract" model="ir.sequence">
+            <field name="name">تسلسل العقود</field>
+            <field name="code">document.contract</field>
+            <field name="prefix">عقد/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_document_invoice" model="ir.sequence">
+            <field name="name">تسلسل الفواتير</field>
+            <field name="code">document.invoice</field>
+            <field name="prefix">فاتورة/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_document_other" model="ir.sequence">
+            <field name="name">تسلسل الوثائق الأخرى</field>
+            <field name="code">document.other</field>
+            <field name="prefix">وثيقة/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_approval_request" model="ir.sequence">
+            <field name="name">تسلسل طلبات الموافقة</field>
+            <field name="code">approval.request</field>
+            <field name="prefix">موافقة/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_digital_signature" model="ir.sequence">
+            <field name="name">تسلسل التوقيعات الرقمية</field>
+            <field name="code">digital.signature</field>
+            <field name="prefix">توقيع/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo> 

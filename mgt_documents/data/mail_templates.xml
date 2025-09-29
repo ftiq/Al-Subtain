@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+
+        <record id="email_template_document_created" model="mail.template">
+            <field name="name">إشعار إنشاء وثيقة جديدة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="subject">تم إنشاء وثيقة جديدة: ${object.name}</field>
+            <field name="email_from">${(object.create_uid.email_formatted or user.email_formatted)|safe}</field>
+            <field name="email_to">${object.recipient_employee_id.work_email or object.recipient_id.email}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; direction: rtl;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F2F3; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; color: #454748; width: 100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse: separate;">
+                    <tbody>
+                        <tr>
+                            <td style="padding-top: 32px; text-align: center;">
+                                <h2 style="color: #875A7B;">تم إنشاء وثيقة جديدة</h2>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 16px;">
+                                <p>السلام عليكم ورحمة الله وبركاته،</p>
+                                <p>نود إعلامكم بأنه تم إنشاء وثيقة جديدة في النظام:</p>
+                                
+                                <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">عنوان الوثيقة:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">الرقم المرجعي:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.reference_number}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">الموضوع:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.subject}</td>
+                                    </tr>
+                                </table>
+                                
+                                <p style="text-align: center; margin-top: 32px;">
+                                    <a href="/web#id=${object.id}&amp;view_type=form&amp;model=document.document" 
+                                       style="background-color: #875A7B; padding: 12px 24px; color: white; text-decoration: none; border-radius: 4px;">
+                                        عرض الوثيقة
+                                    </a>
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+            </field>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="email_template_approval_request" model="mail.template">
+            <field name="name">طلب موافقة على وثيقة</field>
+            <field name="model_id" ref="approvals.model_approval_request"/>
+            <field name="subject">طلب موافقة: ${object.document_id.name}</field>
+            <field name="email_from">${(object.requester_id.user_id.email_formatted or user.email_formatted)|safe}</field>
+            <field name="email_to">${object.approver_id.work_email}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; direction: rtl;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F2F3; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; color: #454748; width: 100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse: separate;">
+                    <tbody>
+                        <tr>
+                            <td style="padding-top: 32px; text-align: center;">
+                                <h2 style="color: #FF6600;">طلب موافقة على وثيقة</h2>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 16px;">
+                                <p>السلام عليكم ${object.approver_id.name}،</p>
+                                <p>يرجى مراجعة الوثيقة التالية والموافقة عليها:</p>
+                                
+                                <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">عنوان الوثيقة:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.document_id.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">طالب الموافقة:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.requester_id.name}</td>
+                                    </tr>
+                                </table>
+                                
+                                <p style="text-align: center; margin-top: 32px;">
+                                    <a href="/web#id=${object.id}&amp;view_type=form&amp;model=approval.request" 
+                                       style="background-color: #28a745; padding: 12px 24px; color: white; text-decoration: none; border-radius: 4px;">
+                                        مراجعة الطلب
+                                    </a>
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+            </field>
+            <field name="lang">${object.approver_id.user_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="email_template_document_approved" model="mail.template">
+            <field name="name">إشعار اعتماد الوثيقة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="subject">تم اعتماد الوثيقة: ${object.name}</field>
+            <field name="email_from">${user.email_formatted}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; direction: rtl;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F2F3; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; color: #454748; width: 100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse: separate;">
+                    <tbody>
+                        <tr>
+                            <td align="center" style="min-height: 120px;">
+                                <img src="/web/binary/company_logo" style="padding: 0px; margin: 0px; height: auto; width: 120px;" alt="${object.company_id.name}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 32px; text-align: center;">
+                                <h2 style="color: #28a745;">تم اعتماد الوثيقة</h2>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 16px;">
+                                <p>السلام عليكم ${object.create_uid.name}،</p>
+                                <p>نود إعلامكم بأنه تم اعتماد الوثيقة التالية:</p>
+                                
+                                <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">عنوان الوثيقة:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">الرقم المرجعي:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.reference_number}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">تاريخ الاعتماد:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${format_datetime(object.approved_date, tz=user.tz, dt_format='medium', lang_code=user.lang)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">الحالة:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; color: #28a745; font-weight: bold;">معتمدة</td>
+                                    </tr>
+                                </table>
+                                
+                                <p style="text-align: center; margin-top: 32px;">
+                                    <a href="/web#id=${object.id}&amp;view_type=form&amp;model=document.document" 
+                                       style="background-color: #875A7B; padding: 12px 24px; color: white; text-decoration: none; border-radius: 4px;">
+                                        عرض الوثيقة
+                                    </a>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 32px; text-align: center; color: #888;">
+                                <p>هذه رسالة تلقائية من نظام إدارة الوثائق</p>
+                                <p>${object.company_id.name}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+            </field>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="email_template_document_rejected" model="mail.template">
+            <field name="name">إشعار رفض الوثيقة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="subject">تم رفض الوثيقة: ${object.name}</field>
+            <field name="email_from">${user.email_formatted}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; direction: rtl;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F2F3; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; color: #454748; width: 100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse: separate;">
+                    <tbody>
+                        <tr>
+                            <td align="center" style="min-height: 120px;">
+                                <img src="/web/binary/company_logo" style="padding: 0px; margin: 0px; height: auto; width: 120px;" alt="${object.company_id.name}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 32px; text-align: center;">
+                                <h2 style="color: #dc3545;">تم رفض الوثيقة</h2>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 16px;">
+                                <p>السلام عليكم ${object.create_uid.name}،</p>
+                                <p>نود إعلامكم بأنه تم رفض الوثيقة التالية:</p>
+                                
+                                <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">عنوان الوثيقة:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">الرقم المرجعي:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.reference_number}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">الحالة:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; color: #dc3545; font-weight: bold;">مرفوضة</td>
+                                    </tr>
+                                </table>
+                                
+                                <p>يرجى مراجعة الوثيقة وإجراء التعديلات اللازمة قبل إعادة تقديمها.</p>
+                                
+                                <p style="text-align: center; margin-top: 32px;">
+                                    <a href="/web#id=${object.id}&amp;view_type=form&amp;model=document.document" 
+                                       style="background-color: #875A7B; padding: 12px 24px; color: white; text-decoration: none; border-radius: 4px;">
+                                        عرض الوثيقة
+                                    </a>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 32px; text-align: center; color: #888;">
+                                <p>هذه رسالة تلقائية من نظام إدارة الوثائق</p>
+                                <p>${object.company_id.name}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+            </field>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    
+        <record id="email_template_document_archived" model="mail.template">
+            <field name="name">إشعار أرشفة الوثيقة</field>
+            <field name="model_id" ref="model_document_document"/>
+            <field name="subject">تم أرشفة الوثيقة: ${object.name}</field>
+            <field name="email_from">${user.email_formatted}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; direction: rtl;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F2F3; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; color: #454748; width: 100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse: separate;">
+                    <tbody>
+                        <tr>
+                            <td align="center" style="min-height: 120px;">
+                                <img src="/web/binary/company_logo" style="padding: 0px; margin: 0px; height: auto; width: 120px;" alt="${object.company_id.name}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 32px; text-align: center;">
+                                <h2 style="color: #6c757d;">تم أرشفة الوثيقة</h2>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 16px;">
+                                <p>السلام عليكم ${object.create_uid.name}،</p>
+                                <p>نود إعلامكم بأنه تم أرشفة الوثيقة التالية:</p>
+                                
+                                <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">عنوان الوثيقة:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">الرقم المرجعي:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${object.reference_number}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">تاريخ الأرشفة:</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${format_datetime(object.archived_date, tz=user.tz, dt_format='medium', lang_code=user.lang)}</td>
+                                    </tr>
+                                </table>
+                                
+                                <p>يمكنكم الوصول للوثيقة المؤرشفة من خلال قسم الأرشيف في النظام.</p>
+                                
+                                <p style="text-align: center; margin-top: 32px;">
+                                    <a href="/web#id=${object.id}&amp;view_type=form&amp;model=document.document" 
+                                       style="background-color: #875A7B; padding: 12px 24px; color: white; text-decoration: none; border-radius: 4px;">
+                                        عرض الوثيقة المؤرشفة
+                                    </a>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 32px; text-align: center; color: #888;">
+                                <p>هذه رسالة تلقائية من نظام إدارة الوثائق</p>
+                                <p>${object.company_id.name}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+            </field>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo> 

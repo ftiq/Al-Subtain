@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="mgt_documents.CKEditor5FallbackWidget" owl="1">
+        <div class="o_field_ckeditor5_fallback_widget" t-att-style="'min-height: ' + editorHeight">
+            <div class="fallback-editor-container">
+                <div 
+                    t-ref="editor" 
+                    class="fallback-editor"
+                    t-att-style="'min-height: ' + editorHeight"
+                    t-att-placeholder="props.placeholder || 'ابدأ بكتابة محتوى الوثيقة...'"
+                />
+            </div>
+        </div>
+    </t>
+</templates>

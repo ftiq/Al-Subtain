@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="mgt_documents.RichTextWidget" owl="1">
+        <div class="o_field_rich_text_widget" t-att-style="'min-height: ' + editorHeight">
+            <!-- حالة التحميل -->
+            <div t-if="state.isLoading" class="text-center p-4">
+                <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
+                <div class="mt-2 text-muted">جاري تحميل محرر النصوص المتقدم...</div>
+            </div>
+            
+            <!-- المحرر المتقدم أو البسيط -->
+            <div t-if="!state.isLoading and state.isReady" class="rich-text-container">
+                <!-- شريط الأدوات البسيط -->
+                <div t-if="state.showToolbar and isSimpleMode" t-ref="toolbar" class="simple-toolbar">
+                    <div class="toolbar-group">
+                        <!-- أدوات التنسيق الأساسية -->
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="bold" title="غامق">
+                            <i class="fa fa-bold"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="italic" title="مائل">
+                            <i class="fa fa-italic"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="underline" title="تحته خط">
+                            <i class="fa fa-underline"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="strikeThrough" title="يتوسطه خط">
+                            <i class="fa fa-strikethrough"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-separator"></div>
+                    
+                    <div class="toolbar-group">
+                        <!-- أدوات المحاذاة -->
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="justifyLeft" title="محاذاة يسار">
+                            <i class="fa fa-align-left"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="justifyCenter" title="محاذاة وسط">
+                            <i class="fa fa-align-center"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="justifyRight" title="محاذاة يمين">
+                            <i class="fa fa-align-right"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="justifyFull" title="ضبط">
+                            <i class="fa fa-align-justify"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-separator"></div>
+                    
+                    <div class="toolbar-group">
+                        <!-- القوائم -->
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="insertUnorderedList" title="قائمة نقطية">
+                            <i class="fa fa-list-ul"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="insertOrderedList" title="قائمة مرقمة">
+                            <i class="fa fa-list-ol"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-separator"></div>
+                    
+                    <div class="toolbar-group">
+                        <!-- أدوات إضافية -->
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="indent" title="زيادة المسافة البادئة">
+                            <i class="fa fa-indent"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="outdent" title="تقليل المسافة البادئة">
+                            <i class="fa fa-outdent"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-separator"></div>
+                    
+                    <div class="toolbar-group">
+                        <!-- حجم الخط -->
+                        <select class="form-select form-select-sm" style="width: auto;" onchange="this.getRootNode().host.changeFontSize(this.value)">
+                            <option value="">حجم الخط</option>
+                            <option value="1">صغير جداً</option>
+                            <option value="2">صغير</option>
+                            <option value="3">عادي</option>
+                            <option value="4">كبير</option>
+                            <option value="5">كبير جداً</option>
+                            <option value="6">كبير جداً جداً</option>
+                            <option value="7">أكبر</option>
+                        </select>
+                    </div>
+                    
+                    <div class="toolbar-separator"></div>
+                    
+                    <div class="toolbar-group">
+                        <!-- أدوات أخرى -->
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="removeFormat" title="إزالة التنسيق">
+                            <i class="fa fa-eraser"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="undo" title="تراجع">
+                            <i class="fa fa-undo"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-command="redo" title="إعادة">
+                            <i class="fa fa-redo"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- منطقة المحرر -->
+                <div 
+                    t-ref="editor" 
+                    class="rich-text-editor"
+                    t-att-class="{ 'with-toolbar': state.showToolbar, 'readonly': props.readonly }"
+                    t-att-style="'min-height: ' + editorHeight"
+                    t-att-placeholder="props.placeholder || 'ابدأ بكتابة محتوى الوثيقة...'"
+                />
+                
+                <!-- مؤشر نوع المحرر -->
+                <div class="editor-status">
+                    <small class="text-muted">
+                        <span t-if="isAdvancedMode">
+                            <i class="fa fa-check text-success"></i> محرر متقدم (CKEditor 5)
+                        </span>
+                        <span t-if="isSimpleMode">
+                            <i class="fa fa-edit text-info"></i> محرر بسيط
+                        </span>
+                    </small>
+                </div>
+            </div>
+            
+            <!-- حالة الخطأ -->
+            <div t-if="!state.isReady and !state.isLoading" class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle"></i>
+                فشل في تحميل محرر النصوص. يرجى إعادة تحديث الصفحة.
+            </div>
+        </div>
+    </t>
+</templates>
