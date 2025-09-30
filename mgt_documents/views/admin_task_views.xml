@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    
+
+    <record id="admin_task_tree_view" model="ir.ui.view">
+        <field name="name">admin.task.tree</field>
+        <field name="model">admin.task</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="is_overdue" decoration-info="state=='in_progress'" decoration-success="state=='completed'">
+                <field name="name"/>
+                <field name="task_type"/>
+                <field name="assigned_employee_id"/>
+                <field name="assigned_department_id"/>
+                <field name="priority" widget="priority"/>
+                <field name="due_date"/>
+                <field name="state" widget="badge" decoration-info="state=='in_progress'" decoration-success="state=='completed'"/>
+                <field name="is_overdue" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="admin_task_form_view" model="ir.ui.view">
+        <field name="name">admin.task.form</field>
+        <field name="model">admin.task</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_assign" string="Assign" type="object" invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_start" string="Start" type="object" invisible="state != 'assigned'" class="btn-primary"/>
+                    <button name="action_complete" string="Complete" type="object" invisible="state != 'in_progress'" class="btn-success"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state not in ('draft', 'assigned', 'in_progress')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,assigned,in_progress,completed"/>
+                </header>
+                
+                <sheet>
+                    <widget name="web_ribbon" title="Overdue" bg_color="bg-danger" invisible="not is_overdue"/>
+                    <widget name="web_ribbon" title="Completed" bg_color="bg-success" invisible="state != 'completed'"/>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Task Name"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="task_type"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="due_date"/>
+                        </group>
+                        <group>
+                            <field name="assigned_department_id"/>
+                            <field name="assigned_employee_id"/>
+                            <field name="assigned_by" readonly="1"/>
+                            <field name="assigned_date" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Description">
+                            <group>
+                                <field name="description" nolabel="1" placeholder="Description..."/>
+                            </group>
+                            
+                            <group string="Process" invisible="not process_id">
+                                <field name="process_id"/>
+                                <field name="process_instance_id"/>
+                            </group>
+                            
+                            <group string="Related Document" invisible="not request_document_id">
+                                <field name="request_document_id"/>
+                            </group>
+                            
+                            <group string="Approval Request" invisible="not approval_request_id">
+                                <field name="approval_request_id"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Execution and Result">
+                            <group>
+                                <group>
+                                    <field name="completion_date" readonly="1"/>
+                                    <field name="is_overdue" readonly="1"/>
+                                </group>
+                            </group>
+                            
+                            <separator string="Execution Notes"/>
+                            <field name="execution_notes" nolabel="1" placeholder="Execution Notes..."/>
+                            
+                            <separator string="Result Summary"/>
+                            <field name="result_summary" nolabel="1" placeholder="Result Summary..."/>
+                        </page>
+                        
+                        <page string="Subtasks">
+                            <group string="Main Task" invisible="not parent_task_id">
+                                <field name="parent_task_id"/>
+                            </group>
+                            
+                            <group string="Subtasks">
+                                <field name="subtask_ids" nolabel="1">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="assigned_employee_id"/>
+                                        <field name="due_date"/>
+                                        <field name="state"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                        
+                        <page string="Security and Company">
+                            <group>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="admin_task_kanban_view" model="ir.ui.view">
+        <field name="name">admin.task.kanban</field>
+        <field name="model">admin.task</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" default_order="priority desc, due_date asc"
+                    class="o_kanban_wide_column o_document_kanban o_task_kanban"
+                    quick_create="false" create="true"
+                    records_draggable="false" groups_draggable="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="task_type"/>
+                <field name="assigned_employee_id"/>
+                <field name="assigned_department_id"/>
+                <field name="due_date"/>
+                <field name="priority"/>
+                <field name="is_overdue"/>
+                <field name="state"/>
+                <field name="completion_date"/>
+                <field name="activity_ids"/>
+                <field name="activity_state"/>
+                <field name="create_date"/>
+                <field name="create_uid"/>
+                
+                <progressbar field="activity_state" 
+                           colors='{"planned": "success", "today": "warning", "overdue": "danger"}'
+                           help="Progress bar shows the status of scheduled activities for the tasks"/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click o_document_card o_task_card" 
+                             t-attf-class="#{record.is_overdue.raw_value ? 'o_card_overdue' : ''} #{record.priority.raw_value == '3' ? 'o_card_featured' : ''}"
+                             t-attf-data-state="#{record.state.raw_value}"
+                             t-attf-data-priority="#{record.priority.raw_value}">
+                            
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_top_left">
+                                        <div class="d-flex align-items-center mb-2" t-if="record.is_overdue.raw_value">
+                                            <span class="badge badge-danger me-2">
+                                                <i class="fa fa-exclamation-triangle me-1"/>Overdue
+                                            </span>
+                                        </div>
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <div class="o_kanban_record_subtitle text-muted" t-if="record.task_type.raw_value">
+                                            <i class="fa fa-tag me-1"/>
+                                            <field name="task_type"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_top_right">
+                                        <div class="o_dropdown_kanban dropdown">
+                                            <a role="button" class="dropdown-toggle o-no-caret btn" data-bs-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                                <span class="fa fa-ellipsis-v"/>
+                                            </a>
+                                            <div class="dropdown-menu" role="menu">
+                                                <a role="menuitem" class="dropdown-item oe_kanban_action oe_kanban_action_a" type="open">
+                                                    <i class="fa fa-external-link me-2"/>View Task
+                                                </a>
+                                                <a role="menuitem" class="dropdown-item oe_kanban_action oe_kanban_action_a" type="edit">
+                                                    <i class="fa fa-edit me-2"/>Edit
+                                                </a>
+                                                <div class="dropdown-divider"/>
+                                                <t t-if="widget.deletable">
+                                                    <a role="menuitem" class="dropdown-item oe_kanban_action oe_kanban_action_a" type="delete">
+                                                        <i class="fa fa-trash me-2"/>Delete
+                                                    </a>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_card_content">
+                                <div class="o_kanban_tags_section mb-3">
+                                    <div class="d-flex flex-wrap gap-1 mb-2">
+                                        <span class="o_kanban_tag o_kanban_tag_type" t-if="record.task_type.raw_value">
+                                            <i class="fa fa-cog me-1"/>
+                                            <field name="task_type"/>
+                                        </span>
+                                        <span class="o_kanban_tag o_kanban_tag_department" t-if="record.assigned_department_id.raw_value">
+                                            <i class="fa fa-building me-1"/>
+                                            <field name="assigned_department_id"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="o_kanban_details_section mb-3">
+                                    <div class="o_kanban_detail_row" t-if="record.assigned_employee_id.raw_value">
+                                        <span class="o_kanban_detail_label">
+                                            <i class="fa fa-user me-1"/>
+                                            Assigned Employee
+                                        </span>
+                                        <span class="o_kanban_detail_value">
+                                            <field name="assigned_employee_id"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_detail_row" t-if="record.due_date.raw_value">
+                                        <span class="o_kanban_detail_label">
+                                            <i class="fa fa-calendar me-1"/>
+                                            Due Date
+                                        </span>
+                                        <span class="o_kanban_detail_value">
+                                            <field name="due_date" widget="date"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_card_footer">
+                                <div class="o_kanban_footer_left">
+                                    <div class="o_kanban_footer_stats">
+                                        <span class="o_kanban_stats_item" t-if="record.priority.raw_value != '0'">
+                                            <field name="priority" widget="priority" readonly="1"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_footer_activity">
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_footer_right">
+                                    <div class="o_kanban_footer_meta">
+                                        <small class="text-muted" t-if="record.create_date.raw_value">
+                                            <i class="fa fa-clock-o me-1"/>
+                                            <field name="create_date" widget="relative"/>
+                                        </small>
+                                    </div>
+                                    <div class="o_kanban_click_indicator">
+                                        <i class="fa fa-external-link text-primary" title="عرض التفاصيل"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="admin_task_search_view" model="ir.ui.view">
+        <field name="name">admin.task.search</field>
+        <field name="model">admin.task</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Task" filter_domain="[('name', 'ilike', self)]"/>
+                <field name="assigned_employee_id" string="Employee"/>
+                <field name="assigned_department_id" string="Department"/>
+                <field name="task_type" string="Type"/>
+                
+                <filter string="My Tasks" name="my_tasks" domain="[('assigned_employee_id.user_id', '=', uid)]"/>
+                <filter string="Department Tasks" name="department_tasks" domain="[('assigned_department_id.manager_id.user_id', '=', uid)]"/>
+                <separator/>
+                
+                <filter string="Urgent" name="urgent" domain="[('priority', 'in', ['3', '4'])]"/>
+                <filter string="Overdue" name="overdue" domain="[('is_overdue', '=', True)]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
+                <separator/>
+                
+                <filter string="Today" name="today" domain="[('due_date', '&gt;=', context_today().strftime('%Y-%m-%d')), ('due_date', '&lt;', (context_today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="This Week" name="this_week" domain="[('due_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')), ('due_date', '&lt;', (context_today() + datetime.timedelta(days=7-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="State" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="Employee" name="assigned_employee" context="{'group_by': 'assigned_employee_id'}"/>
+                    <filter string="Department" name="department" context="{'group_by': 'assigned_department_id'}"/>
+                    <filter string="Task Type" name="task_type" context="{'group_by': 'task_type'}"/>
+                    <filter string="Priority" name="priority" context="{'group_by': 'priority'}"/>
+                    <filter string="Due Date" name="due_date" context="{'group_by': 'due_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="admin_task_calendar_view" model="ir.ui.view">
+        <field name="name">admin.task.calendar</field>
+        <field name="model">admin.task</field>
+        <field name="arch" type="xml">
+            <calendar string="Tasks" date_start="due_date" color="state">
+                <field name="name"/>
+                <field name="assigned_employee_id"/>
+                <field name="priority"/>
+            </calendar>
+        </field>
+    </record>
+
+
+    <record id="admin_task_activity_view" model="ir.ui.view">
+        <field name="name">admin.task.activity</field>
+        <field name="model">admin.task</field>
+        <field name="arch" type="xml">
+            <activity string="Tasks">
+                <field name="assigned_employee_id"/>
+                <templates>
+                    <div t-name="activity-box">
+                        <img t-att-src="activity_image('admin.task', 'assigned_employee_id', record.assigned_employee_id.raw_value)" role="img" t-att-title="record.assigned_employee_id.value" t-att-alt="record.assigned_employee_id.value"/>
+                        <div>
+                            <field name="name" display="full"/>
+                            <div t-if="record.task_type.value" class="text-muted">
+                                <i class="fa fa-tag" role="img" aria-label="Type" title="Type"/> <t t-esc="record.task_type.value"/>
+                            </div>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+
+
+    <record id="admin_task_action" model="ir.actions.act_window">
+        <field name="name">Tasks</field>
+        <field name="res_model">admin.task</field>
+        <field name="view_mode">kanban,list,form,calendar,activity</field>
+        <field name="context">{'search_default_my_tasks': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No tasks found!
+            </p>
+            <p>
+                Click on "Create" to add a new task.
+            </p>
+        </field>
+    </record>
+
+
+    <menuitem 
+        id="menu_admin_tasks"
+        name="Taskss"
+        parent="menu_document_main"
+        action="admin_task_action"
+        sequence="15"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    
+
+    <record id="document_version_tree_view" model="ir.ui.view">
+        <field name="name">document.version.tree</field>
+        <field name="model">document.version</field>
+        <field name="arch" type="xml">
+            <list decoration-info="is_current" decoration-muted="state=='archived'">
+                <field name="document_id"/>
+                <field name="version_number"/>
+                <field name="version_name"/>
+                <field name="created_by"/>
+                <field name="create_date"/>
+                <field name="approval_status" widget="badge" decoration-success="approval_status=='approved'" decoration-warning="approval_status=='pending'" decoration-danger="approval_status=='rejected'"/>
+                <field name="is_current" widget="boolean_toggle"/>
+                <field name="state" widget="badge" decoration-success="state=='active'" decoration-muted="state=='archived'"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="document_version_form_view" model="ir.ui.view">
+        <field name="name">document.version.form</field>
+        <field name="model">document.version</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate" string="تفعيل" type="object" invisible="is_current" class="btn-primary"/>
+                    <button name="action_archive_version" string="أرشفة" type="object" invisible="state == 'archived'" class="btn-secondary"/>
+                    <button name="action_submit_for_approval" string="تقديم للاعتماد" type="object" invisible="approval_status != 'draft'" class="btn-warning"/>
+                    <button name="action_approve" string="اعتماد" type="object" invisible="approval_status != 'pending'" class="btn-success" groups="mgt_documents.group_document_approver"/>
+                    <button name="action_reject" string="رفض" type="object" invisible="approval_status != 'pending'" class="btn-danger" groups="mgt_documents.group_document_approver"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,archived"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_document" icon="fa-file-text-o">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">الوثيقة</span>
+                                <span class="o_stat_text">الأساسية</span>
+                            </div>
+                        </button>
+                        
+                        <button class="oe_stat_button" type="object" name="action_view_comparison" icon="fa-code-fork" invisible="not previous_version_id">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">مقارنة</span>
+                                <span class="o_stat_text">الإصدارات</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <widget name="web_ribbon" title="الإصدار الحالي" bg_color="bg-success" invisible="not is_current"/>
+                    <widget name="web_ribbon" title="مؤرشف" bg_color="bg-secondary" invisible="state != 'archived'"/>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="version_name" placeholder="اسم الإصدار"/>
+                        </h1>
+                        <h2>
+                            <field name="version_number" readonly="1"/>
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="document_id"/>
+                            <field name="created_by" readonly="1"/>
+                            <field name="create_date" readonly="1"/>
+                            <field name="is_current"/>
+                        </group>
+                        <group>
+                            <field name="approval_status" widget="badge"/>
+                            <field name="approved_by" readonly="1" invisible="approval_status == 'draft'"/>
+                            <field name="approved_date" readonly="1" invisible="approval_status == 'draft'"/>
+                            <field name="file_size" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="محتوى الإصدار">
+                            <group>
+                                <field name="description" nolabel="1" placeholder="وصف التغييرات في هذا الإصدار..."/>
+                            </group>
+                            
+                            <group string="الملف">
+                                <field name="content_file" filename="content_filename"/>
+                                <field name="content_filename" invisible="1"/>
+                            </group>
+                            
+                            <group string="الروابط والمراجع">
+                                <field name="previous_version_id"/>
+                                <field name="change_reason" placeholder="سبب التحديث..."/>
+                            </group>
+                        </page>
+                        
+                        
+                        <page string="الاعتماد والمراجعة">
+                            <group string="حالة الاعتماد">
+                                <field name="approval_status"/>
+                                <field name="approved_by" readonly="1"/>
+                                <field name="approved_date" readonly="1"/>
+                            </group>
+                            
+                            <separator string="ملاحظات الاعتماد"/>
+                            <field name="approval_notes" nolabel="1" placeholder="ملاحظات المعتمد..."/>
+                            
+                            <separator string="سبب الرفض" invisible="approval_status != 'rejected'"/>
+                            <field name="rejection_reason" nolabel="1" placeholder="أسباب رفض الإصدار..." invisible="approval_status != 'rejected'"/>
+                        </page>
+                        
+                        <page string="المقارنة والتحليل">
+                            <group string="مقارنة مع الإصدار السابق" invisible="not previous_version_id">
+                                <field name="comparison_summary" readonly="1"/>
+                            </group>
+                            
+                            <group string="إحصائيات الإصدار">
+                                <field name="download_count" readonly="1"/>
+                                <field name="view_count" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="document_version_kanban_view" model="ir.ui.view">
+        <field name="name">document.version.kanban</field>
+        <field name="model">document.version</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="document_id" default_order="version_number desc, create_date desc"
+                    class="o_kanban_wide_column o_document_kanban o_version_kanban"
+                    quick_create="false" create="true"
+                    records_draggable="false" groups_draggable="false">
+                <field name="id"/>
+                <field name="version_name"/>
+                <field name="version_number"/>
+                <field name="document_id"/>
+                <field name="is_current"/>
+                <field name="approval_status"/>
+                <field name="create_date"/>
+                <field name="created_by"/>
+                <field name="change_reason"/>
+                <field name="file_size"/>
+                <field name="activity_ids"/>
+                <field name="activity_state"/>
+                
+                <progressbar field="activity_state" 
+                           colors='{"planned": "success", "today": "warning", "overdue": "danger"}'
+                           help="شريط التقدم يظهر حالة الأنشطة المجدولة للإصدارات"/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click o_document_card o_version_card" 
+                             t-attf-class="#{record.is_current.raw_value ? 'o_card_current o_card_featured' : 'o_card_archived'} #{record.approval_status.raw_value == 'approved' ? 'o_card_approved' : ''}"
+                             t-attf-data-current="#{record.is_current.raw_value}"
+                             t-attf-data-version="#{record.version_number.raw_value}"
+                             t-attf-data-approval="#{record.approval_status.raw_value}">
+                            
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_top_left">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge me-2" 
+                                                  t-attf-class="#{record.is_current.raw_value ? 'badge-success' : 'badge-secondary'}">
+                                                <i class="fa fa-star me-1" t-if="record.is_current.raw_value"/>
+                                                <i class="fa fa-archive me-1" t-if="not record.is_current.raw_value"/>
+                                                <t t-if="record.is_current.raw_value">الحالي</t>
+                                                <t t-if="not record.is_current.raw_value">قديم</t>
+                                            </span>
+                                            <span class="badge badge-info ms-1">
+                                                <i class="fa fa-code-fork me-1"/>
+                                                v<t t-esc="record.version_number.value"/>
+                                            </span>
+                                            <span class="badge ms-1" 
+                                                  t-attf-class="#{record.approval_status.raw_value === 'approved' ? 'badge-success' : record.approval_status.raw_value === 'pending' ? 'badge-warning' : 'badge-secondary'}">
+                                                <i class="fa fa-check me-1" t-if="record.approval_status.raw_value === 'approved'"/>
+                                                <i class="fa fa-clock-o me-1" t-if="record.approval_status.raw_value === 'pending'"/>
+                                                <i class="fa fa-times me-1" t-if="record.approval_status.raw_value === 'rejected'"/>
+                                                <t t-esc="record.approval_status.value"/>
+                                            </span>
+                                        </div>
+                                        <strong class="o_kanban_record_title">
+                                            <field name="version_name"/>
+                                        </strong>
+                                    </div>
+                                    <div class="o_kanban_top_right">
+                                        <div class="o_dropdown_kanban dropdown">
+                                            <a role="button" class="dropdown-toggle o-no-caret btn" data-bs-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                                <span class="fa fa-ellipsis-v"/>
+                                            </a>
+                                            <div class="dropdown-menu" role="menu">
+                                                <a role="menuitem" class="dropdown-item oe_kanban_action oe_kanban_action_a" type="open">
+                                                    <i class="fa fa-external-link me-2"/>عرض الإصدار
+                                                </a>
+                                                <a role="menuitem" class="dropdown-item oe_kanban_action oe_kanban_action_a" type="edit">
+                                                    <i class="fa fa-edit me-2"/>تحرير
+                                                </a>
+                                                <div class="dropdown-divider"/>
+                                                <t t-if="widget.deletable">
+                                                    <a role="menuitem" class="dropdown-item oe_kanban_action oe_kanban_action_a" type="delete">
+                                                        <i class="fa fa-trash me-2"/>حذف
+                                                    </a>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_card_content">
+                                <div class="o_kanban_details_section mb-3">
+                                    <div class="o_kanban_detail_row" t-if="record.change_reason.raw_value">
+                                        <span class="o_kanban_detail_label">
+                                            <i class="fa fa-edit me-1"/>
+                                            سبب التغيير
+                                        </span>
+                                        <span class="o_kanban_detail_value text-truncate">
+                                            <field name="change_reason"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_detail_row" t-if="record.file_size.raw_value > 0">
+                                        <span class="o_kanban_detail_label">
+                                            <i class="fa fa-hdd-o me-1"/>
+                                            الحجم
+                                        </span>
+                                        <span class="o_kanban_detail_value">
+                                            <field name="file_size" widget="data_size"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_detail_row">
+                                        <span class="o_kanban_detail_label">
+                                            <i class="fa fa-calendar me-1"/>
+                                            أنشئ
+                                        </span>
+                                        <span class="o_kanban_detail_value">
+                                            <field name="create_date" widget="relative"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="o_kanban_version_status mb-2" t-if="record.is_current.raw_value">
+                                    <div class="alert alert-success mb-0 py-2">
+                                        <i class="fa fa-check-circle me-1"/>
+                                        <small>هذا هو الإصدار النشط حالياً</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_card_footer">
+                                <div class="o_kanban_footer_left">
+                                    <div class="o_kanban_footer_stats">
+                                        <span class="o_kanban_stats_item">
+                                            <i class="fa fa-code-fork me-1"/>
+                                            v<t t-esc="record.version_number.value"/>
+                                        </span>
+                                        <span class="o_kanban_stats_item" t-if="record.is_current.raw_value">
+                                            <i class="fa fa-star me-1"/>
+                                            <small class="text-muted">نشط</small>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_footer_activity">
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_footer_right">
+                                    <div class="o_kanban_footer_meta">
+                                        <small class="text-muted">
+                                            <i class="fa fa-user me-1"/>
+                                            <field name="created_by"/>
+                                        </small>
+                                    </div>
+                                    <div class="o_kanban_click_indicator">
+                                        <i class="fa fa-external-link text-primary" title="عرض التفاصيل"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="document_version_search_view" model="ir.ui.view">
+        <field name="name">document.version.search</field>
+        <field name="model">document.version</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="version_name" string="الإصدار" filter_domain="[('version_name', 'ilike', self)]"/>
+                <field name="document_id" string="الوثيقة"/>
+                <field name="created_by" string="المُنشئ"/>
+                
+                <filter string="الإصدار الحالي" name="current" domain="[('is_current', '=', True)]"/>
+                <filter string="معتمدة" name="approved" domain="[('approval_status', '=', 'approved')]"/>
+                <filter string="في انتظار الاعتماد" name="pending" domain="[('approval_status', '=', 'pending')]"/>
+                <filter string="مرفوضة" name="rejected" domain="[('approval_status', '=', 'rejected')]"/>
+                <separator/>
+                
+                <filter string="نشطة" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="مؤرشفة" name="archived" domain="[('state', '=', 'archived')]"/>
+                <separator/>
+                
+                <filter string="إصداراتي" name="my_versions" domain="[('created_by', '=', uid)]"/>
+                
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الوثيقة" name="document" context="{'group_by': 'document_id'}"/>
+                    <filter string="حالة الاعتماد" name="approval_status" context="{'group_by': 'approval_status'}"/>
+                    <filter string="المُنشئ" name="created_by" context="{'group_by': 'created_by'}"/>
+                    <filter string="تاريخ الإنشاء" name="create_date" context="{'group_by': 'create_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    </data>
+</odoo>

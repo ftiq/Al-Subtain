@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_document_incoming" model="ir.sequence">
+            <field name="name">Incoming Document Sequence</field>
+            <field name="code">document.incoming</field>
+            <field name="prefix">IN/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_document_outgoing" model="ir.sequence">
+            <field name="name">Outgoing Document Sequence</field>
+            <field name="code">document.outgoing</field>
+            <field name="prefix">OUT/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_document_internal" model="ir.sequence">
+            <field name="name">Internal Document Sequence</field>
+            <field name="code">document.internal</field>
+            <field name="prefix">INT/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+
+
+
+        <record id="seq_document_circular" model="ir.sequence">
+            <field name="name">Circular Document Sequence</field>
+            <field name="code">document.circular</field>
+            <field name="prefix">CIR/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_document_memo" model="ir.sequence">
+            <field name="name">Memo Document Sequence</field>
+            <field name="code">document.memo</field>
+            <field name="prefix">MEMO/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_document_report" model="ir.sequence">
+            <field name="name">Report Document Sequence</field>
+            <field name="code">document.report</field>
+            <field name="prefix">REP/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_document_letter" model="ir.sequence">
+            <field name="name">Letter Document Sequence</field>
+            <field name="code">document.letter</field>
+            <field name="prefix">LET/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_document_contract" model="ir.sequence">
+            <field name="name">Contract Document Sequence</field>
+            <field name="code">document.contract</field>
+            <field name="prefix">CON/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_document_invoice" model="ir.sequence">
+            <field name="name">Invoice Document Sequence</field>
+            <field name="code">document.invoice</field>
+            <field name="prefix">INV/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_document_other" model="ir.sequence">
+            <field name="name">Other Document Sequence</field>
+            <field name="code">document.other</field>
+            <field name="prefix">OTH/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="seq_approval_request" model="ir.sequence">
+            <field name="name">Approval Request Sequence</field>
+            <field name="code">approval.request</field>
+            <field name="prefix">APPR/</field>
+            <field name="suffix">/%(year)s</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

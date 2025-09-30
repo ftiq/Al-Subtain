@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <record id="view_approval_task_assignment_wizard_form" model="ir.ui.view">
+            <field name="name">approval.task.assignment.wizard.form</field>
+            <field name="model">approval.task.assignment.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Assign Task After Approval">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Approval with Task Assignment</strong><br/>
+                        You can approve the request and assign a task for execution at the same time
+                    </div>
+                    
+                    <group>
+                        <group string="Approval Information">
+                            <field name="approver_id" readonly="1"/>
+                            <field name="request_id" readonly="1"/>
+                            <field name="document_id" readonly="1"/>
+                        </group>
+                        
+                        <group string="Official Directive">
+                            <field name="official_directive" 
+                                   placeholder="Write here the official directive or instruction that will be executed..." 
+                                   colspan="2" 
+                                   nolabel="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Assign Task" name="task_assignment">
+                            <group>
+                                <group string="Assignment Type">
+                                    <field name="assignment_type" widget="radio"/>
+                                </group>
+                                
+                                <group string="Assignee">
+                                    <field name="assigned_department_id" 
+                                           invisible="assignment_type in ['employee', 'none']"
+                                           required="assignment_type in ['department', 'both']"/>
+                                    <field name="assigned_employee_id" 
+                                           invisible="assignment_type in ['department', 'none']"
+                                           required="assignment_type in ['employee', 'both']"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Task Details" invisible="assignment_type == 'none'">
+                                <group>
+                                    <field name="task_title" required="assignment_type != 'none'"/>
+                                    <field name="task_type" required="assignment_type != 'none'"/>
+                                    <field name="priority" required="assignment_type != 'none'"/>
+                                    <field name="due_date" required="assignment_type != 'none'"/>
+                                </group>
+                                
+                                <group>
+                                    <field name="task_description" 
+                                           placeholder="Description of the task and the steps to be executed..." 
+                                           nolabel="1" 
+                                           colspan="2"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Notifications" name="notifications" invisible="assignment_type == 'none'">
+                            <group>
+                                <group string="Notification Settings">
+                                    <field name="send_notification"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Notification Message" invisible="not send_notification">
+                                <field name="notification_message" 
+                                       placeholder="Notification message to be sent to the assignee..." 
+                                       nolabel="1" 
+                                       colspan="2"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Additional Notes" name="notes">
+                            <group>
+                                <field name="approver_notes" 
+                                       placeholder="Additional notes from the approver..." 
+                                       nolabel="1" 
+                                       colspan="2"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    
+                    <footer>
+                        <button name="action_approve_and_assign" 
+                                string="Approve and Assign Task" 
+                                type="object" 
+                                class="btn-primary"
+                                invisible="assignment_type == 'none'"/>
+                        <button name="action_approve_without_task" 
+                                string="Approve Without Task" 
+                                type="object" 
+                                class="btn-secondary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+
+        <record id="action_approval_task_assignment_wizard" model="ir.actions.act_window">
+            <field name="name">Assign Task After Approval</field>
+            <field name="res_model">approval.task.assignment.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+    </data>
+</odoo>

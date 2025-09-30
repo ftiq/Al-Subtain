@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <record id="category_administrative" model="document.category">
+            <field name="name">Administrative Documents</field>
+            <field name="description">All documents and administrative letters</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,circular,memo,report,request,letter,other</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_incoming" model="document.category">
+            <field name="name">Incoming Letters</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">All incoming letters from external entities</field>
+            <field name="allowed_document_types">incoming</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+
+        <record id="category_outgoing" model="document.category">
+            <field name="name">Outgoing Letters</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">All outgoing letters to external entities</field>
+            <field name="allowed_document_types">outgoing</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+
+        <record id="category_internal" model="document.category">
+            <field name="name">Internal Letters</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">All internal letters between internal departments</field>
+            <field name="allowed_document_types">internal</field>
+            <field name="auto_archive_days">180</field>
+            <field name="is_active">True</field>
+            <field name="sequence">30</field>
+        </record>
+
+
+        <record id="category_circulars" model="document.category">
+            <field name="name">Circulars</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">Circulars and administrative decisions</field>
+            <field name="allowed_document_types">circular</field>
+            <field name="auto_archive_days">730</field>
+            <field name="is_active">True</field>
+            <field name="sequence">40</field>
+        </record>
+
+
+        
+
+        <record id="category_hr" model="document.category">
+            <field name="name">Human Resources</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">Human Resources and administrative documents</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,memo,report,request</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">100</field>
+        </record>
+
+
+        <record id="category_hr_employment" model="document.category">
+            <field name="name">Employment and Hiring</field>
+            <field name="parent_id" ref="category_hr"/>
+            <field name="description">Employment and Hiring documents</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,request</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_hr_leaves" model="document.category">
+            <field name="name">Leaves and Absences</field>
+            <field name="parent_id" ref="category_hr"/>
+            <field name="description">Leave and Absence requests</field>
+            <field name="allowed_document_types">internal,memo,request</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="category_hr_evaluation" model="document.category">
+            <field name="name">Performance Evaluation</field>
+            <field name="parent_id" ref="category_hr"/>
+            <field name="description">Performance Evaluation and promotions</field>
+            <field name="allowed_document_types">report,memo</field>
+            <field name="auto_archive_days">1825</field>
+            <field name="is_active">True</field>
+            <field name="sequence">30</field>
+        </record>
+
+
+        <record id="category_finance" model="document.category">
+            <field name="name">Finance and Accounting</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">Financial and Accounting documents</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,report,invoice,request</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">200</field>
+        </record>
+
+
+        <record id="category_finance_budget" model="document.category">
+            <field name="name">Budget and Financial Planning</field>
+            <field name="parent_id" ref="category_finance"/>
+            <field name="description">Budget and Financial Planning documents</field>
+            <field name="allowed_document_types">report,internal</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_finance_invoices" model="document.category">
+            <field name="name">Invoices and Payments</field>
+            <field name="parent_id" ref="category_finance"/>
+            <field name="description">Invoices and Payments documents</field>
+            <field name="allowed_document_types">incoming,outgoing,invoice</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        
+        <record id="category_legal" model="document.category">
+            <field name="name">Legal Affairs</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">Legal documents and communications</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,report,contract</field>
+            <field name="auto_archive_days">3650</field>
+            <field name="is_active">True</field>
+            <field name="sequence">300</field>
+        </record>
+
+        
+        <record id="category_legal_contracts" model="document.category">
+            <field name="name">Contracts and Agreements</field>
+            <field name="parent_id" ref="category_legal"/>
+            <field name="description">Contracts and Agreements documents</field>
+            <field name="allowed_document_types">incoming,outgoing,contract</field>
+            <field name="auto_archive_days">3650</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_legal_litigation" model="document.category">
+            <field name="name">Litigation and Claims</field>
+            <field name="parent_id" ref="category_legal"/>
+            <field name="description">Litigation and Claims documents</field>
+            <field name="allowed_document_types">incoming,outgoing,report</field>
+            <field name="auto_archive_days">3650</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        
+        <record id="category_it" model="document.category">
+            <field name="name">IT and Systems</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">IT and Systems documents</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,report,memo</field>
+            <field name="auto_archive_days">1095</field>
+            <field name="is_active">True</field>
+            <field name="sequence">400</field>
+        </record>
+
+        <record id="category_it_reports" model="document.category">
+            <field name="name">IT Reports</field>
+            <field name="parent_id" ref="category_it"/>
+            <field name="description">IT Reports documents</field>
+            <field name="allowed_document_types">report,internal</field>
+            <field name="auto_archive_days">1095</field>
+            <field name="is_active">True</field>
+            <field name="sequence">405</field>
+        </record>
+
+        <record id="category_procurement" model="document.category">
+            <field name="name">Procurement and Bids</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">Procurement and Bids documents</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,report,request</field>
+            <field name="auto_archive_days">2555</field>
+            <field name="is_active">True</field>
+            <field name="sequence">500</field>
+        </record>
+
+        <record id="category_reports" model="document.category">
+            <field name="name">Reports</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">Reports documents</field>
+            <field name="allowed_document_types">report</field>
+            <field name="auto_archive_days">1095</field>
+            <field name="is_active">True</field>
+            <field name="sequence">600</field>
+        </record>
+
+
+        <record id="category_memos" model="document.category">
+            <field name="name">Memos</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">Memos documents</field>
+            <field name="allowed_document_types">memo</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">700</field>
+        </record>
+
+
+        <record id="category_archive" model="document.category">
+            <field name="name">Archive</field>
+            <field name="description">Archived documents</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,circular,memo,report,other</field>
+            <field name="is_active">True</field>
+            <field name="sequence">9999</field>
+        </record>
+
+
+        <record id="category_requests" model="document.category">
+            <field name="name">Requests and Inquiries</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">Requests and Inquiries documents</field>
+            <field name="allowed_document_types">incoming,outgoing,internal,request</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">250</field>
+        </record>
+
+
+        <record id="category_employee_requests" model="document.category">
+            <field name="name">Employee Requests</field>
+            <field name="parent_id" ref="category_hr"/>
+            <field name="description">Special category for employee requests such as leaves and allowances</field>
+            <field name="allowed_document_types">request,internal,memo</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="requires_approval">True</field>
+            <field name="sequence">25</field>
+        </record>
+
+
+        <record id="category_finance_purchase_requests" model="document.category">
+            <field name="name">Purchase Requests</field>
+            <field name="parent_id" ref="category_finance"/>
+            <field name="description">Purchase Requests documents</field>
+            <field name="allowed_document_types">request,internal,outgoing</field>
+            <field name="auto_archive_days">1095</field>
+            <field name="is_active">True</field>
+            <field name="requires_approval">True</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="category_monthly_reports" model="document.category">
+            <field name="name">Monthly Reports</field>
+            <field name="parent_id" ref="category_reports"/>
+            <field name="description">Monthly Reports documents</field>
+            <field name="allowed_document_types">report,internal</field>
+            <field name="auto_archive_days">1095</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_annual_reports" model="document.category">
+            <field name="name">Annual Reports</field>
+            <field name="parent_id" ref="category_reports"/>
+            <field name="description">Annual Reports documents</field>
+            <field name="allowed_document_types">report</field>
+            <field name="auto_archive_days">3650</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="category_correspondence" model="document.category">
+            <field name="name">Correspondence</field>
+            <field name="parent_id" ref="category_administrative"/>
+            <field name="description">Correspondence documents</field>
+            <field name="allowed_document_types">incoming,outgoing,letter</field>
+            <field name="auto_archive_days">730</field>
+            <field name="is_active">True</field>
+            <field name="sequence">260</field>
+        </record>
+        
+        <record id="category_external_correspondence" model="document.category">
+            <field name="name">External Correspondence</field>
+            <field name="parent_id" ref="category_correspondence"/>
+            <field name="description">Correspondence documents with government and external entities</field>
+            <field name="allowed_document_types">incoming,outgoing,letter</field>
+            <field name="auto_archive_days">1095</field>
+            <field name="is_active">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_internal_correspondence" model="document.category">
+            <field name="name">Internal Correspondence</field>
+            <field name="parent_id" ref="category_correspondence"/>
+            <field name="description">Correspondence documents between departments and branches</field>
+            <field name="allowed_document_types">internal,letter,memo</field>
+            <field name="auto_archive_days">365</field>
+            <field name="is_active">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+    </data>
+</odoo> 

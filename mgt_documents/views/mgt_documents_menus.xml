@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <menuitem id="menu_document_main"
+                  name="إدارة الوثائق"
+                  web_icon="mgt_documents,static/description/icon.png"
+                  sequence="10"/>
+
+        <menuitem id="menu_bpm"
+                  name="إدارة العمليات"
+                  parent="menu_document_main"
+                  sequence="20"/>
+
+        <menuitem id="menu_workflow_process"
+                  name="عمليات سير العمل"
+                  parent="menu_bpm"
+                  action="workflow_process_action"
+                  sequence="10"/>
+
+
+
+        <menuitem id="menu_workflow_instances"
+                  name="نسخ سير العمل"
+                  parent="menu_bpm"
+                  action="action_document_workflow_instance"
+                  sequence="30"/>
+
+        <menuitem id="menu_admin_tasks"
+                  name="المهام الإدارية"
+                  parent="menu_bpm"
+                  action="action_admin_task"
+                  sequence="40"/>
+
+        <menuitem id="menu_workflow"
+                  name="الموافقات والأرشيف"
+                  parent="menu_document_main"
+                  sequence="30"/>
+
+        <menuitem id="menu_approval_requests"
+                  name="طلبات الموافقة"
+                  parent="menu_workflow"
+                  action="action_approval_request"
+                  sequence="10"/>
+
+        <menuitem id="menu_my_approval_requests"
+                  name="طلبات موافقتي"
+                  parent="menu_workflow"
+                  action="action_my_approval_requests"
+                  sequence="20"/>
+
+        <menuitem id="menu_my_pending_approvals"
+                  name="الموافقات المعلقة"
+                  parent="menu_workflow"
+                  action="action_my_pending_approvals"
+                  sequence="30"/>
+
+        <menuitem id="menu_archive_management"
+                  name="إدارة الأرشيف"
+                  parent="menu_workflow"
+                  action="action_archive_management"
+                  sequence="40"
+                  groups="mgt_documents.group_document_manager"/>
+
+        <menuitem id="menu_configuration"
+                  name="الإعدادات"
+                  parent="menu_document_main"
+                  sequence="40"
+                  groups="mgt_documents.group_document_manager"/>
+
+        <menuitem id="menu_document_categories"
+                  name="فئات الوثائق"
+                  parent="menu_configuration"
+                  action="action_document_category"
+                  sequence="10"/>
+
+        <menuitem id="menu_configuration_workflow"
+                  name="العمليات وسير العمل"
+                  parent="menu_configuration"
+                  sequence="20"
+                  groups="mgt_documents.group_document_manager"/>
+
+        <menuitem id="menu_document_router"
+                  name="قواعد التوجيه"
+                  parent="menu_configuration_workflow"
+                  action="document_router_action"
+                  sequence="10"/>
+
+
+        <menuitem id="menu_document_history"
+                  name="سجل التغييرات"
+                  parent="menu_configuration_workflow"
+                  action="action_document_history"
+                  sequence="30"/>
+
+        <menuitem id="menu_document_versions"
+                  name="إدارة الإصدارات"
+                  parent="menu_configuration_workflow"
+                  action="document_version_action"
+                  sequence="40"/>
+    </data>
+</odoo> 
