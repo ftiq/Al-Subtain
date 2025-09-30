@@ -1,0 +1,11 @@
+<odoo>
+  <record id="ir_cron_check_work_entry_approvals" model="ir.cron">
+    <field name="name">Check Work Entry Approvals</field>
+    <field name="model_id" ref="model_hr_work_entry_request"/>
+    <field name="state">code</field>
+    <field name="code">model._cron_check_approvals()</field>
+    <field name="interval_number">5</field>
+    <field name="interval_type">minutes</field>
+    <field name="active">True</field>
+  </record>
+</odoo>

@@ -1,0 +1,65 @@
+<odoo>
+  <record id="view_work_entry_request_form" model="ir.ui.view">
+    <field name="name">hr.work.entry.request.form</field>
+    <field name="model">hr.work.entry.request</field>
+    <field name="arch" type="xml">
+      <form string="Work Entry Request">
+        <header>
+          <button name="action_submit" string="Submit" type="object"
+            modifiers='{"invisible": [["state","!=", "draft"]]}'/>
+          <button name="action_reject" string="Reject" type="object"
+            modifiers='{"invisible": [["state","!=", "submit"]]}'/>
+          <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,reject"/>
+        </header>
+        <sheet>
+          <group>
+            <group>
+              <field name="name" readonly="1"/>
+              <field name="employee_id"/>
+              <field name="date_from"/>
+              <field name="date_to"/>
+            </group>
+            <group>
+              <field name="request_type" modifiers='{"readonly": [["state","!=", "draft"]]}'/>
+              <field name="approved_type" modifiers='{"readonly": [["state","!=", "submit"]]}'/>
+              <field name="approved_leave_type_id"
+                modifiers='{"invisible": [["approved_type","not in",["leave_normal","leave_comp","leave_unpaid","leave_sick","leave_paid_days"]]]}'/>
+              <field name="approved_work_entry_type_id"
+                modifiers='{"invisible": [["approved_type","not in",["home_work","out_contract"]]]}'/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Notes"><field name="note"/></page>
+            <page string="Approval"><field name="approval_request_id" readonly="1"/></page>
+            <page string="Chatter"><field name="message_ids" widget="mail_thread"/></page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_work_entry_request_tree" model="ir.ui.view">
+    <field name="name">hr.work.entry.request.tree</field>
+    <field name="model">hr.work.entry.request</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="employee_id"/>
+        <field name="date_from"/>
+        <field name="date_to"/>
+        <field name="request_type"/>
+        <field name="approved_type"/>
+        <field name="state"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="action_work_entry_request" model="ir.actions.act_window">
+    <field name="name">Work Entry Requests</field>
+    <field name="res_model">hr.work.entry.request</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem id="menu_work_entry_request_root" name="Work Entry Requests" parent="hr.menu_hr_root"/>
+  <menuitem id="menu_work_entry_request" name="Requests" parent="menu_work_entry_request_root" action="action_work_entry_request"/>
+</odoo>

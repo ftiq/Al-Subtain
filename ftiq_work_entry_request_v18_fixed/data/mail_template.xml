@@ -1,0 +1,16 @@
+<odoo>
+  <record id="mail_tmpl_work_entry_approved" model="mail.template">
+    <field name="name">Work Entry Approved</field>
+    <field name="model_id" ref="model_hr_work_entry_request"/>
+    <field name="subject">تمت الموافقة على طلبك</field>
+    <field name="email_to">${object.employee_id.user_id.partner_id.email}</field>
+    <field name="body_html"><![CDATA[<p>تمت الموافقة على طلبك ${object.name}.</p>]]></field>
+  </record>
+  <record id="mail_tmpl_work_entry_refused" model="mail.template">
+    <field name="name">Work Entry Refused</field>
+    <field name="model_id" ref="model_hr_work_entry_request"/>
+    <field name="subject">تم رفض طلبك</field>
+    <field name="email_to">${object.employee_id.user_id.partner_id.email}</field>
+    <field name="body_html"><![CDATA[<p>تم رفض طلبك ${object.name}.</p>]]></field>
+  </record>
+</odoo>
