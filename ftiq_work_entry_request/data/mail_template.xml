@@ -1,0 +1,28 @@
+<odoo>
+    <record id="mail_tmpl_work_entry_approved" model="mail.template">
+        <field name="name">Work Entry Approved</field>
+        <field name="model_id" ref="model_hr_work_entry_request"/>
+        <field name="subject">تمت الموافقة على طلبك: ${object.employee_id.name}</field>
+        <field name="email_from">${(object.company_id.email or user.email) | safe}</field>
+        <field name="email_to">${object.employee_id.user_id.partner_id.email}</field>
+        <field name="body_html"><![CDATA[
+            <p>مرحباً ${object.employee_id.name},</p>
+            <p>تمت الموافقة على طلبك (<b>${object.display_name}</b>).</p>
+            <p>النوع النهائي: <b>${dict(object._fields['approved_type'].selection).get(object.approved_type or object.request_type)}</b></p>
+            <p>الفترة: ${object.date_from} → ${object.date_to}</p>
+        ]]></field>
+    </record>
+
+    <record id="mail_tmpl_work_entry_refused" model="mail.template">
+        <field name="name">Work Entry Refused</field>
+        <field name="model_id" ref="model_hr_work_entry_request"/>
+        <field name="subject">تم رفض طلبك: ${object.employee_id.name}</field>
+        <field name="email_from">${(object.company_id.email or user.email) | safe}</field>
+        <field name="email_to">${object.employee_id.user_id.partner_id.email}</field>
+        <field name="body_html"><![CDATA[
+            <p>مرحباً ${object.employee_id.name},</p>
+            <p>نأسف، تم رفض طلبك (<b>${object.display_name}</b>).</p>
+            <p>الفترة: ${object.date_from} → ${object.date_to}</p>
+        ]]></field>
+    </record>
+</odoo>
