@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- واجهة بسيطة لفحص مطرقة شميدت داخل مهمة FSM -->
+    <record id="project_task_view_form_schmidt" model="ir.ui.view">
+        <field name="name">project.task.form.schmidt</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]" position="before">
+                <page string="نمذجة مطرقة شميدت" name="schmidt_page" 
+                      invisible="not show_schmidt_ui" groups="industry_fsm.group_fsm_user">
+                    <group>
+                        <group string="إعداد الفحص">
+                            <field name="sch_points_count"/>
+                            <button name="action_fill_schmidt_points" type="object" 
+                                    string="تعبئة النقاط" class="btn btn-secondary"/>
+                            <button name="action_generate_schmidt_sample_and_results" type="object"
+                                    string="إنشاء العينة ومجموعة النتائج" class="btn btn-primary oe_highlight"
+                                    invisible="not schmidt_point_ids"/>
+                        </group>
+                    </group>
+
+                    <field name="schmidt_point_ids" string="نقاط القياس" nolabel="1">
+                        <list editable="bottom">
+                            <field name="point_no" string="ت"/>
+                            <field name="point_name" string="رقم النقطة" readonly="1"/>
+                            <field name="direction"/>
+                            <field name="rn_avg" string="معدل R.N"/>
+                            <button name="action_open_rn_readings_wizard" type="object" string="إدخال القراءات" class="btn btn-secondary btn-sm"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

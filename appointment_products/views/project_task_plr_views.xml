@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_task_view_form_plr" model="ir.ui.view">
+        <field name="name">project.task.form.plr</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]" position="before">
+                <page string="نمذجة الاستوائية" name="plr_page"
+                      invisible="not show_plr_ui" groups="industry_fsm.group_fsm_user">
+                    <group string="إعداد الفحص">
+                        <group>
+                            <group>
+                                <field name="plr_course_type"/>
+                                <field name="plr_street_name"/>
+                                <field name="plr_window_length"/>
+                            </group>
+                            <group>
+                                <field name="plr_road_type"/>
+                                <field name="plr_street_length"/>
+                                <field name="plr_reading_step" invisible="1" readonly="1"/>
+                            </group>
+                        </group>
+                        <div class="mt-2">
+                            <button name="action_fill_plr_segments" type="object"
+                                    string="توليد مقاطع 300 م" class="btn btn-secondary me-2"/>
+                            <button name="action_generate_plr_sample_and_results" type="object"
+                                    string="إنشاء العينة ومجموعة النتائج" class="btn btn-primary oe_highlight"
+                                    invisible="not plr_segment_ids"/>
+                        </div>
+                    </group>
+
+                    <field name="plr_segment_ids" string="مقاطع 300 م" nolabel="1">
+                        <list editable="bottom">
+                            <field name="segment_no" string="مقطع" readonly="1"/>
+                            <field name="station_range" string="المحطة"/>
+                            <field name="irr_459_count" string="4.0–5.9 مم"/>
+                            <field name="irr_610_count" string="6.0–10.0 مم"/>
+                            <field name="irr_gt10_count" string="> 10 مم"/>
+                            <button name="action_open_input_wizard" type="object" icon="fa-pencil" string="إدخال" class="btn btn-secondary"/>
+                        </list>
+                        <form string="مقطع 300 م">
+                            <group>
+                                <group>
+                                    <field name="segment_no" readonly="1"/>
+                                    <field name="station_range"/>
+                                </group>
+                                <group>
+                                    <field name="start_m"/>
+                                    <field name="end_m"/>
+                                </group>
+                            </group>
+                            <group string="الانحرافات">
+                                <field name="irr_459_count"/>
+                                <field name="irr_610_count"/>
+                                <field name="irr_gt10_count"/>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

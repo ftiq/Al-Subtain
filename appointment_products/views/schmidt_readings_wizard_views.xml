@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_schmidt_readings_wizard_form" model="ir.ui.view">
+        <field name="name">schmidt.readings.wizard.form</field>
+        <field name="model">schmidt.readings.wizard</field>
+        <field name="arch" type="xml">
+            <form string="إدخال قراءات R.N (10 قراءات)" create="false" edit="true" delete="false">
+                <group>
+                    <group>
+                        <field name="point_id" readonly="1"/>
+                        <field name="rn_avg_preview" readonly="1"/>
+                    </group>
+                </group>
+                <separator string="القراءات"/>
+                <group col="5">
+                    <field name="r1"/>
+                    <field name="r2"/>
+                    <field name="r3"/>
+                    <field name="r4"/>
+                    <field name="r5"/>
+                    <field name="r6"/>
+                    <field name="r7"/>
+                    <field name="r8"/>
+                    <field name="r9"/>
+                    <field name="r10"/>
+                </group>
+                <footer>
+                    <button name="action_apply" type="object" string="تطبيق" class="btn btn-primary"/>
+                    <button string="إلغاء" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
