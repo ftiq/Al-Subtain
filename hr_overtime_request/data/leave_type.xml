@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="leave_type_comp_time" model="hr.leave.type">
+        <field name="name">Compensatory Time Off</field>
+        <field name="requires_allocation">yes</field>
+        <field name="employee_requests">no</field>
+        <field name="request_unit">day</field>
+        <field name="show_on_dashboard" eval="True"/>
+        <field name="time_type">leave</field>
+        <field name="leave_validation_type">hr</field>
+        <field name="allocation_validation_type">hr</field>
+    </record>
+</odoo>
