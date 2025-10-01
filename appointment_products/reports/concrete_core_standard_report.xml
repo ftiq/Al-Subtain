@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Concrete Core Test Report (QWeb PDF) -->
+    <template id="concrete_core_standard_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="sample">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+
+                        <style>
+                            * { font-family: Arial, sans-serif !important; }
+                            .compact-table thead th { padding: 4px 3px; font-size: 12px; font-weight: bold; text-align: center; background-color: #DDDDDD; border: 1px solid #dee2e6; }
+                            .compact-table tbody td { padding: 3px 3px; font-size: 12px; line-height: 1.1; text-align: center; border: 1px solid #dee2e6; }
+                            .table { margin-bottom: 3px; }
+                            .lab-section { margin: 4px 0; }
+                            .tight-space { margin-top: 2px !important; margin-bottom: 2px !important; }
+                            .spec-table td, .spec-table th { padding: 3px 3px !important; font-size: 12px !important; line-height: 1.1 !important; text-align: center; }
+                            .section-title { background:#eef3ff;border:1px solid #cdd9ff;border-radius:8px;padding:10px;margin-bottom:12px;text-align:center;font-size:22px;font-weight:700; }
+                            .greeting { text-align: right; margin: 16px 0; padding: 12px; background: #f8f9fa; border-radius: 8px; border-right: 4px solid #17a2b8; font-size: 18px; line-height: 1.8; }
+                            .divider { height: 1px; background: #e9ecef; margin: 6px 0 10px 0; }
+                            .result-block-title { text-align:center;background:#f1fff1;border:1px solid #c8f7c8;border-radius:8px;padding:6px;margin:12px 0 8px 0; font-size: 14px; }
+                            .lab-code-cell { font-weight: bold; font-size: 11px; padding: 2px 4px; }
+                        </style>
+
+
+                        <div class="section-title">
+                            م/ تقرير فحص سمك وحدل 
+                            <t t-if="sample.task_id and sample.task_id.main_sample_subtype_id">
+                                (طبقة <t t-esc="sample.task_id.main_sample_subtype_id.name"/>)
+                            </t>
+                            <t t-elif="sample.sample_subtype_id">
+                                (طبقة <t t-esc="sample.sample_subtype_id.name"/>)
+                            </t>
+                        </div>
+
+                        <div class="greeting">
+                            <p style="margin: 0;">تحية طيبة ..</p>
+                            <p style="margin: 0;">ندرج نتائج فحص النماذج المبينة تفاصيلها ادناه. راجين الاطلاع ...مع التقدير</p>
+                        </div>
+
+                        <t t-set="task" t-value="sample.task_id or False"/>
+                        <t t-set="result_sets" t-value="sample.result_set_ids.filtered(lambda rs: rs.template_id and rs.template_id.code == 'CONCRETE_CORE_TEST')"/>
+                        <t t-set="total_sets_count" t-value="len(result_sets)"/>
+                        <t t-set="total_samples_count" t-value="sum([rs.number_of_samples for rs in result_sets])"/>
+                        <t t-set="sorted_sets" t-value="result_sets.sorted('id')"/>
+                        <t t-set="first_rs" t-value="(sorted_sets and sorted_sets[0]) or False"/>
+                        <t t-set="last_rs" t-value="(sorted_sets and sorted_sets[-1]) or False"/>
+
+                        <div class="lab-section">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr style="background-color: #DDDDDD;">
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">رقم الكتاب</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">تاريخ الكتاب</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">رقم الطلب</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">تاريخ الطلب</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">تاريخ الاستلام</th>
+                                        <th style="text-align: center; padding: 8px; font-weight: bold; color: black; background-color: #DDDDDD; font-size: 16px;">عدد النماذج</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="task.book_number if task and task.book_number else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="task.book_date.strftime('%Y-%m-%d') if task and task.book_date else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="sample.sale_order_id.name if sample.sale_order_id else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="sample.sale_order_id.date_order.strftime('%Y-%m-%d') if sample.sale_order_id and sample.sale_order_id.date_order else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="sample.create_date.strftime('%Y-%m-%d') if sample.create_date else ''"/>
+                                        <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="total_samples_count"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="lab-section" style="margin-top:2px;">
+                            <t t-if="result_sets">
+                                <t t-foreach="sorted_sets" t-as="rs">
+                                    <t t-set="subtype_name" t-value="(sample.task_id.main_sample_subtype_id.name if (sample.task_id and sample.task_id.main_sample_subtype_id) else (sample.sample_subtype_id.name if sample.sample_subtype_id else ''))"/>
+                                    <t t-set="l_core_size_avg_1" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'CORE_SIZE_AVG' and l.sample_no == 1)"/>
+                                    <t t-set="l_core_size_avg_2" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'CORE_SIZE_AVG' and l.sample_no == 2)"/>
+
+                                    <t t-set="l_bulk_1" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'BULK_DENSITY' and l.sample_no == 1)"/>
+                                    <t t-set="l_bulk_2" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'BULK_DENSITY' and l.sample_no == 2)"/>
+
+                                    <t t-set="l_lab_1" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'LABORATORY_DENSITY' and l.sample_no == 1)"/>
+                                    <t t-set="l_lab_2" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'LABORATORY_DENSITY' and l.sample_no == 2)"/>
+
+                                    <t t-set="l_comp_1" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'COMPACTION_RATIO' and l.sample_no == 1)"/>
+                                    <t t-set="l_comp_2" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'COMPACTION_RATIO' and l.sample_no == 2)"/>
+
+                                    <t t-set="l_overall_thick" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'CORE_THICKNESS_OVERALL_AVG')"/>
+                                    <t t-set="l_avg_comp" t-value="rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'COMPACTION_RATIO_AVG')"/>
+
+                                    <t t-set="rs_index" t-value="sorted_sets.ids.index(rs.id)"/>
+                                    <t t-set="serial_raw" t-value="rs.concrete_field_serial or rs.concrete_field_code or ''"/>
+                                    <t t-set="display_serial" t-value="serial_raw.split('/')[-1] if serial_raw else False"/>
+                                    <table class="table table-bordered compact-table" t-att-style="('width:100%; table-layout:fixed; margin-top:2px;' if first_rs and (rs.id != first_rs.id) else 'width:100%; table-layout:fixed; margin-top:2px;')">
+                                        <colgroup>
+                                            <col style="width:8%; min-width:14mm;"/>
+                                            <col style="width:16%;"/>
+                                            <col style="width:16%;"/>
+                                            <col style="width:16%;"/>
+                                            <col style="width:16%;"/>
+                                            <col style="width:15%;"/>
+                                            <col style="width:15%;"/>
+                                        </colgroup>
+                                        <thead t-if="first_rs and (rs.id == first_rs.id)">
+                                            <tr>
+                                                <th>م</th>
+                                                <th>معدل السماكة (سم)</th>
+                                                <th>معدل السماكة العام (سم)</th>
+                                                <th>الكثافة الموقعية (كغم/م³)</th>
+                                                <th>الكثافة المختبرية (كغم/م³)</th>
+                                                <th>نسبة الحدل (%)</th>
+                                                <th>معدل نسبة الحدل (%)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="lab-code-cell"><t t-esc="display_serial if display_serial else (rs_index * 2 + 1)"/></td>
+                                                <td>
+                                                    <t t-if="l_core_size_avg_1">
+                                                        <t t-esc="'{:.2f}'.format(l_core_size_avg_1[0].value_numeric or 0.0)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td style="background:#f8f9fa;" rowspan="2">
+                                                    <t t-if="l_overall_thick">
+                                                        <t t-set="val_overall" t-value="l_overall_thick[0].value_numeric or 0.0"/>
+                                                        <t t-set="is_fail_overall" t-value="not l_overall_thick[0].is_compliant"/>
+                                                        <t t-esc="'{:.2f}'.format(val_overall)"/><t t-if="is_fail_overall">*</t>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="l_bulk_1">
+                                                        <t t-esc="'{:.2f}'.format(l_bulk_1[0].value_numeric or 0.0)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="l_lab_1">
+                                                        <t t-esc="'{:.3f}'.format(l_lab_1[0].value_numeric or 0.0)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="l_comp_1">
+                                                        <t t-esc="'{:.2f}'.format(l_comp_1[0].value_numeric or 0.0)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td style="background:#f8f9fa;" rowspan="2">
+                                                    <t t-if="l_avg_comp">
+                                                        <t t-set="val_avg_comp" t-value="l_avg_comp[0].value_numeric or 0.0"/>
+                                                        <t t-set="is_fail_avg_comp" t-value="not l_avg_comp[0].is_compliant"/>
+                                                        <t t-esc="'{:.2f}'.format(val_avg_comp)"/><t t-if="is_fail_avg_comp">*</t>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="lab-code-cell"><t t-esc="display_serial if display_serial else (rs_index * 2 + 2)"/></td>
+                                                <td>
+                                                    <t t-if="l_core_size_avg_2">
+                                                        <t t-esc="'{:.2f}'.format(l_core_size_avg_2[0].value_numeric or 0.0)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="l_bulk_2">
+                                                        <t t-esc="'{:.2f}'.format(l_bulk_2[0].value_numeric or 0.0)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="l_lab_2">
+                                                        <t t-esc="'{:.3f}'.format(l_lab_2[0].value_numeric or 0.0)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="l_comp_2">
+                                                        <t t-esc="'{:.2f}'.format(l_comp_2[0].value_numeric or 0.0)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    
+                                    <t t-if="last_rs and (rs.id == last_rs.id)">
+                                        <div class="tight-space">
+                                            <table class="table table-bordered compact-table spec-table" style="width:100%;">
+                                                <tr>
+                                                    <td rowspan="2" style="background-color:#DDDDDD; font-weight:bold; text-align:center; padding:6px 4px;">حدود المواصفة</td>
+                                                    <td style="background:#f8f9fa; font-weight:bold; text-align:center; padding:6px 4px;">السمك المطلوب</td>
+                                                    <td style="background:#f8f9fa; font-weight:bold; text-align:center; padding:6px 4px;">نسبة الحدل% حد ادنى</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:center; padding:6px 4px;">
+                                                        <t t-if="rs.reference_general_limit">
+                                                            <t t-esc="rs.reference_general_limit"/>
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                    <td style="text-align:center; padding:6px 4px;">
+                                                        <t t-if="rs.core_compaction_ratio_reference">
+                                                            <t t-esc="rs.core_compaction_ratio_reference"/>
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </t>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p style="text-align:center;">لا توجد نتائج فحص كور متاحة للعرض</p>
+                            </t>
+                        </div>
+
+                        <!-- Notes -->
+                        <t t-if="sample.notes">
+                            <div class="lab-section" style="page-break-inside: avoid; margin-top: 4px;">
+                                <div style="padding: 8px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                                    <div style="font-size: 14px; line-height: 1.6;" t-field="sample.notes"/>
+                                </div>
+                            </div>
+                        </t>
+
+
+                        <div class="lab-section" style="page-break-inside: avoid; margin-top: 16px;">
+                            <table style="width:100%;border-collapse:collapse;direction:rtl;">
+                                <tr>
+                                    <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                                        <div style="margin-bottom:6px;font-weight:bold;">مسؤول الوحدة</div>
+                                        <t t-if="sample.exec_signature">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                                                <img t-att-src="image_data_uri(sample.exec_signature)" style="max-width:100%;max-height:100%;"/>
+                                            </div>
+                                            <div style="font-size:12px;" t-esc="sample.exec_signer_name or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                                            <div style="font-size:12px;">الاسم/ ____________</div>
+                                        </t>
+                                    </td>
+                                    <td style="width:10px;"/>
+                                    <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                                        <div style="margin-bottom:6px;font-weight:bold;">مسؤول الجودة</div>
+                                        <t t-if="sample.super_signature">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                                                <img t-att-src="image_data_uri(sample.super_signature)" style="max-width:100%;max-height:100%;"/>
+                                            </div>
+                                            <div style="font-size:12px;" t-esc="sample.super_signer_name or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                                            <div style="font-size:12px;">الاسم/ ____________</div>
+                                        </t>
+                                    </td>
+                                    <td style="width:10px;"/>
+                                    <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                                        <div style="margin-bottom:6px;font-weight:bold;">المدير التنفيذي</div>
+                                        <t t-if="sample.company_signature">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                                                <img t-att-src="image_data_uri(sample.company_signature)" style="max-width:100%;max-height:100%;"/>
+                                            </div>
+                                            <div style="font-size:12px;" t-esc="sample.company_signer_name or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                                            <div style="font-size:12px;">الاسم/ ____________</div>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

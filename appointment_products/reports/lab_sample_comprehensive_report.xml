@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+
+        <record id="lab_sample_comprehensive_report_paperformat" model="report.paperformat">
+            <field name="name">Lab Sample Comprehensive Report</field>
+            <field name="default" eval="False"/>
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">40</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+        </record>
+
+
+
+
+        <template id="concrete_compression_report_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="sample">
+                    <t t-call="web.external_layout">
+                        <t t-call="appointment_products.concrete_compression_report_page" t-lang="sample.env.context.get('lang', 'ar_001')"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <template id="concrete_compression_report_page">
+            <div class="page">
+                            <div class="oe_structure"></div>
+                            <style>
+                                @font-face {
+                                    font-family: 'tradbdo';
+                                    src: url('/appointment_products/static/src/fonts/tradbdo.ttf') format('truetype');
+                                    font-weight: bold;
+                                    font-style: normal;
+                                }
+                                
+                                .custom-main-title {
+                                    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+                                    color: #000 !important;
+                                    padding: 15px;
+                                    margin: 8px 0 15px 0;
+                                    border-radius: 12px;
+                                    text-align: center;
+                                    font-family: 'tradbdo', Arial, sans-serif !important;
+                                    font-size: 20px !important;
+                                    font-weight: 600;
+                                    box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+                                    border: 2px solid #1e3c72;
+                                    position: relative;
+                                    overflow: hidden;
+                                }
+                                
+                                .custom-main-title::before {
+                                    content: '';
+                                    position: absolute;
+                                    top: 0;
+                                    left: -100%;
+                                    width: 100%;
+                                    height: 100%;
+                                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                                    animation: shine 3s infinite;
+                                }
+                                
+                                @keyframes shine {
+                                    0% { left: -100%; }
+                                    50% { left: 100%; }
+                                    100% { left: 100%; }
+                                }
+                                
+                                h1, h2, h3, h4, h5, h6 {
+                                    font-family: 'tradbdo', Arial, sans-serif !important;
+                                }
+                                
+                                table th {
+                                    font-family: 'tradbdo', Arial, sans-serif !important;
+                                }
+                                
+                                .lab-section {
+                                    background: #fff;
+                                    border: 1px solid #dee2e6;
+                                    border-radius: 8px;
+                                    margin: 4px 0;
+                                    padding: 8px;
+                                }
+                                
+                                .lab-section h3 {
+                                    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                                    color: #000 !important;
+                                    padding: 6px 8px;
+                                    margin: -8px -8px 8px -8px;
+                                    border-radius: 10px 10px 0 0;
+                                    font-weight: 600;
+                                    font-size: 16px !important;
+                                    text-align: center;
+                                    font-family: 'tradbdo', Arial, sans-serif !important;
+                                    border-bottom: 2px solid #28a745;
+                                    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.25);
+                                    position: relative;
+                                }
+                                
+                                .lab-section h3::after {
+                                    content: '';
+                                    position: absolute;
+                                    bottom: -2px;
+                                    left: 50%;
+                                    transform: translateX(-50%);
+                                    width: 50px;
+                                    height: 3px;
+                                    background: #fff;
+                                    border-radius: 2px;
+                                }
+                                
+                                .lab-section table {
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                    background: #fff;
+                                }
+                                
+                                .lab-section table thead th {
+                                    background: rgba(13, 110, 253, 0.1);
+                                    color: #0d6efd;
+                                    font-weight: 600;
+                                    padding: 8px 6px;
+                                    text-align: center;
+                                    border: 1px solid #dee2e6;
+                                    font-size: 14px;
+                                    font-family: 'tradbdo', Arial, sans-serif !important;
+                                }
+                                
+                                .lab-section table tbody td {
+                                    padding: 6px 4px;
+                                    border: 1px solid #dee2e6;
+                                    text-align: center;
+                                    font-size: 13px;
+                                }
+                                
+                                .page {
+                                    background: #fff;
+                                    padding: 20px;
+                                    font-size: 15px;
+                                }
+                                
+
+                                @media print {
+                                    .lab-section table thead {
+                                        display: table-header-group !important;
+                                    }
+                                    
+                                    .lab-section table tbody {
+                                        display: table-row-group;
+                                    }
+                                    
+                                    .lab-section table {
+                                        page-break-inside: auto;
+                                        border-collapse: collapse;
+                                    }
+                                    
+                                    .lab-section table tr {
+                                        page-break-inside: avoid;
+                                        page-break-after: auto;
+                                    }
+                                    
+                                    .lab-section {
+                                        page-break-inside: avoid;
+                                    }
+                                    
+
+                                    .lab-section h3 {
+                                        page-break-after: avoid !important;
+                                        page-break-inside: avoid !important;
+                                        margin-bottom: 0 !important;
+                                    }
+                                    
+                                    .lab-section h3 + * {
+                                        page-break-before: avoid !important;
+                                    }
+                                    
+                                    .group-section {
+                                        page-break-inside: avoid !important;
+                                        page-break-before: auto;
+                                    }
+                                    
+                                    .group-section h4 {
+                                        page-break-after: avoid !important;
+                                        page-break-inside: avoid !important;
+                                        margin-bottom: 5px !important;
+                                    }
+                                    
+                                    .group-section h4 + * {
+                                        page-break-before: avoid !important;
+                                    }
+                                    
+                                    /* قسم النتائج التفصيلية - صفحة جديدة */
+                                    .detailed-results-section {
+                                        page-break-before: always !important;
+                                        page-break-inside: avoid !important;
+                                    }
+                                    
+                                    .detailed-results-section h3 {
+                                        page-break-after: avoid !important;
+                                        margin-top: 0 !important;
+                                        margin-bottom: 15px !important;
+                                    }
+                                }
+                                
+
+                                
+                                .summary-card {
+                                    background: linear-gradient(to bottom, #fff 0%, #f8f9ff 100%);
+                                    border: none;
+                                    border-radius: 16px;
+                                    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.15);
+                                    margin: 8px 0;
+                                    padding: 12px;
+                                }
+                                
+                                .summary-card h3 {
+                                    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+                                    color: #000 !important;
+                                    padding: 10px 12px;
+                                    margin: -12px -12px 12px -12px;
+                                    border-radius: 15px 15px 0 0;
+                                    font-weight: 700;
+                                    font-size: 18px !important;
+                                    text-align: center;
+                                    box-shadow: 0 3px 15px rgba(255, 107, 53, 0.4);
+                                    font-family: 'tradbdo', Arial, sans-serif !important;
+                                    border: 2px solid #ff6b35;
+                                    position: relative;
+                                }
+                            </style>
+                            
+
+                            <div class="custom-main-title">
+                                <span>م/ تقرير فحص ( مقاومة الانضغاط لمكعبات خرسانية )</span>
+                            </div>
+                            
+
+                            <t t-set="task" t-value="sample.task_id or env['project.task'].search([('stock_receipt_id.move_line_ids.product_id', '=', sample.product_id.id)], limit=1)"/>
+                            <t t-set="ref_general" t-value="float(task.reference_general_limit) if task and task.reference_general_limit else 0"/>
+                            <t t-set="ref_min" t-value="float(task.reference_min_limit) if task and task.reference_min_limit else 0"/>
+                            <t t-set="general_margin" t-value="3.0"/>
+                            <t t-set="min_margin" t-value="3.0"/>
+                            <t t-set="is_bridges" t-value="bool(sample.concrete_sample_type_id and sample.concrete_sample_type_id.code == 'CONCRETE_BRIDGES')"/>
+                            <t t-set="result_sets" t-value="sorted([rs for rs in sample.result_set_ids if rs.is_concrete_sample and rs.concrete_age_days == '28'], key=lambda x: x.concrete_group_no or 0)"/>
+                            
+
+                            <t t-set="total_samples_count" t-value="sum(len(set(rs.result_line_ids.mapped('sample_no'))) for rs in result_sets)"/>
+                            
+
+                            
+                            <t t-set="has_group_failure" t-value="False"/>
+                            <t t-set="has_rolling_failure" t-value="False"/>
+                            <t t-set="passed_groups" t-value="0"/>
+                            <t t-set="failed_groups" t-value="0"/>
+                            
+
+                            <t t-foreach="result_sets" t-as="rs">
+                                <t t-set="grp_avg_lines" t-value="[l for l in rs.result_line_ids if l.criterion_id.code == 'AVG_COMP_STRENGTH_CONCRETE']"/>
+                                <t t-set="grp_avg" t-value="grp_avg_lines[0].value_numeric if grp_avg_lines else 0"/>
+                                <t t-if="ref_min and grp_avg &lt; (ref_min - min_margin)">
+                                    <t t-set="has_group_failure" t-value="True"/>
+                                    <t t-set="failed_groups" t-value="failed_groups + 1"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-set="passed_groups" t-value="passed_groups + 1"/>
+                                </t>
+                            </t>
+                            
+
+                            <t t-if="not is_bridges and len(result_sets) >= 4">
+                                <t t-set="group_averages" t-value="[]"/>
+                                <t t-foreach="result_sets" t-as="rs">
+                                    <t t-set="grp_avg_lines" t-value="[l for l in rs.result_line_ids if l.criterion_id.code == 'AVG_COMP_STRENGTH_CONCRETE']"/>
+                                    <t t-set="grp_avg" t-value="grp_avg_lines[0].value_numeric if grp_avg_lines else 0"/>
+                                    <t t-set="dummy" t-value="group_averages.append(grp_avg)"/>
+                                </t>
+                                
+                                <t t-foreach="range(len(group_averages) - 3)" t-as="i">
+                                    <t t-set="window_avg" t-value="sum(group_averages[i:i+4]) / 4"/>
+                                    <t t-if="ref_general and window_avg &lt; (ref_general + general_margin)">
+                                        <t t-set="has_rolling_failure" t-value="True"/>
+                                    </t>
+                                </t>
+                            </t>
+                            
+                            <t t-set="final_failed" t-value="has_group_failure or has_rolling_failure"/>
+                            <t t-set="final_result" t-value="'فاشل' if final_failed else 'ناجح'"/>
+                            <t t-set="final_color" t-value="'#FFC7CE' if final_failed else '#C6EFCE'"/>
+
+
+                            <div style="text-align: right; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; border-right: 4px solid #17a2b8; font-family: 'tradbdo', Arial, sans-serif; font-size: 16px; line-height: 1.8;">
+                                <p style="margin: 0;">تحية طيبة ..</p>
+                                <p style="margin: 0;">ندرج نتائج فحص النماذج المبينة تفاصيلها ادناه. راجين الاطلاع ...مع التقدير</p>
+                            </div>
+                            
+
+                            <t t-set="first_result_set" t-value="result_sets[0] if result_sets else None"/>
+                            <div class="lab-section">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr style="background-color: #DDDDDD;">
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">رقم الكتاب</th>
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">تاريخ الكتاب</th>
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">رقم الطلب</th>
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">تاريخ الطلب</th>
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">تاريخ الاستلام</th>
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">عدد النماذج</th>
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">موقع النموذج</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="task.book_number if task and task.book_number else ''"/>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="task.book_date.strftime('%Y-%m-%d') if task and task.book_date else ''"/>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="sample.sale_order_id.name if sample.sale_order_id else ''"/>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="sample.sale_order_id.date_order.strftime('%Y-%m-%d') if sample.sale_order_id and sample.sale_order_id.date_order else ''"/>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="sample.create_date.strftime('%Y-%m-%d') if sample.create_date else ''"/>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="total_samples_count"/>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;"></td>
+                                        </tr>
+                                        <tr style="background-color: #DDDDDD;">
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">درجة الحرارة عند الفحصCْ</th>
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">نوع الفشل</th>
+                                            <th style="text-align: center; padding: 8px; font-weight: bold; font-family: 'tradbdo', Arial, sans-serif; color: black; background-color: #DDDDDD; font-size: 16px;">طريق دمك المكعبات</th>
+                                            <th colspan="4" style="background-color: #DDDDDD;"></th>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;" t-esc="first_result_set.testing_temperature if first_result_set and first_result_set.testing_temperature else ''"/>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;"></td>
+                                            <td style="text-align: center; padding: 6px; border: 1px solid #dee2e6;"></td>
+                                            <td colspan="4" style="border: 1px solid #dee2e6;"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="lab-section">
+                                <h3>مقاومة الضغط والكثافة لمكعبات الخرسانة</h3>
+                                
+
+                                <table class="table table-bordered" style="margin-bottom: 20px;">
+                                    <tr>
+                                        <td style="background-color: #DDDDDD; font-weight: bold; text-align: center; width: 16.66%;">الطول (مم)</td>
+                                        <td style="background-color: #DDDDDD; font-weight: bold; text-align: center; width: 16.66%;">العرض (مم)</td>
+                                        <td style="background-color: #DDDDDD; font-weight: bold; text-align: center; width: 16.66%;">الارتفاع (مم)</td>
+                                        <td style="background-color: #DDDDDD; font-weight: bold; text-align: center; width: 16.66%;">المساحة (مم²)</td>
+                                        <td style="background-color: #DDDDDD; font-weight: bold; text-align: center; width: 16.66%;">الحجم (م³)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: center;">150</td>
+                                        <td style="text-align: center;">150</td>
+                                        <td style="text-align: center;">150</td>
+                                        <td style="text-align: center;">22500</td>
+                                        <td style="text-align: center;">0.0034</td>
+                                    </tr>
+                                </table>
+
+
+                                
+                                <table class="table table-bordered">
+                                                    <thead>
+                                        <tr style="background-color: #DDDDDD;">
+                                            <th style="text-align: center; padding: 8px;">الرمز الحقلي</th>
+                                            <th style="text-align: center; padding: 8px;">الوزن (كغ)</th>
+                                            <th style="text-align: center; padding: 8px;">الكثافة (كغ/م³)</th>
+                                            <th style="text-align: center; padding: 8px;">أقصى حمل (kN)</th>
+                                            <th style="text-align: center; padding: 8px;">مقاومة الضغط (N/mm²)</th>
+                                            <th style="text-align: center; padding: 8px;">مقاومة الضغط المصححة (N/mm²)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                        <t t-foreach="result_sets" t-as="rs">
+
+                                            <t t-set="weights" t-value="[l for l in rs.result_line_ids if l.criterion_id.code == 'WEIGHT_CONCRETE']"/>
+                                            <t t-set="densities" t-value="[l for l in rs.result_line_ids if l.criterion_id.code == 'DENSITY_CONCRETE']"/>
+                                            <t t-set="loads" t-value="[l for l in rs.result_line_ids if l.criterion_id.code == 'LOAD_KN_CONCRETE']"/>
+                                            <t t-set="strengths" t-value="[l for l in rs.result_line_ids if l.criterion_id.code == 'COMP_STRENGTH_CONCRETE']"/>
+                                            
+                                            <t t-set="max_len" t-value="max(len(weights), len(densities), len(loads), len(strengths), 1)"/>
+                                            
+                                            <t t-foreach="range(max_len)" t-as="i">
+                                                <tr>
+                                                    <td style="text-align: center; padding: 6px;" t-esc="rs.concrete_field_serial or rs.concrete_field_code or rs.name"/>
+                                                    <td style="text-align: center; padding: 6px;" t-esc="('%.3f' % weights[i].value_numeric) if i &lt; len(weights) and weights[i].value_numeric else ''"/>
+                                                    <td style="text-align: center; padding: 6px;" t-esc="('%.0f' % densities[i].value_numeric) if i &lt; len(densities) and densities[i].value_numeric else ''"/>
+                                                    <td style="text-align: center; padding: 6px;" t-esc="('%.1f' % loads[i].value_numeric) if i &lt; len(loads) and loads[i].value_numeric else ''"/>
+                                                    <td style="text-align: center; padding: 6px;" t-esc="('%.2f' % strengths[i].value_numeric) if i &lt; len(strengths) and strengths[i].value_numeric else ''"/>
+                                                    <td style="text-align: center; padding: 6px;" t-esc="('%.2f' % (strengths[i].value_numeric * (rs.cube_factor or 1.0))) if i &lt; len(strengths) and strengths[i].value_numeric else ''"/>
+                                                            </tr>
+                                            </t>
+                                            
+
+                                            <t t-set="grp_avg_lines" t-value="[l for l in rs.result_line_ids if l.criterion_id.code == 'AVG_COMP_STRENGTH_CONCRETE']"/>
+                                            <t t-set="grp_avg" t-value="grp_avg_lines[0].value_numeric if grp_avg_lines else 0"/>
+                                            <t t-set="group_failed" t-value="grp_avg &lt; (ref_min - min_margin) if ref_min else False"/>
+                                            <t t-set="grp_display" t-value="('%.2f' % grp_avg) + ('*' if group_failed else '')"/>
+                                            <t t-set="factor_display" t-value="('Factor: ' + str(int(rs.factor))) if rs.factor and rs.factor > 0 else ''"/>
+                                            <tr t-attf-style="background-color: #{group_failed and '#FFC7CE' or '#F2F2F2'};">
+                                                <td style="text-align: center; padding: 6px; font-weight: bold;" t-esc="'معدل المجموعة ' + str(rs.concrete_group_no or '')"/>
+                                                <td colspan="3"></td>
+                                                <td style="text-align: center; padding: 6px; font-weight: bold;" t-esc="grp_display"/>
+                                                <td style="text-align: center; padding: 6px; font-weight: bold; color: red;" t-esc="factor_display"/>
+                                            </tr>
+                                        </t>
+                                        </tbody>
+                                </table>
+
+
+                                <t t-if="not is_bridges and len(result_sets) >= 4">
+                                    <div style="margin-top: 20px;">
+                                        <h4 style="background-color: #4F81BD; color: white; padding: 8px; text-align: center;">متوسطات مجموعات الخرسانة المتتالية</h4>
+                                        <table class="table table-bordered">
+                                                <thead>
+                                                <tr style="background-color: #305496; color: white;">
+                                                    <th style="text-align: center; padding: 8px; color: white;">المجموعات</th>
+                                                    <th style="text-align: center; padding: 8px; color: white;">متوسط القوة (N/mm²)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <t t-set="window_size" t-value="4"/>
+                                                <t t-foreach="range(len(group_averages) - window_size + 1)" t-as="i">
+                                                    <t t-set="window_avg" t-value="sum(group_averages[i:i+window_size]) / window_size"/>
+                                                    <t t-set="is_failed" t-value="window_avg &lt; (ref_general + general_margin) if ref_general else False"/>
+                                                    <tr t-attf-style="background-color: #{is_failed and '#FFC7CE' or 'inherit'};">
+                                                        <td style="text-align: center; padding: 6px;" t-esc="str(i+1) + '-' + str(i+window_size)"/>
+                                                        <td style="text-align: center; padding: 6px; font-weight: bold;" t-esc="('%.2f' % window_avg) + ('*' if is_failed else '')"/>
+                                                    </tr>
+                                                </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </t>
+
+
+
+
+                                <div style="margin-top: 20px;">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td style="background-color: #DDDDDD; font-weight: bold; width: 30%;">نتيجة الفحص</td>
+                                            <td t-attf-style="font-weight: bold; font-size: 16px; background-color: #{final_color};" t-esc="final_result"/>
+                                            </tr>
+                                    </table>
+                                </div>
+                                
+
+                                <t t-set="uncertainty_lines" t-value="[l for rs in result_sets for l in rs.result_line_ids if l.criterion_id.code == 'UNCERTAINTY_STRESS_VALUE']"/>
+                                <t t-if="uncertainty_lines">
+                                    <div style="margin-top: 20px;">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td style="background-color: #DDDDDD; font-weight: bold; width: 30%;">Uncertainty Stress Value</td>
+                                                <td style="font-weight: bold;" t-esc="'%.3f' % uncertainty_lines[0].value_numeric"/>
+                                            </tr>
+                                    </table>
+                                </div>
+                            </t>
+                            </div>
+
+
+                            <t t-if="sample.notes">
+                                <div class="lab-section" style="page-break-inside: avoid;">
+                                    <h3>الملاحظات</h3>
+                                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                                        <div style="font-size: 14px; line-height: 1.6; font-family: 'tradbdo', Arial, sans-serif;" t-field="sample.notes"/>
+                                    </div>
+                                </div>
+                            </t>
+
+
+                            <div class="lab-section" style="page-break-inside: avoid; margin-top: 20px;">
+                                <h3>التوقيعات</h3>
+                                <div style="padding-bottom:4px;margin-bottom:4px;">
+                                    <table style="width:100%;border-collapse:collapse;direction:rtl;">
+                                        <tr>
+                                            <td style="width:33.33%;text-align:center;padding:15px;border:1px solid #c0d6e4;border-radius:8px;background:#ffffff;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                                                <div style="margin-bottom:8px;">
+                                                    <strong>مسؤول الوحدة</strong>
+                                                </div>
+                                                <t t-if="sample.exec_signature">
+                                                    <div style="height:80px;border:1px solid #ddd;margin:10px 0;display:flex;align-items:center;justify-content:center;">
+                                                        <img t-att-src="image_data_uri(sample.exec_signature)" style="max-width:100%;max-height:100%;"/>
+                                                    </div>
+                                                    <div style="font-size:12px;"><t t-esc="sample.exec_signer_name or ''"/></div>
+                                                </t>
+                                                <t t-else="">
+                                                    <div style="height:80px;border:1px solid #ddd;margin:10px 0;"/>
+                                                    <div style="font-size:12px;">الاسم/ ____________</div>
+                                                </t>
+                                            </td>
+                                            <td style="width:10px;"></td>
+                                            <td style="width:33.33%;text-align:center;padding:15px;border:1px solid #c0d6e4;border-radius:8px;background:#ffffff;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                                                <div style="margin-bottom:8px;">
+                                                    <strong>مسؤول الجودة</strong>
+                                                </div>
+                                                <t t-if="sample.super_signature">
+                                                    <div style="height:80px;border:1px solid #ddd;margin:10px 0;display:flex;align-items:center;justify-content:center;">
+                                                        <img t-att-src="image_data_uri(sample.super_signature)" style="max-width:100%;max-height:100%;"/>
+                                                    </div>
+                                                    <div style="font-size:12px;"><t t-esc="sample.super_signer_name or ''"/></div>
+                                                </t>
+                                                <t t-else="">
+                                                    <div style="height:80px;border:1px solid #ddd;margin:10px 0;"/>
+                                                    <div style="font-size:12px;">الاسم/ ____________</div>
+                                                </t>
+                                            </td>
+                                            <td style="width:10px;"></td>
+                                            <td style="width:33.33%;text-align:center;padding:15px;border:1px solid #c0d6e4;border-radius:8px;background:#ffffff;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                                                <div style="margin-bottom:8px;">
+                                                    <strong>المدير التنفيذي</strong>
+                                                </div>
+                                                <t t-if="sample.company_signature">
+                                                    <div style="height:80px;border:1px solid #ddd;margin:10px 0;display:flex;align-items:center;justify-content:center;">
+                                                        <img t-att-src="image_data_uri(sample.company_signature)" style="max-width:100%;max-height:100%;"/>
+                                                    </div>
+                                                    <div style="font-size:12px;"><t t-esc="sample.company_signer_name or ''"/></div>
+                                                </t>
+                                                <t t-else="">
+                                                    <div style="height:80px;border:1px solid #ddd;margin:10px 0;"/>
+                                                    <div style="font-size:12px;">الاسم/ ____________</div>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+
+            </div>
+        </template>
+
+
+    </data>
+</odoo>
