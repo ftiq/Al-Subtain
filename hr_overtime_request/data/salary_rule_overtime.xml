@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="salary_rule_overtime_emp" model="hr.salary.rule">
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="name">Overtime Pay</field>
+        <field name="sequence">60</field>
+        <field name="code">OVERTIME_PAY</field>
+        <field name="appears_on_payslip">True</field>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = 'OVERTIME' in inputs</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result_rate = 100.0
+# hours * hourly_wage * multiplier (default 1.5)
+multiplier = 1.5
+hourly = contract.hourly_wage or 0.0
+qty = inputs['OVERTIME'].amount
+result = qty * hourly * multiplier
+result_name = 'Overtime (hrs=%s, x%s)' % (qty, multiplier)
+        </field>
+        <field name="struct_id" ref="hr_payroll.structure_002"/>
+    </record>
+
+    <record id="salary_rule_overtime_worker" model="hr.salary.rule">
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="name">Overtime Pay</field>
+        <field name="sequence">60</field>
+        <field name="code">OVERTIME_PAY</field>
+        <field name="appears_on_payslip">True</field>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = 'OVERTIME' in inputs</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result_rate = 100.0
+multiplier = 1.5
+hourly = contract.hourly_wage or 0.0
+qty = inputs['OVERTIME'].amount
+result = qty * hourly * multiplier
+result_name = 'Overtime (hrs=%s, x%s)' % (qty, multiplier)
+        </field>
+        <field name="struct_id" ref="hr_payroll.structure_worker_001"/>
+    </record>
+</odoo>

@@ -1,0 +1,567 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hr_overtime_request
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20250101\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-29 15:28+0000\n"
+"PO-Revision-Date: 2025-09-29 15:28+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_needaction
+msgid "Action Needed"
+msgstr "إجراء مطلوب"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_ids
+msgid "Activities"
+msgstr "الأنشطة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "زخرفة استثناء النشاط"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_state
+msgid "Activity State"
+msgstr "حالة النشاط"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "رمز نوع النشاط"
+
+#. module: hr_overtime_request
+#: model:ir.actions.act_window,name:hr_overtime_request.overtime_request_action_all
+#: model:ir.ui.menu,name:hr_overtime_request.menu_hr_overtime_all
+msgid "All Overtime Requests"
+msgstr "جميع طلبات العمل الإضافي"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__approval_line_ids
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_form
+msgid "Approvals"
+msgstr "الموافقات"
+
+#. module: hr_overtime_request
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_form
+msgid "Approve"
+msgstr "موافقة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request__state__approved
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request_approval__state__approved
+msgid "Approved"
+msgstr "موافق عليه"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__approved_by
+msgid "Approved By"
+msgstr "موافق من قبل"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__approved_date
+msgid "Approved On"
+msgstr "تاريخ الموافقة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__approver_user_id
+msgid "Approver"
+msgstr "المُوافِق"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_attachment_count
+msgid "Attachment Count"
+msgstr "عدد المرفقات"
+
+#. module: hr_overtime_request
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_form
+msgid "Chatter"
+msgstr "المناقشات"
+
+#. module: hr_overtime_request
+#: model:hr.leave.type,name:hr_overtime_request.leave_type_comp_time
+msgid "Compensatory Time Off"
+msgstr "إجازة تعويضية"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Compensatory Time Off type is not configured."
+msgstr "نوع الإجازة التعويضية غير مكون."
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Compensatory time for overtime on %s"
+msgstr "وقت تعويضي للعمل الإضافي في %s"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Computed number of days must be > 0."
+msgstr "عدد الأيام المحسوب يجب أن يكون أكبر من 0."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__conversion_type
+msgid "Conversion Type"
+msgstr "نوع التحويل"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Conversion to money initiated."
+msgstr "تم بدء التحويل إلى مال."
+
+#. module: hr_overtime_request
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_form
+msgid "Convert"
+msgstr "تحويل"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request__conversion_type__leave
+msgid "Convert to Leave Balance"
+msgstr "تحويل إلى رصيد الإجازات"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request__conversion_type__money
+msgid "Convert to Money"
+msgstr "تحويل إلى مال"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request__state__converted
+msgid "Converted"
+msgstr "محول"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Converted to leave balance."
+msgstr "تم التحويل إلى رصيد الإجازات."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__create_uid
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__create_uid
+msgid "Created by"
+msgstr "أُنشئ بواسطة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__create_date
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__create_date
+msgid "Created on"
+msgstr "أُنشئ في"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__date
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__date
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__display_name
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__display_name
+msgid "Display Name"
+msgstr "الاسم المعروض"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request__state__draft
+msgid "Draft"
+msgstr "مسودة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__employee_id
+msgid "Employee"
+msgstr "الموظف"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_follower_ids
+msgid "Followers"
+msgstr "المتابعون"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "المتابعون (الشركاء)"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "رمز Font Awesome مثل fa-tasks"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__has_message
+msgid "Has Message"
+msgstr "لديه رسالة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__hours
+msgid "Hours"
+msgstr "الساعات"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__id
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__id
+msgid "ID"
+msgstr "المعرف"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_exception_icon
+msgid "Icon"
+msgstr "الرمز"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "رمز للإشارة إلى نشاط استثنائي."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "إذا تم التحديد، الرسائل الجديدة تتطلب انتباهك."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__message_has_error
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "إذا تم التحديد، بعض الرسائل بها خطأ في التسليم."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__is_approver
+msgid "Is Approver"
+msgstr "هو مُوافِق"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__is_current_approver
+msgid "Is Current Approver"
+msgstr "هو المُوافِق الحالي"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__is_employee
+msgid "Is Employee"
+msgstr "هو موظف"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_is_follower
+msgid "Is Follower"
+msgstr "هو متابع"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__write_uid
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__write_date
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_has_error
+msgid "Message Delivery error"
+msgstr "خطأ في تسليم الرسالة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_ids
+msgid "Messages"
+msgstr "الرسائل"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "موعد نشاطي النهائي"
+
+#. module: hr_overtime_request
+#: model:ir.actions.act_window,name:hr_overtime_request.overtime_request_action_my
+#: model:ir.ui.menu,name:hr_overtime_request.menu_hr_overtime_my
+msgid "My Overtime Requests"
+msgstr "طلبات العمل الإضافي الخاصة بي"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "حدث تقويم النشاط التالي"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "موعد النشاط التالي النهائي"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_summary
+msgid "Next Activity Summary"
+msgstr "ملخص النشاط التالي"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_type_id
+msgid "Next Activity Type"
+msgstr "نوع النشاط التالي"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid ""
+"No draft payslip found for the period. Payroll should add OVERTIME input "
+"(amount=%s hours) to the next payslip."
+msgstr ""
+"لا توجد قسيمة راتب مسودة للفترة. يجب على كشوف المرتبات إضافة مدخل العمل "
+"الإضافي (المبلغ=%s ساعة) إلى قسيمة الراتب التالية."
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "No pending approval found for you."
+msgstr "لا توجد موافقة معلقة لك."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__note
+msgid "Note"
+msgstr "ملاحظة"
+
+#. module: hr_overtime_request
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_form
+msgid "Notes"
+msgstr "الملاحظات"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr "عدد الإجراءات"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_has_error_counter
+msgid "Number of errors"
+msgstr "عدد الأخطاء"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "عدد الرسائل التي تتطلب إجراء"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "عدد الرسائل التي بها خطأ في التسليم"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Only approved requests can be converted."
+msgstr "يمكن تحويل الطلبات الموافق عليها فقط."
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Only the employee can submit this request."
+msgstr "الموظف فقط يمكنه تقديم هذا الطلب."
+
+#. module: hr_overtime_request
+#: model:hr.salary.rule,name:hr_overtime_request.salary_rule_overtime_emp
+#: model:hr.salary.rule,name:hr_overtime_request.salary_rule_overtime_worker
+msgid "Overtime Pay"
+msgstr "راتب العمل الإضافي"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+#: model:ir.model,name:hr_overtime_request.model_overtime_request
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_form
+msgid "Overtime Request"
+msgstr "طلب العمل الإضافي"
+
+#. module: hr_overtime_request
+#: model:ir.model,name:hr_overtime_request.model_overtime_request_approval
+msgid "Overtime Request Approval Step"
+msgstr "خطوة موافقة طلب العمل الإضافي"
+
+#. module: hr_overtime_request
+#: model:ir.ui.menu,name:hr_overtime_request.menu_hr_overtime_management
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_tree
+msgid "Overtime Requests"
+msgstr "طلبات العمل الإضافي"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Overtime approval needed"
+msgstr "موافقة العمل الإضافي مطلوبة"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Overtime hours must be greater than 0."
+msgstr "ساعات العمل الإضافي يجب أن تكون أكبر من 0."
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Overtime on %s"
+msgstr "عمل إضافي في %s"
+
+#. module: hr_overtime_request
+#: model:ir.actions.act_window,name:hr_overtime_request.overtime_request_action_to_approve
+msgid "Overtime: To Approve"
+msgstr "العمل الإضافي: للموافقة"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Payslip Input Type OVERTIME is not configured."
+msgstr "نوع مدخل قسيمة الراتب للعمل الإضافي غير مكون."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request_approval__state__pending
+msgid "Pending"
+msgstr "معلق"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Please choose a conversion type."
+msgstr "يرجى اختيار نوع التحويل."
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Please provide a reject reason."
+msgstr "يرجى تقديم سبب الرفض."
+
+#. module: hr_overtime_request
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_form
+msgid "Reason if rejected..."
+msgstr "السبب في حالة الرفض..."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__name
+msgid "Reference"
+msgstr "المرجع"
+
+#. module: hr_overtime_request
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_form
+msgid "Reject"
+msgstr "رفض"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__reject_reason
+msgid "Reject Reason"
+msgstr "سبب الرفض"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request__state__rejected
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request_approval__state__rejected
+msgid "Rejected"
+msgstr "مرفوض"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__rejected_by
+msgid "Rejected By"
+msgstr "مرفوض من قبل"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__rejected_date
+msgid "Rejected On"
+msgstr "تاريخ الرفض"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__request_id
+msgid "Request"
+msgstr "الطلب"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Request fully approved."
+msgstr "الطلب موافق عليه بالكامل."
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Request rejected by %s: %s"
+msgstr "الطلب مرفوض من قبل %s: %s"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Request submitted for approval."
+msgstr "تم تقديم الطلب للموافقة."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__activity_user_id
+msgid "Responsible User"
+msgstr "المستخدم المسؤول"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "خطأ في تسليم الرسائل النصية"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__state
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__state
+msgid "State"
+msgstr "الحالة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"الحالة بناءً على الأنشطة\n"
+"متأخر: تاريخ الاستحقاق قد مضى\n"
+"اليوم: تاريخ النشاط هو اليوم\n"
+"مخطط: أنشطة مستقبلية."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request_approval__step
+msgid "Step"
+msgstr "الخطوة"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "Step approved by %s. Next approver: %s"
+msgstr "الخطوة موافق عليها من قبل %s. المُوافِق التالي: %s"
+
+#. module: hr_overtime_request
+#: model_terms:ir.ui.view,arch_db:hr_overtime_request.overtime_request_form
+msgid "Submit"
+msgstr "تقديم"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields.selection,name:hr_overtime_request.selection__overtime_request__state__to_approve
+msgid "To Approve"
+msgstr "للموافقة"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "نوع النشاط الاستثنائي في السجل."
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,field_description:hr_overtime_request.field_overtime_request__website_message_ids
+msgid "Website Messages"
+msgstr "رسائل الموقع"
+
+#. module: hr_overtime_request
+#: model:ir.model.fields,help:hr_overtime_request.field_overtime_request__website_message_ids
+msgid "Website communication history"
+msgstr "تاريخ اتصالات الموقع"
+
+#. module: hr_overtime_request
+#. odoo-python
+#: code:addons/hr_overtime_request/models/overtime_request.py:0
+msgid "You are not allowed to convert this request."
+msgstr "غير مسموح لك بتحويل هذا الطلب."

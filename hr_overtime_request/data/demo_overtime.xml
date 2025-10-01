@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="user_division_manager" model="res.users">
+        <field name="name">Division Manager</field>
+        <field name="login">div.manager</field>
+        <field name="password">demo</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="company_ids" eval="[(6, 0, [ref('base.main_company')])]"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]"/>
+    </record>
+    <record id="user_department_manager" model="res.users">
+        <field name="name">Department Manager</field>
+        <field name="login">dept.manager</field>
+        <field name="password">demo</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="company_ids" eval="[(6, 0, [ref('base.main_company')])]"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]"/>
+    </record>
+    <record id="user_team_manager" model="res.users">
+        <field name="name">Team Manager</field>
+        <field name="login">team.manager</field>
+        <field name="password">demo</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="company_ids" eval="[(6, 0, [ref('base.main_company')])]"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]"/>
+    </record>
+    <record id="user_demo_worker" model="res.users">
+        <field name="name">Demo Worker</field>
+        <field name="login">demo.worker</field>
+        <field name="password">demo</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="company_ids" eval="[(6, 0, [ref('base.main_company')])]"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]"/>
+    </record>
+
+
+    <record id="emp_division_manager" model="hr.employee">
+        <field name="name">Division Manager</field>
+        <field name="user_id" ref="hr_overtime_request.user_division_manager"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+    <record id="emp_department_manager" model="hr.employee">
+        <field name="name">Department Manager</field>
+        <field name="user_id" ref="hr_overtime_request.user_department_manager"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+    <record id="emp_team_manager" model="hr.employee">
+        <field name="name">Team Manager</field>
+        <field name="user_id" ref="hr_overtime_request.user_team_manager"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+
+    <record id="dept_division_a" model="hr.department">
+        <field name="name">Division A</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="manager_id" ref="hr_overtime_request.emp_division_manager"/>
+    </record>
+    <record id="dept_department_a" model="hr.department">
+        <field name="name">Department A</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="parent_id" ref="hr_overtime_request.dept_division_a"/>
+        <field name="manager_id" ref="hr_overtime_request.emp_department_manager"/>
+    </record>
+    <record id="dept_team_a" model="hr.department">
+        <field name="name">Team A</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="parent_id" ref="hr_overtime_request.dept_department_a"/>
+        <field name="manager_id" ref="hr_overtime_request.emp_team_manager"/>
+    </record>
+
+
+    <record id="emp_demo_worker" model="hr.employee">
+        <field name="name">Demo Worker</field>
+        <field name="user_id" ref="hr_overtime_request.user_demo_worker"/>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="department_id" ref="hr_overtime_request.dept_team_a"/>
+    </record>
+
+
+    <record id="contract_demo_worker" model="hr.contract">
+        <field name="name">Demo Contract</field>
+        <field name="employee_id" ref="hr_overtime_request.emp_demo_worker"/>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="date_start">2025-09-01</field>
+        <field name="state">open</field>
+        <field name="wage">5000.0</field>
+        <field name="hourly_wage">50.0</field>
+    </record>
+
+
+    <record id="att_demo_worker_am" model="hr.attendance">
+        <field name="employee_id" ref="hr_overtime_request.emp_demo_worker"/>
+        <field name="check_in">2025-09-28 08:00:00</field>
+        <field name="check_out">2025-09-28 12:00:00</field>
+    </record>
+    <record id="att_demo_worker_pm" model="hr.attendance">
+        <field name="employee_id" ref="hr_overtime_request.emp_demo_worker"/>
+        <field name="check_in">2025-09-28 13:00:00</field>
+        <field name="check_out">2025-09-28 19:00:00</field>
+    </record>
+</odoo>

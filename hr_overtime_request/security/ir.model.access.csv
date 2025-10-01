@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+hr_overtime_request_access_user,hr.overtime.request user,model_overtime_request,base.group_user,1,1,1,0
+hr_overtime_request_access_manager,hr.overtime.request manager,model_overtime_request,hr_holidays.group_hr_holidays_responsible,1,1,1,1
+hr_overtime_request_access_hr,hr.overtime.request hr,model_overtime_request,hr.group_hr_user,1,1,1,1
+hr_overtime_approval_access_user,hr.overtime.approval user,model_overtime_request_approval,base.group_user,1,1,1,0
+hr_overtime_approval_access_manager,hr.overtime.approval manager,model_overtime_request_approval,hr_holidays.group_hr_holidays_responsible,1,1,1,1
+hr_overtime_approval_access_hr,hr.overtime.approval hr,model_overtime_request_approval,hr.group_hr_user,1,1,1,1

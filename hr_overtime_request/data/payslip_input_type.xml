@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="input_type_overtime" model="hr.payslip.input.type">
+        <field name="name">Overtime Hours</field>
+        <field name="code">OVERTIME</field>
+        <field name="available_in_attachments">False</field>
+        <field name="is_quantity">True</field>
+
+    </record>
+</odoo>
