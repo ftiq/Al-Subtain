@@ -144,7 +144,6 @@
             'appointment_products/static/src/xml/lab_dashboard.xml',
             'appointment_products/static/src/widgets/lab_timer.js',
             'appointment_products/static/src/widgets/lab_timer.xml',
-            # Charts widget (uses Chart.js; the widget can lazy-load CDN if missing)
             'appointment_products/static/src/widgets/lab_charts.js',
             'appointment_products/static/src/xml/lab_charts.xml',
         ],
