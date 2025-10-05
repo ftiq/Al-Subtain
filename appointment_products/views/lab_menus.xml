@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_lab_sample" model="ir.actions.act_window">
+        <field name="name">الفحوصات والنتائج</field>
+        <field name="res_model">lab.sample</field>
+        <field name="view_mode">list,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="context">{'search_default_group_by_state': 1}</field>
+        <field name="groups_id" eval="[(4, ref('appointment_products.group_lab_technician')), (4, ref('appointment_products.group_lab_manager'))]"/>
+    </record>
+
+    <menuitem id="menu_lab_root" 
+              name="LAP" 
+              web_icon="appointment_products,static/description/lab_icon.png"
+              sequence="10"
+              groups="appointment_products.group_lab_technician,appointment_products.group_lab_manager"/>
+
+    <menuitem id="menu_lab_testing" 
+              name="🔬 الفحوصات والنتائج" 
+              parent="menu_lab_root"
+              action="action_lab_sample" 
+              groups="appointment_products.group_lab_manager"
+              sequence="10"/>
+
+
+    <menuitem id="menu_lab_standards" 
+              name="📚 القوالب والمعايير" 
+              parent="menu_lab_root" 
+              groups="appointment_products.group_lab_manager"
+              sequence="20"/>
+
+
+    <menuitem id="menu_lab_test_criterion" 
+              name="📝 المعايير" 
+              parent="menu_lab_standards" 
+              action="action_lab_test_criterion" 
+              sequence="25"/>
+
+    <menuitem id="menu_lab_test_template" 
+              name="📋 قوالب المعايير" 
+              parent="menu_lab_standards" 
+              action="appointment_products.action_lab_test_template" 
+              sequence="30"/>
+
+    <menuitem id="menu_lab_sample_type" 
+              name="🏷️ أنواع العينات" 
+              parent="menu_lab_standards" 
+              action="action_lab_sample_type" 
+              sequence="50"/>
+
+    <record id="action_lab_dashboard_new" model="ir.actions.act_window">
+        <field name="name">🎛️ الفحوصات</field>
+        <field name="res_model">lab.sample</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'search_default_group_by_state': 1}</field>
+        <field name="groups_id" eval="[(4, ref('appointment_products.group_lab_technician')), (4, ref('appointment_products.group_lab_manager'))]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+
+            </p>
+            <p>
+                هنا يمكنك متابعة جميع العينات والفحوصات الجارية.
+            </p>
+        </field>
+    </record>
+
+
+    <record id="action_lab_my_assignments" model="ir.actions.act_window">
+        <field name="name">🔬 مهامي المخبرية</field>
+        <field name="res_model">lab.result.set</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_lab_result_set_kanban')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('lab_result_set_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('lab_result_set_form_dynamic')})]"/>
+        <field name="search_view_id" ref="lab_result_set_search"/>
+        <field name="domain">[]</field>
+        <field name="context">{'search_default_assigned_to_me': 1, 'search_default_group_by_state': 1}</field>
+        <field name="groups_id" eval="[(4, ref('appointment_products.group_lab_technician')), (4, ref('appointment_products.group_lab_manager'))]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                🔬 لا توجد مهام مخبرية مكلف بها
+            </p>
+            <p>
+                هنا ستظهر جميع <strong>نتائج الفحوصات</strong> المكلف بها فقط.
+            </p>
+            <p>
+                📊 يمكنك متابعة تقدم الفحوصات وإدخال النتائج مباشرة من هنا.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_lab_my_assignments" 
+              name="🔬 مهامي" 
+              parent="menu_lab_root"
+              action="action_lab_my_assignments" 
+              sequence="5"
+              groups="appointment_products.group_lab_technician"/>
+
+</odoo> 

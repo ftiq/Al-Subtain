@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="appointment_products.LabTimer">
+        <div t-att-class="'d-flex align-items-center lab-timer-widget ' + (state.isExpired ? 'timer-completed' : 'timer-running')">
+            <i t-att-class="'fa ' + iconClass + ' me-2 ' + statusClass"/>
+            <span t-att-class="'fw-bold ' + statusClass" t-esc="state.displayTime"/>
+            <small class="text-muted ms-2" t-esc="props.label"/>
+        </div>
+    </t>
+
+    <t t-name="appointment_products.LabTimerField">
+        <LabTimer 
+            t-if="isActive" 
+            startTime="startTime" 
+            endTime="endTime" 
+            isActive="isActive" 
+            label="label"/>
+        <span t-else="" class="text-muted">
+            <i class="fa fa-clock-o me-1"/>
+            لم يبدأ المؤقت
+        </span>
+    </t>
+</templates> 

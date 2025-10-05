@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_move_line_operation_tree_inherit_field_code" model="ir.ui.view">
+        <field name="name">stock.move.line.operation.tree.inherit.field.code</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_name']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_id']" position="after">
+                <field name="is_sample_product_line" invisible="1"/>
+                <field name="field_code" string="الرمز المختبري" invisible="not is_sample_product_line"/>
+                <field name="field_serial" string="الرمز الحقلي" invisible="not is_sample_product_line"/>
+                <field name="sample_quantity" string="كمية العينة" invisible="not is_sample_product_line"/>
+            </xpath>
+
+            <xpath expr="//field[last()]" position="after">
+                <field name="ign_person_name" string="الاسم" invisible="not is_ignitability_sample"/>
+                <field name="ign_site_location" string="الموقع" invisible="not is_ignitability_sample"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_move_line_detailed_operation_tree_inherit_field_code" model="ir.ui.view">
+        <field name="name">stock.move.line.detailed.operation.tree.inherit.field.code</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_name']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_id' or @name='lot_name']" position="after">
+                <field name="is_sample_product_line" invisible="1"/>
+                <field name="field_code" string="الرمز المختبري" invisible="not is_sample_product_line"/>
+                <field name="field_serial" string="الرمز الحقلي" invisible="not is_sample_product_line"/>
+                <field name="sample_quantity" string="كمية العينة" invisible="not is_sample_product_line"/>
+            </xpath>
+
+            <xpath expr="//field[last()]" position="after">
+                <field name="ign_person_name" string="الاسم" invisible="not is_ignitability_sample"/>
+                <field name="ign_site_location" string="الموقع" invisible="not is_ignitability_sample"/>
+            </xpath>
+        </field>
+    </record>
+</odoo> 

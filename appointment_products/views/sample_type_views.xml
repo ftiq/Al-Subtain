@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_lab_sample_type_tree" model="ir.ui.view">
+        <field name="name">lab.sample.type.tree</field>
+        <field name="model">lab.sample.type</field>
+        <field name="arch" type="xml">
+            <list string="أنواع العينات" default_order="sequence" create="false" edit="false" delete="false">
+                <field name="sequence"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_lab_sample_type_form" model="ir.ui.view">
+        <field name="name">lab.sample.type.form</field>
+        <field name="model">lab.sample.type</field>
+        <field name="arch" type="xml">
+            <form string="نوع العينة">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                        <field name="description"/>
+                        <field name="subtype_ids" nolabel="1" invisible="code != 'MASONRY'">
+                            <list create="false" delete="false" editable="bottom">
+                                <field name="sequence" readonly="1"/>
+                                <field name="name" readonly="1"/>
+                                <field name="code" readonly="1"/>
+                                <field name="active" readonly="1"/>
+                                <field name="hole_count" widget="integer"/>
+                                <field name="allowed_efflorescence_values" string="قيم التزهر المسموحة" 
+                                       help="قيم رقمية مفصولة بفواصل (مثال: 1,2 للسماح بـ لا يوجد و خفيف)"/>
+
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_lab_sample_type" model="ir.actions.act_window">
+        <field name="name">أنواع العينات</field>
+        <field name="res_model">lab.sample.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="groups_id" eval="[(4, ref('appointment_products.group_lab_technician')), (4, ref('appointment_products.group_lab_manager'))]"/>
+        <field name="help" type="html">
+            <p>
+                قم بتعريف أنواع العينات (مثال: خرسانة، تربة، أسفلت) لاستخدامها في القوالب والمنتجات.
+            </p>
+        </field>
+    </record>
+
+</odoo> 

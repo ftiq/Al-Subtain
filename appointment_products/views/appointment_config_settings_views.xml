@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+     <record id="res_config_settings_view_form_appointment_products" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.appointment.products</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="90"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="إعدادات العينات" name="appointment_products" groups="base.group_system">
+                    
+                    <block title="إعدادات العينات" name="samples_settings">
+                        <setting string="العينة الواحدة تساوي (إعداد عام)" help="عدد العينات التي تمثل وحدة واحدة في الكمية - يستخدم عند عدم وجود إعداد خاص">
+                            <field name="samples_per_unit" class="o_light_label" widget="integer"/>
+                            <div class="text-muted">
+                                العدد الافتراضي: 50,000 عينة = وحدة واحدة
+                            </div>
+                        </setting>
+                        <setting string="مديري الموافقة" help="المستخدمون المسؤولون عن الموافقة على العينات">
+                            <field name="approval_manager_ids" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True}"/>
+                        </setting>
+
+                        <setting id="prevent_duplicate_sample_setting" string="منع تكرار منتج العينات"
+                                 help="عند التفعيل يمنع وجود أكثر من منتج مُعيَّن كمنتج عينات في النظام." company_dependent="1">
+                            <field name="prevent_duplicate_sample_product"/>
+                        </setting>
+                        <setting string="إعدادات منتجات العينات الفردية" 
+                                 help="تحديد قيم مختلفة للعينة الواحدة تساوي لكل منتج عينات على حدة"
+                                 invisible="prevent_duplicate_sample_product == True">
+                            <div class="mt-2">
+                                <field name="sample_product_configs" nolabel="1">
+                                    <list string="إعدادات منتجات العينات" editable="bottom" style="min-width:800px;">
+                                        <field name="sample_product_id" string="منتج العينات"/>
+                                        <field name="samples_per_unit" string="العينة الواحدة تساوي"/>
+                                        <field name="fixed_price" string="السعر الثابت" widget="monetary"/>
+                                    </list>
+                                </field>
+                                <div class="text-muted mt-2">
+                                    <small>
+                                        <i class="fa fa-info-circle"></i> 
+                                        يمكنك تحديد قيم مختلفة لكل منتج عينات. 
+                                        إذا لم يتم تحديد قيمة لمنتج معين، سيتم استخدام الإعداد العام أعلاه.
+                                    </small>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting id="apply_discount_incomplete_samples_setting" string="تطبيق خصم على العينات غير المكتملة"
+                                 help="عند التفعيل، سيطبّق خصماً نسبياً على سطر عرض السعر إذا كانت الكمية الفعلية أقل من الكمية المفترضة لكل وحدة." company_dependent="1">
+                            <field name="apply_discount_incomplete_samples"/>
+                        </setting>
+
+                        <setting string="هامش المعيار العام (+)" help="قيمة الهامش المضافة إلى المعيار العام لتحديد عتبة النجاح لمتوسطات المجموعات المتتابعة (افتراضياً 3).">
+                            <field name="concrete_general_limit_margin" widget="float"/>
+                            <div class="text-muted"><small>تُستخدم هذه القيمة في تقارير الخرسانة لحساب العتبة: المعيار العام + الهامش</small></div>
+                        </setting>
+
+                        <setting string="هامش المعيار الأدنى (-)" help="قيمة الهامش المطروحة من المعيار الأدنى لتحديد فشل متوسط المجموعة الفردية (افتراضياً 3).">
+                            <field name="concrete_min_limit_margin" widget="float"/>
+                            <div class="text-muted"><small>تُستخدم في التقارير لتعليم المجموعات المفردة التي متوسطها أقل من: المعيار الأدنى − الهامش</small></div>
+                        </setting>
+                    </block>
+                  
+                    <block title="البطاقات المختبرية" name="lab_code_settings">
+                        <setting id="allow_lab_code_duplicates_setting" string="السماح بتكرار الرمز المختبري"
+                                 help="عند التفعيل يُسمح بتكرار الرمز المختبري داخل الشركة." company_dependent="1">
+                            <field name="allow_lab_code_duplicates"/>
+                        </setting>
+                        <setting id="auto_generate_lab_code_setting" string="التوليد التلقائي للرمز المختبري"
+                                 help="عند التفعيل سيتم إنشاء رمز مختبري تلقائياً بعد توقيع الاستلام." company_dependent="1">
+                            <field name="auto_generate_lab_code"/>
+                        </setting>
+                        <setting id="use_lab_code_as_barcode_setting" string="استخدام الرمز المختبري كباركود"
+                                 help="عند التفعيل سيتم استخدام الرمز المختبري كباركود في بطاقات المنتجات بدلاً من الباركود القياسي." company_dependent="1">
+                            <field name="use_lab_code_as_barcode"/>
+                        </setting>
+                        <setting id="use_qr_code_labels_setting" string="استخدام QR Code في البطاقات"
+                                 help="عند التفعيل سيتم تحويل الباركود إلى QR Code مع زيادة ارتفاع البطاقات." company_dependent="1">
+                            <field name="use_qr_code_labels"/>
+                            <div class="alert alert-info mt-2" style="padding: 8px; font-size: 12px; margin-top: 8px;">
+                                <div style="font-weight: bold; color: #0c5460; margin-bottom: 4px;">
+                                    📋 تعليمات تثبيت مكتبة QR Code:
+                                </div>
+                                <div style="margin-bottom: 6px;">
+                                    لتفعيل ميزة QR Code بشكل كامل، يرجى تثبيت المكتبة المطلوبة في الخادم:
+                                </div>
+                                <div style="background: #f8f9fa; padding: 6px; border-radius: 4px; font-family: monospace; border-left: 3px solid #17a2b8;">
+                                    pip install "qrcode[pil]" Pillow
+                                </div>
+                                <div style="margin-top: 6px; font-size: 11px; color: #6c757d;">
+                                    <strong>ملاحظة:</strong> إذا لم تكن المكتبة مثبتة، ستعمل البطاقات بدون QR Code دون ظهور أي أخطاء أو رسائل تحذير.
+                                </div>
+                            </div>
+                        </setting>
+                        <setting id="prevent_edit_lab_code_setting" string="منع تعديل الرمز المختبري بعد إنشائه"
+                                 help="عند التفعيل، يمنع تعديل حقل الرمز المختبري بعد إضافته لأول مرة." company_dependent="1">
+                            <field name="prevent_edit_lab_code"/>
+                        </setting>
+                        <setting id="auto_field_code_on_creation_setting" string="توليد الرمز الحقلي عند إنشاء السجل"
+                                 help="عند التفعيل سيتم إنشاء الرمز الحقلي (Lot/Serial) تلقائياً بمجرد إنشاء السجل." company_dependent="1">
+                            <field name="auto_field_code_on_creation"/>
+                        </setting>
+                    </block>
+
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+</odoo> 
