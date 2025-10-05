@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="0">
+
+    <!-- Proctor Compaction Test (ASTM D698) under Aggregate Quality sample type -->
+    <record id="template_proctor_compaction_agg" model="lab.test.template">
+      <field name="name">فحص بروكتر (قياسي D698) - جودة الركام</field>
+      <field name="code">AGG_PROCTOR_D698</field>
+      <field name="description">تحديد علاقة الرطوبة/الكثافة للتربة المضغوطة في المختبر بطريقة بروكتر القياسية ASTM D698 لاشتقاق الكثافة الجافة العظمى (MDD) ونسبة الرطوبة المثلى (OMC).</field>
+      <field name="standard_code">ASTM D698</field>
+      <field name="industry_type">soil</field>
+      <field name="state">active</field>
+      <field name="sequence">66</field>
+      <field name="applicable_sample_type_ids" eval="[(6,0,[ref('appointment_products.agg_quality_sample_type')])]"/>
+    </record>
+
+    <!-- Geometry of mold -->
+    <record id="crit_proctor_mold_radius_cm" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">نصف قطر القالب (سم)</field>
+      <field name="code">MOLD_RADIUS_CM</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_global">True</field>
+      <field name="sequence">1</field>
+      <field name="computation_formula">result = 7.6</field>
+      <field name="is_required">True</field>
+    </record>
+    <record id="crit_proctor_mold_height_cm" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">ارتفاع القالب (سم)</field>
+      <field name="code">MOLD_HEIGHT_CM</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_global">True</field>
+      <field name="sequence">2</field>
+      <field name="computation_formula">result = 11.5</field>
+      <field name="is_required">True</field>
+    </record>
+    <record id="crit_proctor_mold_volume_cm3" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">حجم القالب (سم³)</field>
+      <field name="code">MOLD_VOLUME_CM3</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_global">True</field>
+      <field name="sequence">3</field>
+      <field name="computation_formula">result = 2091.6</field>
+      <field name="is_required">True</field>
+    </record>
+
+    <!-- Masses for wet density (per trial) -->
+    <record id="crit_proctor_wet_soil_plus_mold_g" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">وزن التربة الرطبة + القالب (غم)</field>
+      <field name="code">A_WET_SOIL_PLUS_MOLD_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">5</field>
+      <field name="is_required">True</field>
+    </record>
+    <record id="crit_proctor_mold_mass_g" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">وزن القالب (غم)</field>
+      <field name="code">B_MOLD_MASS_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">6</field>
+      <field name="is_required">True</field>
+    </record>
+    <record id="crit_proctor_wet_soil_mass_g" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">وزن التربة الرطبة (غم)</field>
+      <field name="code">C_WET_SOIL_MASS_G</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_input_field">False</field>
+      <field name="is_summary_field">False</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">7</field>
+      <field name="computation_formula">result = (A_WET_SOIL_PLUS_MOLD_G or 0) - (B_MOLD_MASS_G or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_proctor_wet_soil_plus_mold_g'), ref('crit_proctor_mold_mass_g')])]"/>
+    </record>
+
+    <!-- Moisture content (tin method) per trial -->
+    <record id="crit_proctor_w1_container_g" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">وزن العلبة (غم)</field>
+      <field name="code">W1_CONTAINER_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">9</field>
+    </record>
+    <record id="crit_proctor_w2_wet_with_container_g" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">وزن التربة الرطبة مع العلبة (غم)</field>
+      <field name="code">W2_WET_WITH_CONT_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">10</field>
+    </record>
+    <record id="crit_proctor_w3_dry_with_container_g" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">وزن التربة الجافة مع العلبة (غم)</field>
+      <field name="code">W3_DRY_WITH_CONT_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">11</field>
+    </record>
+    <record id="crit_proctor_w4_water_mass_g" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">وزن الماء (غم)</field>
+      <field name="code">W4_WATER_MASS_G</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_input_field">False</field>
+      <field name="is_summary_field">False</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">12</field>
+      <field name="computation_formula">result = (W2_WET_WITH_CONT_G or 0) - (W3_DRY_WITH_CONT_G or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_proctor_w2_wet_with_container_g'), ref('crit_proctor_w3_dry_with_container_g')])]"/>
+    </record>
+    <record id="crit_proctor_w5_dry_soil_mass_g" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">وزن التربة الجافة (غم)</field>
+      <field name="code">W5_DRY_SOIL_MASS_G</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_input_field">False</field>
+      <field name="is_summary_field">False</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">13</field>
+      <field name="computation_formula">result = (W3_DRY_WITH_CONT_G or 0) - (W1_CONTAINER_G or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_proctor_w3_dry_with_container_g'), ref('crit_proctor_w1_container_g')])]"/>
+    </record>
+    <record id="crit_proctor_moisture_content" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">المحتوى الرطوبي (%)</field>
+      <field name="code">MOISTURE_CONTENT</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_input_field">False</field>
+      <field name="is_summary_field">False</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">14</field>
+      <field name="computation_formula">result = (((W4_WATER_MASS_G or 0) / (W5_DRY_SOIL_MASS_G or 0)) * 100) if (W5_DRY_SOIL_MASS_G and (W5_DRY_SOIL_MASS_G != 0)) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_proctor_w4_water_mass_g'), ref('crit_proctor_w5_dry_soil_mass_g')])]"/>
+    </record>
+
+    <!-- Densities per trial -->
+    <record id="crit_proctor_wet_density" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">الكثافة الرطبة (كغم/م³)</field>
+      <field name="code">WET_DENSITY_KG_M3</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_input_field">False</field>
+      <field name="is_summary_field">False</field>
+      <field name="uom_id" ref="appointment_products.uom_kg_per_cubic_meter_ap"/>
+      <field name="sequence">15</field>
+      <field name="is_global">False</field>
+      <field name="computation_formula">result = (((C_WET_SOIL_MASS_G or 0) / (MOLD_VOLUME_CM3 or 0)) * 1000) if MOLD_VOLUME_CM3 else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_proctor_wet_soil_mass_g'), ref('crit_proctor_mold_volume_cm3')])]"/>
+    </record>
+    <record id="crit_proctor_dry_density" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">الكثافة الجافة (كغم/م³)</field>
+      <field name="code">DRY_DENSITY_KG_M3</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_input_field">False</field>
+      <field name="is_summary_field">False</field>
+      <field name="uom_id" ref="appointment_products.uom_kg_per_cubic_meter_ap"/>
+      <field name="sequence">16</field>
+      <field name="is_global">False</field>
+      <field name="computation_formula">result = (WET_DENSITY_KG_M3 / (1 + (MOISTURE_CONTENT/100))) if (WET_DENSITY_KG_M3 and MOISTURE_CONTENT is not None) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_proctor_wet_density'), ref('crit_proctor_moisture_content')])]"/>
+    </record>
+
+    <!-- Summaries (once per result set) -->
+    <record id="crit_proctor_mdd" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">الكثافة الجافة العظمى MDD (كغم/م³)</field>
+      <field name="code">MDD_KG_M3</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kg_per_cubic_meter_ap"/>
+      <field name="sequence">100</field>
+      <field name="is_summary_field">True</field>
+      <field name="computation_formula">result = max_series('DRY_DENSITY_KG_M3')</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_proctor_dry_density')])]"/>
+    </record>
+
+    <record id="crit_proctor_omc" model="lab.test.criterion">
+      <field name="template_id" ref="template_proctor_compaction_agg"/>
+      <field name="name">نسبة الرطوبة المثلى OMC (%)</field>
+      <field name="code">OMC_PERCENT</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">101</field>
+      <field name="is_summary_field">True</field>
+      <field name="computation_formula">result = series_value_at('MOISTURE_CONTENT', argmax_series('DRY_DENSITY_KG_M3'))</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_proctor_moisture_content'), ref('crit_proctor_dry_density')])]"/>
+    </record>
+
+    <!-- Flow template combining Aggregate Quality Sieve and Proctor D698 -->
+    <record id="flow_template_agg_quality_with_proctor" model="lab.test.flow.template">
+      <field name="name">خطة فحص جودة الركام + بروكتر (D698)</field>
+      <field name="description">R6/2003 تدرج الركام → بروكتر D698</field>
+      <field name="allow_parallel_tests" eval="True"/>
+    </record>
+
+    <record id="flow_stage_agg_quality_sieve" model="lab.test.flow.template.line">
+      <field name="template_id" ref="flow_template_agg_quality_with_proctor"/>
+      <field name="sequence">10</field>
+      <field name="test_template_id" ref="appointment_products.template_agg_quality_sieve"/>
+      <field name="sample_qty">1</field>
+    </record>
+
+    <record id="flow_stage_proctor_d698" model="lab.test.flow.template.line">
+      <field name="template_id" ref="flow_template_agg_quality_with_proctor"/>
+      <field name="sequence">20</field>
+      <field name="test_template_id" ref="appointment_products.template_proctor_compaction_agg"/>
+      <field name="sample_qty">5</field>
+    </record>
+
+    <!-- Link the existing Aggregate Quality sample product to the new flow template -->
+    <record id="product_agg_quality_sample" model="product.template">
+      <field name="test_flow_template_id" ref="flow_template_agg_quality_with_proctor"/>
+    </record>
+
+  </data>
+</odoo>

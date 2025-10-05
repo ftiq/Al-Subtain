@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="0">
+
+    <!-- California Bearing Ratio (ASTM D1883) - Aggregate Quality -->
+    <record id="template_cbr_d1883" model="lab.test.template">
+      <field name="name">فحص نسبة تحمل كاليفورنيا CBR (ASTM D1883)</field>
+      <field name="code">AGG_CBR_D1883</field>
+      <field name="standard_code">ASTM D1883</field>
+      <field name="industry_type">soil</field>
+      <field name="state">active</field>
+      <field name="sequence">70</field>
+      <field name="applicable_sample_type_ids" eval="[(6,0,[ref('appointment_products.agg_quality_sample_type')])]"/>
+    </record>
+
+    <!-- Global inputs -->
+    <record id="crit_cbr_prf_factor" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">عامل التحويل PRF (F)</field>
+      <field name="code">PRF_FACTOR</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">1</field>
+      <field name="is_global">True</field>
+      <field name="is_required">True</field>
+    </record>
+
+    <record id="crit_cbr_mold_volume" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">حجم القالب (سم³)</field>
+      <field name="code">MOLD_VOLUME_CM3</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">2</field>
+      <field name="is_global">True</field>
+      <field name="is_required">True</field>
+    </record>
+
+    <!-- Per-sample readings at key penetrations -->
+    <record id="crit_cbr_ldr_0_1" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.1 بوصة (LDR)</field>
+      <field name="code">LDR_0_1_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">10</field>
+    </record>
+
+    <record id="crit_cbr_ldr_0_2" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.2 بوصة (LDR)</field>
+      <field name="code">LDR_0_2_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">11</field>
+    </record>
+
+    <record id="crit_cbr_load_0_1" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.1 بوصة (kN)</field>
+      <field name="code">LOAD_0_1_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">12</field>
+      <field name="computation_formula">result = (LDR_0_1_IN * PRF_FACTOR) if (LDR_0_1_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_1'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+
+    <record id="crit_cbr_load_0_2" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.2 بوصة (kN)</field>
+      <field name="code">LOAD_0_2_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">13</field>
+      <field name="computation_formula">result = (LDR_0_2_IN * PRF_FACTOR) if (LDR_0_2_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_2'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+
+    <record id="crit_cbr_percent_0_1" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">CBR% عند 0.1 بوصة</field>
+      <field name="code">CBR_0_1_PERCENT</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">14</field>
+      <field name="computation_formula">result = ((LOAD_0_1_KN / 13.24) * 100) if LOAD_0_1_KN else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_load_0_1')])]"/>
+    </record>
+
+    <record id="crit_cbr_percent_0_2" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">CBR% عند 0.2 بوصة</field>
+      <field name="code">CBR_0_2_PERCENT</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">15</field>
+      <field name="computation_formula">result = ((LOAD_0_2_KN / 19.96) * 100) if LOAD_0_2_KN else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_load_0_2')])]"/>
+    </record>
+
+    <record id="crit_cbr_percent_max" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">CBR% (الأكبر من 0.1 و 0.2)</field>
+      <field name="code">CBR_MAX_PERCENT</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">16</field>
+      <field name="computation_formula">result = max(CBR_0_1_PERCENT or 0, CBR_0_2_PERCENT or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_percent_0_1'), ref('appointment_products.crit_cbr_percent_0_2')])]"/>
+    </record>
+
+    <!-- Per-sample densities and moisture -->
+    <record id="crit_cbr_w2_mold_plus_soil" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">وزن التربة + القالب + القاعدة (غم)</field>
+      <field name="code">W2_MOLD_PLUS_SOIL_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">30</field>
+    </record>
+
+    <record id="crit_cbr_w3_mold_base" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">وزن القالب + القاعدة (غم)</field>
+      <field name="code">W3_MOLD_BASE_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">31</field>
+    </record>
+
+    <record id="crit_cbr_w4_wet_soil" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">وزن التربة الرطبة (غم)</field>
+      <field name="code">W4_WET_SOIL_G</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">32</field>
+      <field name="computation_formula">result = (W2_MOLD_PLUS_SOIL_G or 0) - (W3_MOLD_BASE_G or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_w2_mold_plus_soil'), ref('appointment_products.crit_cbr_w3_mold_base')])]"/>
+    </record>
+
+    <record id="crit_cbr_wet_density" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الكثافة الرطبة (كغم/م³)</field>
+      <field name="code">CBR_WET_DENSITY_KG_M3</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kg_per_cubic_meter_ap"/>
+      <field name="sequence">33</field>
+      <field name="computation_formula">result = (((W4_WET_SOIL_G or 0) / (MOLD_VOLUME_CM3 or 0)) * 1000) if MOLD_VOLUME_CM3 else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_w4_wet_soil'), ref('appointment_products.crit_cbr_mold_volume')])]"/>
+    </record>
+
+    <record id="crit_cbr_w6_container" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">وزن العلبة (غم)</field>
+      <field name="code">W6_CONTAINER_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">34</field>
+    </record>
+
+    <record id="crit_cbr_w7_wet_with_container" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">وزن التربة الرطبة مع العلبة (غم)</field>
+      <field name="code">W7_WET_WITH_CONT_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">35</field>
+    </record>
+
+    <record id="crit_cbr_w8_dry_with_container" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">وزن التربة الجافة مع العلبة (غم)</field>
+      <field name="code">W8_DRY_WITH_CONT_G</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">36</field>
+    </record>
+
+    <record id="crit_cbr_moisture_content" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">المحتوى الرطوبي (%)</field>
+      <field name="code">CBR_MOISTURE_PERCENT</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">37</field>
+      <field name="computation_formula">result = ((((W7_WET_WITH_CONT_G or 0) - (W8_DRY_WITH_CONT_G or 0)) / (((W8_DRY_WITH_CONT_G or 0) - (W6_CONTAINER_G or 0)) or 1)) * 100)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_w6_container'), ref('appointment_products.crit_cbr_w7_wet_with_container'), ref('appointment_products.crit_cbr_w8_dry_with_container')])]"/>
+    </record>
+
+    <record id="crit_cbr_dry_density" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الكثافة الجافة (كغم/م³)</field>
+      <field name="code">CBR_DRY_DENSITY_KG_M3</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kg_per_cubic_meter_ap"/>
+      <field name="sequence">38</field>
+      <field name="computation_formula">result = (CBR_WET_DENSITY_KG_M3 / (1 + (CBR_MOISTURE_PERCENT/100))) if (CBR_WET_DENSITY_KG_M3 and CBR_MOISTURE_PERCENT is not None) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_wet_density'), ref('appointment_products.crit_cbr_moisture_content')])]"/>
+    </record>
+
+    <!-- Summaries -->
+    <record id="crit_cbr_best_cbr_summary" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">أعلى قيمة CBR% عبر العينات</field>
+      <field name="code">BEST_CBR_PERCENT</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">100</field>
+      <field name="is_summary_field">True</field>
+      <field name="computation_formula">result = max_series('CBR_MAX_PERCENT')</field>
+    </record>
+
+    <record id="crit_cbr_mdd_95_summary" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">95% من الكثافة الجافة العظمى (كغم/م³)</field>
+      <field name="code">MDD_95_KG_M3</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kg_per_cubic_meter_ap"/>
+      <field name="sequence">101</field>
+      <field name="is_summary_field">True</field>
+      <field name="computation_formula">mdd_value = sample_avg_across_sets('MDD_KG_M3')
+result = (mdd_value * 0.95) if mdd_value else 0</field>
+    </record>
+
+    <record id="crit_cbr_at_95_compaction" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">نسبة التحمل الكاليفورني لنسبة الحدل 95% (CBR%)</field>
+      <field name="code">CBR_AT_95_PERCENT_COMPACTION</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">102</field>
+      <field name="is_summary_field">True</field>
+      <field name="is_critical">True</field>
+      <field name="computation_formula">result = max_series('CBR_MAX_PERCENT')</field>
+    </record>
+
+    <!-- Add CBR stage to Aggregate Quality + Proctor flow -->
+    <record id="flow_stage_cbr_d1883" model="lab.test.flow.template.line">
+      <field name="template_id" ref="appointment_products.flow_template_agg_quality_with_proctor"/>
+      <field name="sequence">40</field>
+      <field name="test_template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="sample_qty">3</field>
+    </record>
+
+  </data>
+</odoo>

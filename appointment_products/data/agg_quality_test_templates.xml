@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="0">
+
+    <record id="agg_quality_sample_type" model="lab.sample.type">
+      <field name="name">جودة الركام (حصى خابط)</field>
+      <field name="code">AGG_QUALITY</field>
+      <field name="description">تدرج ر6/2003 + نسبة المار بعد 4.75 مم</field>
+      <field name="sequence">65</field>
+      <field name="active">True</field>
+    </record>
+
+    <record id="template_agg_quality_sieve" model="lab.test.template">
+      <field name="name">فحص جودة الركام (تدرج R6/2003)</field>
+      <field name="code">AGG_QUALITY_SIEVE</field>
+      <field name="description">تمرير العينة على المناخل 75, 50, 25, 9.5, 4.75, 2.36, 0.3, 0.075 مم. حساب % المحتجز حسب الوزن الأصلي حتى 4.75 مم وبعدها حسب الوزن المغسول الجاف. حساب % المار = 100 - % المحتجز، وبعد 4.75 يتم ضرب (Passing 4.75 / 100).</field>
+      <field name="standard_code">SoRB R6/2003</field>
+      <field name="industry_type">aggregate</field>
+      <field name="state">active</field>
+      <field name="sequence">25</field>
+      <field name="applicable_sample_type_ids" eval="[(6,0,[ref('appointment_products.agg_quality_sample_type')])]"/>
+    </record>
+
+    <record id="crit_aggq_orig_wt_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">وزن العينة الأصلية (غم)</field>
+      <field name="code">ORIG_WT_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">5</field>
+      <field name="is_required">True</field>
+      <field name="is_global">True</field>
+    </record>
+
+    <record id="crit_aggq_washed_wt_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">وزن العينة المغسولة (غم) جافة</field>
+      <field name="code">WASHED_WT_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">6</field>
+      <field name="is_required">True</field>
+      <field name="is_global">True</field>
+    </record>
+    
+    <record id="crit_aggq_ret_75mm_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained Wt (gm) - 75 mm</field>
+      <field name="code">RET_75MM_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">10</field>
+    </record>
+    <record id="crit_aggq_ret_75mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained % - 75 mm</field>
+      <field name="code">RET_75MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">11</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (RET_75MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_75mm_gm'), ref('crit_aggq_orig_wt_gm')])]"/>
+    </record>
+    <record id="crit_aggq_pass_75mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Passing % - 75 mm</field>
+      <field name="code">PASS_75MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">12</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = 100 - (RET_75MM_PCT or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_75mm_pct')])]"/>
+    </record>
+
+    <!-- 50 mm -->
+    <record id="crit_aggq_ret_50mm_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained Wt (gm) - 50 mm</field>
+      <field name="code">RET_50MM_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">20</field>
+    </record>
+    <record id="crit_aggq_ret_50mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained % - 50 mm</field>
+      <field name="code">RET_50MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">21</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (RET_50MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_50mm_gm'), ref('crit_aggq_orig_wt_gm')])]"/>
+    </record>
+    <record id="crit_aggq_pass_50mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Passing % - 50 mm</field>
+      <field name="code">PASS_50MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">22</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = 100 - (RET_50MM_PCT or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_50mm_pct')])]"/>
+    </record>
+
+    <!-- 25 mm -->
+    <record id="crit_aggq_ret_25mm_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained Wt (gm) - 25 mm</field>
+      <field name="code">RET_25MM_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">30</field>
+    </record>
+    <record id="crit_aggq_ret_25mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained % - 25 mm</field>
+      <field name="code">RET_25MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">31</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (RET_25MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_25mm_gm'), ref('crit_aggq_orig_wt_gm')])]"/>
+    </record>
+    <record id="crit_aggq_pass_25mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Passing % - 25 mm</field>
+      <field name="code">PASS_25MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">32</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = 100 - (RET_25MM_PCT or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_25mm_pct')])]"/>
+    </record>
+
+    <!-- 9.5 mm -->
+    <record id="crit_aggq_ret_9_5mm_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained Wt (gm) - 9.5 mm</field>
+      <field name="code">RET_9_5MM_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">40</field>
+    </record>
+    <record id="crit_aggq_ret_9_5mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained % - 9.5 mm</field>
+      <field name="code">RET_9_5MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">41</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (RET_9_5MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_9_5mm_gm'), ref('crit_aggq_orig_wt_gm')])]"/>
+    </record>
+    <record id="crit_aggq_pass_9_5mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Passing % - 9.5 mm</field>
+      <field name="code">PASS_9_5MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">42</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = 100 - (RET_9_5MM_PCT or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_9_5mm_pct')])]"/>
+    </record>
+
+    <!-- 4.75 mm -->
+    <record id="crit_aggq_ret_4_75mm_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained Wt (gm) - 4.75 mm</field>
+      <field name="code">RET_4_75MM_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">50</field>
+    </record>
+    <record id="crit_aggq_ret_4_75mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained % - 4.75 mm</field>
+      <field name="code">RET_4_75MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">51</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (RET_4_75MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_4_75mm_gm'), ref('crit_aggq_orig_wt_gm')])]"/>
+    </record>
+    <record id="crit_aggq_pass_4_75mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Passing % - 4.75 mm</field>
+      <field name="code">PASS_4_75MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">52</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = 100 - (RET_4_75MM_PCT or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_4_75mm_pct')])]"/>
+    </record>
+
+    <record id="crit_aggq_ret_2_36mm_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained Wt (gm) - 2.36 mm</field>
+      <field name="code">RET_2_36MM_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">60</field>
+    </record>
+    <record id="crit_aggq_ret_2_36mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained % - 2.36 mm</field>
+      <field name="code">RET_2_36MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">61</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (RET_2_36MM_GM / WASHED_WT_GM * 100) if WASHED_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_2_36mm_gm'), ref('crit_aggq_washed_wt_gm')])]"/>
+    </record>
+    <record id="crit_aggq_pass_2_36mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Passing % - 2.36 mm</field>
+      <field name="code">PASS_2_36MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">62</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (100 - (RET_2_36MM_PCT or 0)) * ((PASS_4_75MM_PCT or 0) / 100.0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_2_36mm_pct'), ref('crit_aggq_pass_4_75mm_pct')])]"/>
+    </record>
+
+    <!-- 0.3 mm -->
+    <record id="crit_aggq_ret_0_3mm_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained Wt (gm) - 0.3 mm</field>
+      <field name="code">RET_0_3MM_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">70</field>
+    </record>
+    <record id="crit_aggq_ret_0_3mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained % - 0.3 mm</field>
+      <field name="code">RET_0_3MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">71</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (RET_0_3MM_GM / WASHED_WT_GM * 100) if WASHED_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_0_3mm_gm'), ref('crit_aggq_washed_wt_gm')])]"/>
+    </record>
+    <record id="crit_aggq_pass_0_3mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Passing % - 0.3 mm</field>
+      <field name="code">PASS_0_3MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">72</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (100 - (RET_0_3MM_PCT or 0)) * ((PASS_4_75MM_PCT or 0) / 100.0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_0_3mm_pct'), ref('crit_aggq_pass_4_75mm_pct')])]"/>
+    </record>
+
+    <!-- 0.075 mm -->
+    <record id="crit_aggq_ret_0_075mm_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained Wt (gm) - 0.075 mm</field>
+      <field name="code">RET_0_075MM_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">80</field>
+    </record>
+    <record id="crit_aggq_ret_0_075mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Retained % - 0.075 mm</field>
+      <field name="code">RET_0_075MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">81</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (RET_0_075MM_GM / WASHED_WT_GM * 100) if WASHED_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_0_075mm_gm'), ref('crit_aggq_washed_wt_gm')])]"/>
+    </record>
+    <record id="crit_aggq_pass_0_075mm_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_agg_quality_sieve"/>
+      <field name="name">Passing % - 0.075 mm</field>
+      <field name="code">PASS_0_075MM_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">82</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (100 - (RET_0_075MM_PCT or 0)) * ((PASS_4_75MM_PCT or 0) / 100.0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_aggq_ret_0_075mm_pct'), ref('crit_aggq_pass_4_75mm_pct')])]"/>
+    </record>
+
+    <record id="product_agg_quality_sample" model="product.template">
+       <field name="name">العينة - جودة الركام (R6/2003)</field>
+       <field name="type">consu</field>
+       <field name="is_sample_product">True</field>
+      <field name="tracking">serial</field>
+      <field name="sample_type_id" ref="appointment_products.agg_quality_sample_type"/>
+      <field name="categ_id" ref="product.product_category_all"/>
+   </record>
+  </data>
+</odoo>
