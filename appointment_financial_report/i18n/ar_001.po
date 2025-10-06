@@ -352,3 +352,23 @@ msgstr "رقم القسيمة:"
 #: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
 msgid "Signatures and credentials"
 msgstr "التواقيع والاعتمادات"
+
+#. module: appointment_financial_report
+#: code:addons/appointment_financial_report/models/report_financial_voucher.py:12
+msgid "form"
+msgstr "نموذج"
+
+#. module: appointment_financial_report
+#: code:addons/appointment_financial_report/models/report_financial_voucher.py:23
+msgid "receipt"
+msgstr "إيصال"
+
+#. module: appointment_financial_report
+#: code:addons/appointment_financial_report/models/report_financial_voucher.py:23
+msgid "payment"
+msgstr "دفعة"
+
+#. module: appointment_financial_report
+#: code:addons/appointment_financial_report/models/report_financial_voucher.py:25
+msgid "settlement"
+msgstr "تسوية"
