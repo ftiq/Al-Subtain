@@ -1,0 +1,354 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* appointment_financial_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20250101\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-06 09:46+0000\n"
+"PO-Revision-Date: 2025-10-06 09:46+0000\n"
+"Last-Translator: \n"
+"Language-Team: Arabic\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0?0:n==1?1:n==2?2:n%100>=3 and n%100<=10?3:n%100>=11 and n%100<=99?4:5;\n"
+"Language: ar_001\n"
+
+#. module: appointment_financial_report
+#: model:ir.actions.report,print_report_name:appointment_financial_report.forms_summary_report_action
+msgid ""
+"'Forms-Summary-' + (object.date_from or '') + '-' + (object.date_to or '')"
+msgstr ""
+"'ملخص-النماذج-' + (object.date_from or '') + '-' + (object.date_to or '')"
+
+#. module: appointment_financial_report
+#: model:ir.actions.report,print_report_name:appointment_financial_report.financial_voucher_action
+msgid ""
+"(object.name or 'Voucher') + '-' + (object.invoice_date or "
+"object.date).strftime('%Y%m%d')"
+msgstr ""
+"(object.name or 'قسيمة') + '-' + (object.invoice_date or "
+"object.date).strftime('%Y%m%d')"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "<strong>Accountant</strong>"
+msgstr "<strong>المحاسب</strong>"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "<strong>Approver</strong>"
+msgstr "<strong>المعتمد</strong>"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "<strong>Manager</strong>"
+msgstr "<strong>المدير</strong>"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Account Name"
+msgstr "اسم الحساب"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Book No."
+msgstr "رقم الدفتر"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__company_id
+msgid "Branch/Company"
+msgstr "الفرع/الشركة"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.view_forms_summary_wizard
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Company:"
+msgstr "الشركة:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Cost Center:"
+msgstr "مركز التكلفة:"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__create_uid
+msgid "Created by"
+msgstr "أُنشئ بواسطة"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__create_date
+msgid "Created on"
+msgstr "تاريخ الإنشاء"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Credit"
+msgstr "دائن"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Currency:"
+msgstr "العملة:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Customer"
+msgstr "العميل"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__date_from
+msgid "Date From"
+msgstr "التاريخ من"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__date_to
+msgid "Date To"
+msgstr "التاريخ إلى"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Date:"
+msgstr "التاريخ:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Debit"
+msgstr "مدين"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Description"
+msgstr "الوصف"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__display_name
+msgid "Display Name"
+msgstr "الاسم المعروض"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Document No:"
+msgstr "رقم المستند:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Due"
+msgstr "مستحق"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Executed By"
+msgstr "نُفِّذ بواسطة"
+
+#. module: appointment_financial_report
+#: model:ir.actions.report,name:appointment_financial_report.financial_voucher_action
+msgid "Financial Voucher"
+msgstr "قسيمة مالية"
+
+#. module: appointment_financial_report
+#: model:ir.model,name:appointment_financial_report.model_report_appointment_financial_report_financial_voucher_template
+msgid "Financial Voucher Report (Arabic)"
+msgstr "تقرير القسيمة المالية (العربية)"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Form No:"
+msgstr "رقم النموذج:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Form Total"
+msgstr "إجمالي النموذج"
+
+#. module: appointment_financial_report
+#: model:ir.actions.act_window,name:appointment_financial_report.action_forms_summary_wizard
+#: model:ir.actions.report,name:appointment_financial_report.forms_summary_report_action
+#: model:ir.ui.menu,name:appointment_financial_report.menu_forms_summary_root
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.view_forms_summary_wizard
+msgid "Forms Summary"
+msgstr "ملخص النماذج"
+
+#. module: appointment_financial_report
+#: model:ir.model,name:appointment_financial_report.model_report_appointment_financial_report_forms_summary_template
+msgid "Forms Summary (Grouped)"
+msgstr "ملخص النماذج (مجمع)"
+
+#. module: appointment_financial_report
+#: model:ir.model,name:appointment_financial_report.model_forms_summary_wizard
+msgid "Forms Summary Wizard"
+msgstr "معالج ملخص النماذج"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Forms:"
+msgstr "النماذج:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "From:"
+msgstr "من:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Grand Total:"
+msgstr "الإجمالي الكلي:"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__id
+msgid "ID"
+msgstr "المعرّف"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Journal No."
+msgstr "رقم اليومية"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__journal_ids
+msgid "Journals"
+msgstr "دفاتر اليومية"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Lab Code"
+msgstr "رمز المختبر"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__write_date
+msgid "Last Updated on"
+msgstr "تاريخ آخر تحديث"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Name: _______________"
+msgstr "الاسم: _______________"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "No Journal Entries"
+msgstr "لا توجد قيود يومية"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "No."
+msgstr "رقم"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Note:"
+msgstr "ملاحظة:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Paid"
+msgstr "مدفوع"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Payment"
+msgstr "الدفعة"
+
+#. module: appointment_financial_report
+#: model:ir.model.fields,field_description:appointment_financial_report.field_forms_summary_wizard__only_posted
+msgid "Posted Entries Only"
+msgstr "قيود مُرحلة فقط"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Prepared by the following documents"
+msgstr "أُعد بناءً على المستندات التالية"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.view_forms_summary_wizard
+msgid "Print"
+msgstr "طباعة"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Project"
+msgstr "المشروع"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Project:"
+msgstr "المشروع:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Qty"
+msgstr "الكمية"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Rows:"
+msgstr "الصفوف:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Signature: _______________"
+msgstr "التوقيع: _______________"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Test Type"
+msgstr "نوع الفحص"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "To:"
+msgstr "إلى:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Total"
+msgstr "الإجمالي"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Total Due:"
+msgstr "إجمالي المستحق:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Total Paid:"
+msgstr "إجمالي المدفوع:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Total Samples:"
+msgstr "إجمالي العينات:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Unit Price"
+msgstr "سعر الوحدة"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Voucher No:"
+msgstr "رقم القسيمة:"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Signatures and credentials"
+msgstr "التواقيع والاعتمادات"

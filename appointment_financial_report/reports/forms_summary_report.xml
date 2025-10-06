@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+
+    <record id="forms_summary_paperformat" model="report.paperformat">
+      <field name="name">Forms Summary A4</field>
+      <field name="format">A4</field>
+      <field name="orientation">Landscape</field>
+      <field name="margin_top">20</field>
+      <field name="margin_bottom">15</field>
+      <field name="margin_left">7</field>
+      <field name="margin_right">7</field>
+      <field name="dpi">90</field>
+    </record>
+
+    <template id="forms_summary_template">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="wiz">
+          <t t-call="web.external_layout">
+            <t t-call="appointment_financial_report.forms_summary_page"/>
+          </t>
+        </t>
+      </t>
+    </template>
+
+    <template id="forms_summary_page">
+      <div class="page" style="direction:ltr; font-family: Arial, sans-serif;">
+        <style>
+          * { font-family: Arial, sans-serif !important; }
+          .title{ text-align:center; font-size:20px; font-weight:bold; color:#000; border:1px dashed #90a4ae; padding:6px; border-radius:6px; background:#f5f5f5; }
+          .filters{ margin:8px 0 12px 0; text-align:center; }
+          .filters span{ display:inline-block; min-width:140px; margin:0 8px; padding:4px 8px; border:1px solid #b0bec5; border-radius:6px; background:#fff; }
+          .section-title{ margin:12px 0 4px 0; text-align:left; }
+          .section-title .box{ display:inline-block; border:2px solid #424242; padding:4px 8px; border-radius:4px; font-weight:bold; background:#fafafa; }
+          table.grid{ width:100%; border-collapse:collapse; }
+          table.grid th, table.grid td{ border:1px solid #424242; padding:6px; text-align:center; font-size:12px; color:#000; }
+          table.grid thead th{ background:#e0e0e0; font-weight:bold; }
+          .totals{ font-weight:bold; color:#000; background:#fffbe6; }
+          .grand{ margin-top:12px; padding:8px; border:2px solid #424242; border-radius:6px; background:#f5f5f5; }
+        </style>
+
+        <div class="title">Forms Summary</div>
+        <div class="filters">
+          <span>From: <t t-esc="date_from and date_from.strftime('%Y/%m/%d') or ''"/></span>
+          <span>To: <t t-esc="date_to and date_to.strftime('%Y/%m/%d') or ''"/></span>
+          <span>Company: <t t-esc="company.display_name"/></span>
+        </div>
+
+        <t t-foreach="sections" t-as="sec">
+          <div class="section-title"><span class="box">Form No: <t t-esc="sec['form_no']"/></span></div>
+          <table class="grid">
+            <thead>
+              <tr>
+                <th style="width:3%">No.</th>
+                <th style="width:7%">Date</th>
+                <th style="width:14%">Customer</th>
+                <th style="width:7%">Lab Code</th>
+                <th style="width:8%">Total</th>
+                <th style="width:8%">Paid</th>
+                <th style="width:8%">Due</th>
+                <th style="width:8%">Test Type</th>
+                <th style="width:6%">Payment</th>
+                <th style="width:10%">Executed By</th>
+                <th style="width:12%">Project</th>
+                <th style="width:8%">Book No.</th>
+                <th style="width:5%">Qty</th>
+                <th style="width:6%">Unit Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="sec['rows']" t-as="r">
+                <tr>
+                  <td t-esc="r['seq']"/>
+                  <td t-esc="r['date'] and r['date'].strftime('%Y/%m/%d') or ''"/>
+                  <td t-esc="r['partner']"/>
+                  <td t-esc="r['lab_code']"/>
+                  <td t-esc="format_amount(r['currency'], r['total'])"/>
+                  <td t-esc="format_amount(r['currency'], r['paid'])"/>
+                  <td t-esc="format_amount(r['currency'], r['due'])"/>
+                  <td t-esc="r.get('test_type','')"/>
+                  <td t-esc="r['payment_kind']"/>
+                  <td t-esc="r['exec_side']"/>
+                  <td t-esc="r['project']"/>
+                  <td t-esc="r['book_no']"/>
+                  <td t-esc="r['count']"/>
+                  <td t-esc="format_amount(r['currency'], r['price'])"/>
+                </tr>
+              </t>
+            </tbody>
+            <tfoot>
+              <tr class="totals">
+                <td colspan="12" style="text-align:right">Form Total</td>
+                <td t-esc="sec['totals']['count']"/>
+                <td>
+                  <t t-set="cur" t-value="sec['rows'] and sec['rows'][0]['currency'] or (docs and docs[0].company_id.currency_id)"/>
+                  <t t-esc="format_amount(cur, sec['totals']['total'])"/>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </t>
+
+        <div class="grand">
+          <table style="width:100%">
+            <tr>
+              <td>Forms: <strong t-esc="grand['forms_count']"/></td>
+              <td>Rows: <strong t-esc="grand['rows_count']"/></td>
+              <td>Grand Total: <strong t-esc="format_amount(docs[0].company_id.currency_id, grand['total'])"/></td>
+              <td>Total Paid: <strong t-esc="format_amount(docs[0].company_id.currency_id, grand['paid'])"/></td>
+              <td>Total Due: <strong t-esc="format_amount(docs[0].company_id.currency_id, grand['due'])"/></td>
+              <td>Total Samples: <strong t-esc="grand['count']"/></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </template>
+
+    <record id="forms_summary_report_action" model="ir.actions.report">
+      <field name="name">Forms Summary</field>
+      <field name="model">forms.summary.wizard</field>
+      <field name="report_type">qweb-pdf</field>
+      <field name="report_name">appointment_financial_report.forms_summary_template</field>
+      <field name="paperformat_id" ref="appointment_financial_report.forms_summary_paperformat"/>
+      <field name="print_report_name">'Forms-Summary-' + (object.date_from or '') + '-' + (object.date_to or '')</field>
+    </record>
+
+  </data>
+</odoo>

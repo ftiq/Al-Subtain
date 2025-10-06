@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <record id="view_forms_summary_wizard" model="ir.ui.view">
+      <field name="name">forms.summary.wizard.form</field>
+      <field name="model">forms.summary.wizard</field>
+      <field name="arch" type="xml">
+        <form string="Forms Summary" create="false" edit="false">
+          <group>
+            <group>
+              <field name="date_from"/>
+              <field name="date_to"/>
+              <field name="company_id"/>
+            </group>
+            <group>
+              <field name="journal_ids" widget="many2many_tags"/>
+              <field name="only_posted"/>
+            </group>
+          </group>
+          <footer>
+            <button name="action_print_pdf" type="object" string="Print" class="btn-primary"/>
+            <button string="Cancel" class="btn-secondary" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_forms_summary_wizard" model="ir.actions.act_window">
+      <field name="name">Forms Summary</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">forms.summary.wizard</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+
+    </record>
+
+    <menuitem id="menu_forms_summary_root" name="Forms Summary" parent="account.menu_finance_reports" action="action_forms_summary_wizard" sequence="200" groups="account.group_account_readonly,account.group_account_invoice,account.group_account_manager"/>
+
+  </data>
+</odoo>

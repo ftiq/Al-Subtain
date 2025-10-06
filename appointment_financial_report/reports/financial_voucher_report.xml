@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <record id="financial_voucher_paperformat" model="report.paperformat">
+      <field name="name">Financial Voucher A4</field>
+      <field name="format">A4</field>
+      <field name="orientation">Portrait</field>
+      <field name="margin_top">50</field>
+      <field name="margin_bottom">20</field>
+      <field name="margin_left">7</field>
+      <field name="margin_right">7</field>
+      <field name="header_line" eval="False"/>
+      <field name="header_spacing">35</field>
+      <field name="dpi">90</field>
+    </record>
+
+    <template id="financial_voucher_template">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="move">
+          <t t-call="web.external_layout">
+            <t t-call="appointment_financial_report.financial_voucher_page"/>
+          </t>
+        </t>
+      </t>
+    </template>
+
+    <template id="financial_voucher_page">
+      <div class="page" style="direction:rtl; font-family: Arial, sans-serif;">
+        <style>
+          @page {
+            margin-top: 10mm;
+            margin-bottom: 20mm;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+          }
+          .voucher-title {
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+            color: #000 !important;
+            padding: 12px;
+            margin: -10px 0 15px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 22px !important;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(211, 47, 47, 0.3);
+            border: 2px solid #b71c1c;
+          }
+          .info-section {
+            background: #fff;
+            border: 2px solid #424242;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+          }
+          .info-section table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          .info-section td {
+            border: 1px solid #757575;
+            padding: 8px;
+            font-size: 14px;
+          }
+          .info-label {
+            font-weight: bold;
+            background: #f5f5f5;
+          }
+          .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            border: 2px solid #424242;
+          }
+          .data-table thead th {
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            color: #000;
+            font-weight: bold;
+            padding: 10px 6px;
+            text-align: center;
+            border: 1px solid #424242;
+            font-size: 15px;
+          }
+          .data-table tbody td {
+            padding: 8px 6px;
+            border: 1px solid #757575;
+            text-align: center;
+            font-size: 14px;
+          }
+          .data-table tfoot td {
+            padding: 10px 6px;
+            border: 1px solid #424242;
+            text-align: center;
+            font-weight: bold;
+            background: #f5f5f5;
+            color: #d32f2f;
+            font-size: 15px;
+          }
+          .amount-text {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            padding: 12px;
+            text-align: center;
+            color: #e65100;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 6px;
+            margin: 15px 0;
+          }
+          .footer-note {
+            text-align: center;
+            font-size: 13px;
+            margin: 15px 0;
+            color: #424242;
+            font-style: italic;
+          }
+          .signatures-section {
+            margin-top: 30px;
+            page-break-inside: avoid;
+          }
+          .signatures-section h4 {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 18px;
+          }
+          .signatures-table {
+            width: 100%;
+            border-collapse: collapse;
+            direction: rtl;
+          }
+          .signature-cell {
+            width: 33.33%;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #90caf9;
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+          }
+          .signature-cell strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #1565c0;
+          }
+          .signature-box {
+            height: 80px;
+            border: 1px solid #bdbdbd;
+            margin: 10px auto;
+            background: #fafafa;
+            border-radius: 4px;
+          }
+          .signature-name {
+            font-size: 13px;
+            color: #616161;
+            margin-top: 8px;
+          }
+        </style>
+
+        <t t-set="orders" t-value="get_sale_orders(move)"/>
+        <t t-set="tasks" t-value="get_tasks(move)"/>
+        <t t-set="task" t-value="tasks and tasks[0] or None"/>
+        <t t-set="title" t-value="get_title(move)"/>
+        <t t-set="book_no" t-value="get_book_number(move)"/>
+        <t t-set="project_name" t-value="get_project_name(move)"/>
+
+        <div class="voucher-title">
+          <span t-esc="title"/>
+        </div>
+        <div class="info-section">
+          <table>
+            <tr>
+              <td class="info-label" style="width:20%">Voucher No:</td>
+              <td style="width:30%" t-esc="move.name or ''"/>
+              <td class="info-label" style="width:20%">Document No:</td>
+              <td style="width:30%" t-esc="(orders and orders[0].name) or ''"/>
+            </tr>
+            <tr>
+              <td class="info-label">Date:</td>
+              <td t-esc="(move.invoice_date or move.date).strftime('%Y/%m/%d') if (move.invoice_date or move.date) else ''"/>
+              <td class="info-label">Currency:</td>
+              <td t-esc="move.currency_id.display_name"/>
+            </tr>
+            <tr>
+              <td class="info-label">Document No:</td>
+              <td t-esc="book_no"/>
+              <td class="info-label">Cost Center:</td>
+              <td t-esc="get_cost_center(move)"/>
+            </tr>
+            <tr>
+              <td class="info-label">Project:</td>
+              <td colspan="3" t-esc="project_name"/>
+            </tr>
+            <tr t-if="move.narration">
+              <td class="info-label">Note:</td>
+              <td colspan="3" t-esc="move.narration"/>
+            </tr>
+          </table>
+        </div>
+
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:5%">No.</th>
+              <th style="width:25%">Account Name</th>
+              <th style="width:10%">Journal No.</th>
+              <th style="width:35%">Description</th>
+              <th style="width:12.5%">Debit</th>
+              <th style="width:12.5%">Credit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <t t-set="i" t-value="0"/>
+            <t t-set="lines_to_show" t-value="move.line_ids.filtered(lambda l: l.account_id)"/>
+            <t t-foreach="lines_to_show" t-as="line">
+              <t t-set="i" t-value="i+1"/>
+              <tr>
+                <td t-esc="i"/>
+                <td style="text-align:right; padding-right:10px" t-esc="line.account_id.name or ''"/>
+                <td t-esc="line.account_id.code or ''"/>
+                <td style="text-align:right; padding-right:10px">
+                  <t t-esc="line.name or ''"/>
+                  <t t-if="line.partner_id"> - <t t-esc="line.partner_id.name"/></t>
+                </td>
+                <td t-esc="'{:,.2f}'.format(line.debit) if line.debit else '0.00'"/>
+                <td t-esc="'{:,.2f}'.format(line.credit) if line.credit else '0.00'"/>
+              </tr>
+            </t>
+
+            <t t-if="len(lines_to_show) == 0">
+              <tr>
+                <td colspan="6" style="text-align:center; padding:20px; color:#999; font-style:italic">
+                  No Journal Entries
+                </td>
+              </tr>
+            </t>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">Total</td>
+              <td t-esc="'{:,.2f}'.format(sum(lines_to_show.mapped('debit')) or 0.0)"/>
+              <td t-esc="'{:,.2f}'.format(sum(lines_to_show.mapped('credit')) or 0.0)"/>
+            </tr>
+          </tfoot>
+        </table>
+
+
+        <div class="amount-text">
+          <t t-if="lines_to_show">
+            <t t-set="total_amount" t-value="sum(lines_to_show.mapped('debit')) or sum(lines_to_show.mapped('credit'))"/>
+            <t t-esc="amount_to_text_ar(total_amount, move.currency_id)"/>
+          </t>
+        </div>
+
+
+        <div class="signatures-section">
+          <h4>Signatures and credentials</h4>
+          <table class="signatures-table">
+            <tr>
+              <td class="signature-cell">
+                <strong>Accountant</strong>
+                <div class="signature-box"></div>
+                <div class="signature-name">Name: _______________</div>
+                <div class="signature-name">Signature: _______________</div>
+              </td>
+              <td style="width:15px"></td>
+              <td class="signature-cell">
+                <strong>Approver</strong>
+                <div class="signature-box"></div>
+                <div class="signature-name">Name: _______________</div>
+                <div class="signature-name">Signature: _______________</div>
+              </td>
+              <td style="width:15px"></td>
+              <td class="signature-cell">
+                <strong>Manager</strong>
+                <div class="signature-box"></div>
+                <div class="signature-name">Name: _______________</div>
+                <div class="signature-name">Signature: _______________</div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </template>
+
+    <record id="financial_voucher_action" model="ir.actions.report">
+      <field name="name">Financial Voucher</field>
+      <field name="model">account.move</field>
+      <field name="report_type">qweb-pdf</field>
+      <field name="report_name">appointment_financial_report.financial_voucher_template</field>
+      <field name="binding_model_id" ref="account.model_account_move"/>
+      <field name="binding_type">report</field>
+      <field name="paperformat_id" ref="appointment_financial_report.financial_voucher_paperformat"/>
+      <field name="print_report_name">(object.name or 'Voucher') + '-' + (object.invoice_date or object.date).strftime('%Y%m%d')</field>
+    </record>
+
+  </data>
+</odoo>
