@@ -83,11 +83,41 @@
       <field name="template_id" ref="appointment_products.template_ll_d4318"/>
       <field name="name">حد السيولة LL (%)</field>
       <field name="code">LL_PERCENT</field>
-      <field name="test_type">numeric</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
       <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
       <field name="sequence">20</field>
       <field name="is_global">True</field>
+      <field name="is_summary_field">True</field>
       <field name="is_required">True</field>
+      <field name="computation_formula">xs = []
+ys = []
+for i in range(1, 10):
+    n = series_value_at('NB_LL', i)
+    w = series_value_at('MC_LL_PERCENT', i)
+    if n and n &gt; 0 and w and w &gt; 0:
+        xs.append(log10(float(n)))
+        ys.append(float(w))
+
+npts = len(xs)
+if npts &gt;= 2:
+    sumx = sum(xs)
+    sumy = sum(ys)
+    sumxy = 0.0
+    sumx2 = 0.0
+    for j in range(npts):
+        sumxy += xs[j] * ys[j]
+        sumx2 += xs[j] * xs[j]
+    denom = (npts * sumx2) - (sumx * sumx)
+    if denom != 0:
+        m = ((npts * sumxy) - (sumx * sumy)) / denom
+        b = (sumy - (m * sumx)) / npts
+        result = (m * log10(25)) + b
+    else:
+        result = avg(ys)
+else:
+    result = avg_series('MC_LL_PERCENT')</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_ll_nb_ll'), ref('appointment_products.crit_ll_moisture_ll')])]"/>
     </record>
 
     <!-- Separate Plastic Limit template (ASTM D4318) -->
@@ -161,11 +191,31 @@
       <field name="template_id" ref="appointment_products.template_pl_d4318"/>
       <field name="name">حد اللدونة PL (%)</field>
       <field name="code">PL_PERCENT</field>
-      <field name="test_type">numeric</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
       <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
       <field name="sequence">40</field>
       <field name="is_global">True</field>
+      <field name="is_summary_field">True</field>
       <field name="is_required">True</field>
+      <field name="computation_formula">result = avg_series('MC_PL_PERCENT')</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_pl_moisture_pl')])]"/>
+    </record>
+
+    <record id="crit_plasticity_index" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_pl_d4318"/>
+      <field name="name">دليل اللدونة P.I (%)</field>
+      <field name="code">PI_PERCENT</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">41</field>
+      <field name="is_global">True</field>
+      <field name="is_summary_field">True</field>
+      <field name="is_required">True</field>
+      <field name="computation_formula">ll = get_criterion_from_sample_tests('LL_PERCENT') or 0
+pl = avg_series('MC_PL_PERCENT') or 0
+result = max(0, (ll - pl))</field>
     </record>
 
     <!-- Link separated LL & PL to Aggregate Quality + Proctor flow (3 samples each) -->
