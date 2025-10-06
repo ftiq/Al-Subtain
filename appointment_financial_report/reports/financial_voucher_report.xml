@@ -26,21 +26,16 @@
     </template>
 
     <template id="financial_voucher_page">
-      <div class="page" style="direction:rtl; font-family: Arial, sans-serif;">
+      <div class="page" t-att-dir="is_rtl and 'rtl' or 'ltr'" style="font-family: Arial, sans-serif;">
         <style>
-          @page {
-            margin-top: 10mm;
-            margin-bottom: 20mm;
-          }
           body {
             font-family: Arial, sans-serif;
-            direction: rtl;
           }
           .voucher-title {
             background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
             color: #000 !important;
             padding: 12px;
-            margin: -10px 0 15px 0;
+            margin: 0 0 15px 0;
             border-radius: 8px;
             text-align: center;
             font-size: 22px !important;
@@ -132,7 +127,6 @@
           .signatures-table {
             width: 100%;
             border-collapse: collapse;
-            direction: rtl;
           }
           .signature-cell {
             width: 33.33%;

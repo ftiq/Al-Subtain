@@ -6,7 +6,7 @@
       <field name="name">forms.summary.wizard.form</field>
       <field name="model">forms.summary.wizard</field>
       <field name="arch" type="xml">
-        <form string="Forms Summary" create="false" edit="false">
+        <form string="Forms Summary" create="false">
           <group>
             <group>
               <field name="date_from"/>

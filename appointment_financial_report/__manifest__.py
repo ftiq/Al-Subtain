@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Appointment Financial Voucher Report',
-    'summary': 'Custom financial voucher report for field service appointments',
+    'summary': 'Custom financial voucher report for field service/appointments',
     'version': '1.0.0',
     'category': 'Accounting',
     'author': "Salah Alhjany",

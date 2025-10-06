@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import api, models
+from odoo import api, models, _
 
 
 class ReportFinancialVoucher(models.AbstractModel):
@@ -9,7 +9,7 @@ class ReportFinancialVoucher(models.AbstractModel):
     def get_title(self, move):
         journal_type = getattr(move.journal_id, 'type', False)
         if journal_type == 'sale' or move.move_type in ('out_invoice', 'out_refund'):
-            return 'form'
+            return _('Form Title')
 
         if journal_type == 'cash':
             amount = 0.0
@@ -20,14 +20,14 @@ class ReportFinancialVoucher(models.AbstractModel):
             else:
                 lines = move.line_ids.filtered(lambda l: not l.display_type)
                 amount = (sum(lines.mapped('debit')) - sum(lines.mapped('credit'))) or 0.0
-            return 'receipt' if amount > 0 else 'payment'
+            return _('Receipt Title') if amount > 0 else _('Payment Title')
         if journal_type == 'general':
-            return 'settlement'
+            return _('Settlement Title')
 
         signed = getattr(move, 'amount_total_signed', 0.0) or getattr(move, 'amount_total', 0.0) or 0.0
         if signed:
-            return 'receipt' if signed > 0 else 'payment'
-        return 'payment'
+            return _('Receipt Title') if signed > 0 else _('Payment Title')
+        return _('Payment Title')
 
     def _get_sale_orders(self, move):
         orders = move.invoice_line_ids.mapped('sale_line_ids.order_id')
@@ -89,15 +89,22 @@ class ReportFinancialVoucher(models.AbstractModel):
     def amount_to_text_ar(self, amount, currency):
         try:
             txt = currency.amount_to_text(amount)
-
-            if txt and 'only' not in txt:
-                txt = f"{txt} only"
+            # Append localized "only" if not already present
+            if txt:
+                only_tr = _('only')
+                lower_txt = txt.lower()
+                if ('only' not in lower_txt) and (only_tr.lower() not in lower_txt):
+                    txt = f"{txt} {only_tr}"
             return txt
         except Exception:
             return ''
 
     def _get_report_values(self, docids, data=None):
         docs = self.env['account.move'].browse(docids)
+        # Determine interface direction from language
+        lang_code = self.env.context.get('lang') or self.env.user.lang
+        lang = self.env['res.lang'].search([('code', '=', lang_code)], limit=1)
+        is_rtl = bool(lang and getattr(lang, 'direction', '') == 'rtl')
         return {
             'doc_ids': docids,
             'doc_model': 'account.move',
@@ -110,4 +117,5 @@ class ReportFinancialVoucher(models.AbstractModel):
             'get_cost_center': self.get_cost_center,
             'get_project_name': self.get_project_name_from_questionnaire,
             'amount_to_text_ar': self.amount_to_text_ar,
+            'is_rtl': is_rtl,
         }

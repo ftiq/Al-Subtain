@@ -15,4 +15,8 @@ class FormsSummaryWizard(models.TransientModel):
 
     def action_print_pdf(self):
         self.ensure_one()
-        return self.env.ref('appointment_financial_report.forms_summary_report_action').report_action(self)
+        action = self.env.ref('appointment_financial_report.forms_summary_report_action').report_action(self)
+        # Keep the wizard open/editable after the report is generated
+        if isinstance(action, dict):
+            action['close_on_report_download'] = False
+        return action

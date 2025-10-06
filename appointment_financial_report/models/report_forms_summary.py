@@ -144,6 +144,11 @@ class ReportFormsSummary(models.AbstractModel):
             'count': sum(s['totals']['count'] for s in sections) if sections else 0,
         }
 
+        # Determine interface direction from language
+        lang_code = self.env.context.get('lang') or self.env.user.lang
+        lang = self.env['res.lang'].search([('code', '=', lang_code)], limit=1)
+        is_rtl = bool(lang and getattr(lang, 'direction', '') == 'rtl')
+
         return {
             'doc_ids': wizard.ids,
             'doc_model': 'forms.summary.wizard',
@@ -154,4 +159,5 @@ class ReportFormsSummary(models.AbstractModel):
             'sections': sections,
             'grand': grand,
             'format_amount': self._format_amount,
+            'is_rtl': is_rtl,
         }
