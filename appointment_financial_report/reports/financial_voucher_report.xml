@@ -32,25 +32,25 @@
             font-family: Arial, sans-serif;
           }
           .page {
-            padding-bottom: 40mm;
+            padding-bottom: 25mm;
           }
           .voucher-title {
             background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
             color: #000 !important;
-            padding: 12px;
-            margin: 0 0 15px 0;
-            border-radius: 8px;
+            padding: 8px;
+            margin: 0 0 10px 0;
+            border-radius: 6px;
             text-align: center;
-            font-size: 22px !important;
+            font-size: 18px !important;
             font-weight: bold;
-            box-shadow: 0 3px 10px rgba(211, 47, 47, 0.3);
+            box-shadow: 0 2px 6px rgba(211, 47, 47, 0.3);
             border: 2px solid #b71c1c;
           }
           .info-section {
             background: #fff;
             border: 2px solid #424242;
             border-radius: 4px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             overflow: hidden;
           }
           .info-section table {
@@ -59,8 +59,8 @@
           }
           .info-section td {
             border: 1px solid #757575;
-            padding: 8px;
-            font-size: 14px;
+            padding: 6px;
+            font-size: 13px;
           }
           .info-label {
             font-weight: bold;
@@ -69,17 +69,17 @@
           .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
+            margin: 8px 0;
             border: 2px solid #424242;
           }
           .data-table thead th {
             background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
             color: #000;
             font-weight: bold;
-            padding: 10px 6px;
+            padding: 6px 4px;
             text-align: center;
             border: 1px solid #424242;
-            font-size: 15px;
+            font-size: 13px;
           }
           .data-table tbody td {
             padding: 4px 5px;
@@ -88,24 +88,24 @@
             font-size: 13px;
           }
           .data-table tfoot td {
-            padding: 10px 6px;
+            padding: 6px 4px;
             border: 1px solid #424242;
             text-align: center;
             font-weight: bold;
             background: #f5f5f5;
             color: #d32f2f;
-            font-size: 15px;
+            font-size: 13px;
           }
           .amount-text {
             background: #fff3e0;
             border: 2px solid #ff9800;
-            padding: 12px;
+            padding: 8px;
             text-align: center;
             color: #e65100;
             font-weight: bold;
-            font-size: 16px;
-            border-radius: 6px;
-            margin: 15px 0;
+            font-size: 14px;
+            border-radius: 4px;
+            margin: 8px 0;
           }
           .footer-note {
             text-align: center;
@@ -115,18 +115,18 @@
             font-style: italic;
           }
           .signatures-section {
-            margin-top: 30px;
-            margin-bottom: 20px;
+            margin-top: 15px;
+            margin-bottom: 10px;
             page-break-inside: avoid;
           }
           .signatures-section h4 {
             background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
             color: #fff;
-            padding: 10px;
+            padding: 6px;
             text-align: center;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 18px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 14px;
           }
           .signatures-table {
             width: 100%;
@@ -135,7 +135,7 @@
           .signature-cell {
             width: 33.33%;
             text-align: center;
-            padding: 15px;
+            padding: 8px;
             border: 2px solid #90caf9;
             border-radius: 8px;
             background: #ffffff;
@@ -143,14 +143,14 @@
           }
           .signature-cell strong {
             display: block;
-            margin-bottom: 10px;
-            font-size: 15px;
+            margin-bottom: 5px;
+            font-size: 13px;
             color: #1565c0;
           }
           .signature-box {
-            height: 80px;
+            height: 50px;
             border: 1px solid #bdbdbd;
-            margin: 10px auto;
+            margin: 5px auto;
             background: #fafafa;
             border-radius: 4px;
           }
@@ -299,12 +299,12 @@
         </div>
 
         <!-- الملاحظات بعد الإجمالي النصي -->
-        <div t-if="move.narration" style="margin:15px 0; padding:10px; border:1px solid #ddd; border-radius:4px; background:#f9f9f9;">
-          <strong style="color:#424242;">
+        <div t-if="move.narration" style="margin:8px 0; padding:6px; border:1px solid #ddd; border-radius:4px; background:#f9f9f9;">
+          <strong style="color:#424242; font-size:12px;">
             <t t-if="env.context.get('lang') == 'ar_001'">ملاحظة:</t>
             <t t-else="">Note:</t>
           </strong>
-          <div style="margin-top:5px; font-size:14px;" t-esc="move.narration"/>
+          <div style="margin-top:3px; font-size:12px;" t-esc="move.narration"/>
         </div>
 
 
