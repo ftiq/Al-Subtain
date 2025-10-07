@@ -9,7 +9,7 @@ class ReportFinancialVoucher(models.AbstractModel):
     def get_title(self, move):
         journal_type = getattr(move.journal_id, 'type', False)
         if journal_type == 'sale' or move.move_type in ('out_invoice', 'out_refund'):
-            return _('Form Title')
+            return _('form')
 
         if journal_type == 'cash':
             amount = 0.0
@@ -20,14 +20,14 @@ class ReportFinancialVoucher(models.AbstractModel):
             else:
                 lines = move.line_ids.filtered(lambda l: not l.display_type)
                 amount = (sum(lines.mapped('debit')) - sum(lines.mapped('credit'))) or 0.0
-            return _('Receipt Title') if amount > 0 else _('Payment Title')
+            return _('receipt') if amount > 0 else _('payment')
         if journal_type == 'general':
-            return _('Settlement Title')
+            return _('settlement')
 
         signed = getattr(move, 'amount_total_signed', 0.0) or getattr(move, 'amount_total', 0.0) or 0.0
         if signed:
-            return _('Receipt Title') if signed > 0 else _('Payment Title')
-        return _('Payment Title')
+            return _('receipt') if signed > 0 else _('payment')
+        return _('payment')
 
     def _get_sale_orders(self, move):
         orders = move.invoice_line_ids.mapped('sale_line_ids.order_id')
@@ -91,7 +91,7 @@ class ReportFinancialVoucher(models.AbstractModel):
             txt = currency.amount_to_text(amount)
             # Append localized "only" if not already present
             if txt:
-                only_tr = _('only')
+                only_tr = _('')
                 lower_txt = txt.lower()
                 if ('only' not in lower_txt) and (only_tr.lower() not in lower_txt):
                     txt = f"{txt} {only_tr}"

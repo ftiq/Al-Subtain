@@ -1,3 +1,8 @@
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Book Number"
+msgstr "رقم الكتاب"
+
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* appointment_financial_report
@@ -359,7 +364,7 @@ msgid "form"
 msgstr "نموذج"
 
 #. module: appointment_financial_report
-#: code:addons/appointment_financial_report/models/report_financial_voucher.py:23
+#: code:addons/appointment_financial_report/models/report_financial_voucher.py:20
 msgid "receipt"
 msgstr "إيصال"
 
@@ -372,3 +377,28 @@ msgstr "دفعة"
 #: code:addons/appointment_financial_report/models/report_financial_voucher.py:25
 msgid "settlement"
 msgstr "تسوية"
+
+#. module: appointment_financial_report
+#: code:addons/appointment_financial_report/models/report_financial_voucher.py:95
+msgid "only"
+msgstr "فقط"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.financial_voucher_page
+msgid "Account Code"
+msgstr "رمز الحساب"
+
+#. module: appointment_financial_report
+#: code:addons/appointment_financial_report/wizards/forms_summary_wizard.py:44
+msgid "The start date must be before or equal to the end date."
+msgstr "يجب أن يكون تاريخ البداية أسبق أو مساوياً لتاريخ النهاية."
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "Page"
+msgstr "صفحة"
+
+#. module: appointment_financial_report
+#: model_terms:ir.ui.view,arch_db:appointment_financial_report.forms_summary_page
+msgid "of"
+msgstr "من"

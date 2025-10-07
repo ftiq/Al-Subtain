@@ -6,19 +6,19 @@
       <field name="name">Forms Summary A4</field>
       <field name="format">A4</field>
       <field name="orientation">Landscape</field>
-      <field name="margin_top">40</field>
-      <field name="margin_bottom">15</field>
+      <field name="margin_top">60</field>
+      <field name="margin_bottom">30</field>
       <field name="margin_left">7</field>
       <field name="margin_right">7</field>
       <field name="header_line" eval="False"/>
-      <field name="header_spacing">25</field>
+      <field name="header_spacing">50</field>
       <field name="dpi">90</field>
     </record>
 
     <template id="forms_summary_template">
       <t t-call="web.html_container">
         <t t-foreach="docs" t-as="wiz">
-          <t t-call="web.external_layout">
+          <t t-call="custom_report_layout.custom_external_layout">
             <t t-call="appointment_financial_report.forms_summary_page"/>
           </t>
         </t>
@@ -29,7 +29,7 @@
       <div class="page" t-att-dir="is_rtl and 'rtl' or 'ltr'" style="font-family: Arial, sans-serif;">
         <style>
           * { font-family: Arial, sans-serif !important; }
-          .page { padding-top: 12mm; padding-bottom: 10mm; }
+          .page { padding-top: 5mm; padding-bottom: 30mm; }
           .title{ text-align:center; font-size:20px; font-weight:bold; color:#000; border:1px dashed #90a4ae; padding:6px; border-radius:6px; background:#f5f5f5; }
           .filters{ margin:8px 0 12px 0; text-align:center; }
           .filters span{ display:inline-block; min-width:140px; margin:0 8px; padding:4px 8px; border:1px solid #b0bec5; border-radius:6px; background:#fff; }
@@ -40,6 +40,29 @@
           table.grid thead th{ background:#e0e0e0; font-weight:bold; }
           .totals{ font-weight:bold; color:#000; background:#fffbe6; }
           .grand{ margin-top:12px; padding:8px; border:2px solid #424242; border-radius:6px; background:#f5f5f5; }
+          /* Keep section blocks together */
+          thead { display: table-header-group; }
+          tfoot { display: table-footer-group; }
+          .section { page-break-inside: avoid; margin-bottom: 10px; }
+          /* Override custom layout footer completely */
+          .custom-footer { display: none !important; }
+          .custom-article { margin: 10mm 0 20mm 0 !important; min-height: auto !important; }
+          /* Custom text footer for this report */
+          .report-footer { 
+            position: fixed; 
+            bottom: 8mm; 
+            left: 7mm; 
+            right: 7mm; 
+            height: 15mm;
+            font-size: 11px; 
+            color: #333; 
+            border-top: 1px solid #ccc; 
+            padding: 5px 0;
+            background: white;
+            z-index: 1000;
+          }
+          .report-footer table{ width: 100%; border-collapse: collapse; height: 100%; }
+          .report-footer td{ padding: 3px 5px; vertical-align: middle; }
         </style>
 
         <div class="title">Forms Summary</div>
@@ -50,6 +73,7 @@
         </div>
 
         <t t-foreach="sections" t-as="sec">
+          <div class="section">
           <div class="section-title"><span class="box">Form No: <t t-esc="sec['form_no']"/></span></div>
           <table class="grid">
             <thead>
@@ -57,15 +81,13 @@
                 <th style="width:3%">No.</th>
                 <th style="width:7%">Date</th>
                 <th style="width:14%">Customer</th>
-                <th style="width:7%">Lab Code</th>
+                <th style="width:10%">Book Number</th>
                 <th style="width:8%">Total</th>
                 <th style="width:8%">Paid</th>
                 <th style="width:8%">Due</th>
-                <th style="width:8%">Test Type</th>
-                <th style="width:6%">Payment</th>
-                <th style="width:10%">Executed By</th>
-                <th style="width:12%">Project</th>
-                <th style="width:8%">Book No.</th>
+                <th style="width:10%">Test Type</th>
+                <th style="width:12%">Executed By</th>
+                <th style="width:14%">Project</th>
                 <th style="width:5%">Qty</th>
                 <th style="width:6%">Unit Price</th>
               </tr>
@@ -76,15 +98,13 @@
                   <td t-esc="r['seq']"/>
                   <td t-esc="r['date'] and r['date'].strftime('%Y/%m/%d') or ''"/>
                   <td t-esc="r['partner']"/>
-                  <td t-esc="r['lab_code']"/>
+                  <td t-esc="r.get('book_number','')"/>
                   <td t-esc="format_amount(r['currency'], r['total'])"/>
                   <td t-esc="format_amount(r['currency'], r['paid'])"/>
                   <td t-esc="format_amount(r['currency'], r['due'])"/>
                   <td t-esc="r.get('test_type','')"/>
-                  <td t-esc="r['payment_kind']"/>
                   <td t-esc="r['exec_side']"/>
                   <td t-esc="r['project']"/>
-                  <td t-esc="r['book_no']"/>
                   <td t-esc="r['count']"/>
                   <td t-esc="format_amount(r['currency'], r['price'])"/>
                 </tr>
@@ -92,7 +112,7 @@
             </tbody>
             <tfoot>
               <tr class="totals">
-                <td colspan="12" style="text-align:right">Form Total</td>
+                <td colspan="10" style="text-align:right">Form Total</td>
                 <td t-esc="sec['totals']['count']"/>
                 <td>
                   <t t-set="cur" t-value="sec['rows'] and sec['rows'][0]['currency'] or (docs and docs[0].company_id.currency_id)"/>
@@ -101,17 +121,22 @@
               </tr>
             </tfoot>
           </table>
+          </div>
         </t>
 
-        <div class="grand">
-          <table style="width:100%">
+        <!-- Custom report footer -->
+        <div class="report-footer">
+          <table>
             <tr>
-              <td>Forms: <strong t-esc="grand['forms_count']"/></td>
-              <td>Rows: <strong t-esc="grand['rows_count']"/></td>
-              <td>Grand Total: <strong t-esc="format_amount(docs[0].company_id.currency_id, grand['total'])"/></td>
-              <td>Total Paid: <strong t-esc="format_amount(docs[0].company_id.currency_id, grand['paid'])"/></td>
-              <td>Total Due: <strong t-esc="format_amount(docs[0].company_id.currency_id, grand['due'])"/></td>
-              <td>Total Samples: <strong t-esc="grand['count']"/></td>
+              <td style="text-align:left; width:33%;">
+                <t t-esc="user and user.name or ''"/>
+              </td>
+              <td style="text-align:center; width:34%;">
+                Page <span class="page"/> of <span class="topage"/>
+              </td>
+              <td style="text-align:right; width:33%;">
+                <t t-esc="print_datetime and print_datetime.strftime('%Y/%m/%d %H:%M') or ''"/>
+              </td>
             </tr>
           </table>
         </div>

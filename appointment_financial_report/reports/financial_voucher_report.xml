@@ -7,7 +7,7 @@
       <field name="format">A4</field>
       <field name="orientation">Portrait</field>
       <field name="margin_top">50</field>
-      <field name="margin_bottom">20</field>
+      <field name="margin_bottom">35</field>
       <field name="margin_left">7</field>
       <field name="margin_right">7</field>
       <field name="header_line" eval="False"/>
@@ -18,7 +18,7 @@
     <template id="financial_voucher_template">
       <t t-call="web.html_container">
         <t t-foreach="docs" t-as="move">
-          <t t-call="web.external_layout">
+          <t t-call="custom_report_layout.custom_external_layout">
             <t t-call="appointment_financial_report.financial_voucher_page"/>
           </t>
         </t>
@@ -30,6 +30,9 @@
         <style>
           body {
             font-family: Arial, sans-serif;
+          }
+          .page {
+            padding-bottom: 40mm;
           }
           .voucher-title {
             background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
@@ -47,7 +50,7 @@
             background: #fff;
             border: 2px solid #424242;
             border-radius: 4px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             overflow: hidden;
           }
           .info-section table {
@@ -79,10 +82,10 @@
             font-size: 15px;
           }
           .data-table tbody td {
-            padding: 8px 6px;
+            padding: 4px 5px;
             border: 1px solid #757575;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
           }
           .data-table tfoot td {
             padding: 10px 6px;
@@ -113,6 +116,7 @@
           }
           .signatures-section {
             margin-top: 30px;
+            margin-bottom: 20px;
             page-break-inside: avoid;
           }
           .signatures-section h4 {
@@ -165,35 +169,53 @@
         <t t-set="project_name" t-value="get_project_name(move)"/>
 
         <div class="voucher-title">
-          <span t-esc="title"/>
+          <t t-if="env.context.get('lang') == 'ar_001'">
+            <t t-if="'receipt' in (title or '').lower()">إيصال</t>
+            <t t-elif="'payment' in (title or '').lower()">دفعة</t>
+            <t t-elif="'settlement' in (title or '').lower()">تسوية</t>
+            <t t-else="">إستمارة</t>
+          </t>
+          <t t-else="">
+            <span t-esc="title"/>
+          </t>
         </div>
         <div class="info-section">
           <table>
             <tr>
-              <td class="info-label" style="width:20%">Voucher No:</td>
+              <td class="info-label" style="width:20%">
+                <t t-if="env.context.get('lang') == 'ar_001'">رقم النموذج:</t>
+                <t t-else="">Form No:</t>
+              </td>
               <td style="width:30%" t-esc="move.name or ''"/>
-              <td class="info-label" style="width:20%">Document No:</td>
-              <td style="width:30%" t-esc="(orders and orders[0].name) or ''"/>
+              <td class="info-label" style="width:20%">
+                <t t-if="env.context.get('lang') == 'ar_001'">المشروع:</t>
+                <t t-else="">Project:</t>
+              </td>
+              <td style="width:30%" t-esc="project_name"/>
             </tr>
             <tr>
-              <td class="info-label">Date:</td>
+              <td class="info-label">
+                <t t-if="env.context.get('lang') == 'ar_001'">التاريخ:</t>
+                <t t-else="">Date:</t>
+              </td>
               <td t-esc="(move.invoice_date or move.date).strftime('%Y/%m/%d') if (move.invoice_date or move.date) else ''"/>
-              <td class="info-label">Currency:</td>
+              <td class="info-label">
+                <t t-if="env.context.get('lang') == 'ar_001'">العملة:</t>
+                <t t-else="">Currency:</t>
+              </td>
               <td t-esc="move.currency_id.display_name"/>
             </tr>
             <tr>
-              <td class="info-label">Document No:</td>
+              <td class="info-label">
+                <t t-if="env.context.get('lang') == 'ar_001'">رقم الكتاب:</t>
+                <t t-else="">Book No:</t>
+              </td>
               <td t-esc="book_no"/>
-              <td class="info-label">Cost Center:</td>
+              <td class="info-label">
+                <t t-if="env.context.get('lang') == 'ar_001'">مركز التكلفة:</t>
+                <t t-else="">Cost Center:</t>
+              </td>
               <td t-esc="get_cost_center(move)"/>
-            </tr>
-            <tr>
-              <td class="info-label">Project:</td>
-              <td colspan="3" t-esc="project_name"/>
-            </tr>
-            <tr t-if="move.narration">
-              <td class="info-label">Note:</td>
-              <td colspan="3" t-esc="move.narration"/>
             </tr>
           </table>
         </div>
@@ -202,12 +224,30 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th style="width:5%">No.</th>
-              <th style="width:25%">Account Name</th>
-              <th style="width:10%">Journal No.</th>
-              <th style="width:35%">Description</th>
-              <th style="width:12.5%">Debit</th>
-              <th style="width:12.5%">Credit</th>
+              <th style="width:5%">
+                <t t-if="env.context.get('lang') == 'ar_001'">م.</t>
+                <t t-else="">No.</t>
+              </th>
+              <th style="width:30%">
+                <t t-if="env.context.get('lang') == 'ar_001'">اسم الحساب</t>
+                <t t-else="">Account Name</t>
+              </th>
+              <th style="width:8%">
+                <t t-if="env.context.get('lang') == 'ar_001'">رمز الحساب</t>
+                <t t-else="">Account Code</t>
+              </th>
+              <th style="width:32%">
+                <t t-if="env.context.get('lang') == 'ar_001'">الوصف</t>
+                <t t-else="">Description</t>
+              </th>
+              <th style="width:12.5%">
+                <t t-if="env.context.get('lang') == 'ar_001'">مدين</t>
+                <t t-else="">Debit</t>
+              </th>
+              <th style="width:12.5%">
+                <t t-if="env.context.get('lang') == 'ar_001'">دائن</t>
+                <t t-else="">Credit</t>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -219,28 +259,32 @@
                 <td t-esc="i"/>
                 <td style="text-align:right; padding-right:10px" t-esc="line.account_id.name or ''"/>
                 <td t-esc="line.account_id.code or ''"/>
-                <td style="text-align:right; padding-right:10px">
+                <td style="text-align:right; padding:4px 8px; font-size:13px">
                   <t t-esc="line.name or ''"/>
                   <t t-if="line.partner_id"> - <t t-esc="line.partner_id.name"/></t>
                 </td>
-                <td t-esc="'{:,.2f}'.format(line.debit) if line.debit else '0.00'"/>
-                <td t-esc="'{:,.2f}'.format(line.credit) if line.credit else '0.00'"/>
+                <td style="font-size:13px" t-esc="'{:,.0f}'.format(line.debit) if line.debit else '0'"/>
+                <td style="font-size:13px" t-esc="'{:,.0f}'.format(line.credit) if line.credit else '0'"/>
               </tr>
             </t>
 
             <t t-if="len(lines_to_show) == 0">
               <tr>
-                <td colspan="6" style="text-align:center; padding:20px; color:#999; font-style:italic">
-                  No Journal Entries
+                <td colspan="6" style="text-align:center; padding:15px; color:#999; font-style:italic">
+                  <t t-if="env.context.get('lang') == 'ar_001'">لا توجد قيود يومية</t>
+                  <t t-else="">No Journal Entries</t>
                 </td>
               </tr>
             </t>
           </tbody>
           <tfoot>
             <tr>
-              <td colspan="4">Total</td>
-              <td t-esc="'{:,.2f}'.format(sum(lines_to_show.mapped('debit')) or 0.0)"/>
-              <td t-esc="'{:,.2f}'.format(sum(lines_to_show.mapped('credit')) or 0.0)"/>
+              <td colspan="4" style="font-weight:bold;">
+                <t t-if="env.context.get('lang') == 'ar_001'">الإجمالي</t>
+                <t t-else="">Total</t>
+              </td>
+              <td style="font-weight:bold;" t-esc="'{:,.0f}'.format(sum(lines_to_show.mapped('debit')) or 0.0)"/>
+              <td style="font-weight:bold;" t-esc="'{:,.0f}'.format(sum(lines_to_show.mapped('credit')) or 0.0)"/>
             </tr>
           </tfoot>
         </table>
@@ -250,33 +294,49 @@
           <t t-if="lines_to_show">
             <t t-set="total_amount" t-value="sum(lines_to_show.mapped('debit')) or sum(lines_to_show.mapped('credit'))"/>
             <t t-esc="amount_to_text_ar(total_amount, move.currency_id)"/>
+            <t t-if="env.context.get('lang') == 'ar_001'"> فقط</t>
           </t>
+        </div>
+
+        <!-- الملاحظات بعد الإجمالي النصي -->
+        <div t-if="move.narration" style="margin:15px 0; padding:10px; border:1px solid #ddd; border-radius:4px; background:#f9f9f9;">
+          <strong style="color:#424242;">
+            <t t-if="env.context.get('lang') == 'ar_001'">ملاحظة:</t>
+            <t t-else="">Note:</t>
+          </strong>
+          <div style="margin-top:5px; font-size:14px;" t-esc="move.narration"/>
         </div>
 
 
         <div class="signatures-section">
-          <h4>Signatures and credentials</h4>
+          <h4>
+            <t t-if="env.context.get('lang') == 'ar_001'">التواقيع والاعتمادات</t>
+            <t t-else="">Signatures and credentials</t>
+          </h4>
           <table class="signatures-table">
             <tr>
               <td class="signature-cell">
-                <strong>Accountant</strong>
+                <strong>
+                  <t t-if="env.context.get('lang') == 'ar_001'">المحاسب</t>
+                  <t t-else="">Accountant</t>
+                </strong>
                 <div class="signature-box"></div>
-                <div class="signature-name">Name: _______________</div>
-                <div class="signature-name">Signature: _______________</div>
               </td>
               <td style="width:15px"></td>
               <td class="signature-cell">
-                <strong>Approver</strong>
+                <strong>
+                  <t t-if="env.context.get('lang') == 'ar_001'">المعتمد</t>
+                  <t t-else="">Approver</t>
+                </strong>
                 <div class="signature-box"></div>
-                <div class="signature-name">Name: _______________</div>
-                <div class="signature-name">Signature: _______________</div>
               </td>
               <td style="width:15px"></td>
               <td class="signature-cell">
-                <strong>Manager</strong>
+                <strong>
+                  <t t-if="env.context.get('lang') == 'ar_001'">المدير</t>
+                  <t t-else="">Manager</t>
+                </strong>
                 <div class="signature-box"></div>
-                <div class="signature-name">Name: _______________</div>
-                <div class="signature-name">Signature: _______________</div>
               </td>
             </tr>
           </table>

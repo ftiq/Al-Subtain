@@ -9,8 +9,11 @@
     'license': 'OEEL-1',
     'depends': [
         'account',
+        'sale',
         'sale_management',
         'project',
+        'sale_project',
+        'industry_fsm',
         'appointment_products',
     ],
     'data': [

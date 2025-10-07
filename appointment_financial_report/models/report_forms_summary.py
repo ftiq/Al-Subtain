@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 from odoo import api, models, fields
+from datetime import datetime
 
 
 class ReportFormsSummary(models.AbstractModel):
@@ -60,9 +61,9 @@ class ReportFormsSummary(models.AbstractModel):
 
         groups = defaultdict(list)
 
+        # Group each move by invoice name (form_no = invoice number)
         for mv in moves:
-            orders = self._get_sale_orders_from_moves(mv)
-            key = (orders and orders[0].name) or (mv.invoice_origin or mv.name)
+            key = mv.name
             groups[key].append(mv)
 
 
@@ -71,55 +72,94 @@ class ReportFormsSummary(models.AbstractModel):
             rows = []
             seq = 0
             for mv in mv_list:
-                seq += 1
                 partner = mv.partner_id
                 currency = mv.currency_id
                 total = mv.amount_total or 0.0
                 residual = mv.amount_residual or 0.0
                 paid = (total - residual) if total else 0.0
-
-                orders = self._get_sale_orders_from_moves(mv)
+                
+                orders = self._get_sale_orders_from_moves([mv])
                 tasks = self._get_tasks_from_orders_or_move(mv, orders)
-                task = tasks[:1]
-                project_name = ''
-                test_type = ''
-                lab_code = ''
-                unit_price = 0.0
-                if task:
-
-                    ans = self.env['fsm.task.answer.input'].search([('task_id', '=', task.id)], order='id asc', limit=1)
-                    if ans:
-                        project_name = ans.value_answer_id.name or ans.value_text_box or ''
-
-                    if task.form_line_ids:
-                        test_type = task.form_line_ids[0].sample_type_id and task.form_line_ids[0].sample_type_id.name or ''
-
-                        mls = task.form_line_ids.mapped('move_id.move_line_ids')
-                        if mls:
-                            lab_code = mls[0].field_code or ''
-
-                    if orders:
-                        so_line = orders[0].order_line.filtered(lambda l: l.task_id.id == task.id)
-                        if so_line:
-                            unit_price = so_line[0].price_unit or 0.0
-
-                rows.append({
-                    'seq': seq,
-                    'date': mv.invoice_date or mv.date,
-                    'partner': partner.display_name,
-                    'lab_code': lab_code,
-                    'total': total,
-                    'paid': paid,
-                    'due': residual,
-                    'payment_kind': 'Cash' if mv.journal_id.type == 'cash' else ('Bank' if mv.journal_id.type == 'bank' else ''),
-                    'exec_side': (getattr(task, 'user_ids', False) and task.user_ids[:1].name) if task else '',
-                    'project': project_name,
-                    'book_no': task.book_number if task else '',
-                    'count': task.total_samples_count if task else 0,
-                    'price': unit_price or total,
-                    'currency': currency,
-                    'test_type': test_type,
-                })
+                
+                # If no tasks, show one row for the invoice
+                if not tasks:
+                    seq += 1
+                    rows.append({
+                        'seq': seq,
+                        'date': mv.invoice_date or mv.date,
+                        'partner': partner.display_name,
+                        'book_number': '',
+                        'total': total,
+                        'paid': paid,
+                        'due': residual,
+                        'exec_side': '',
+                        'project': '',
+                        'count': 0,
+                        'price': total,
+                        'currency': currency,
+                        'test_type': '',
+                    })
+                else:
+                    # Show one row per task
+                    for task in tasks:
+                        seq += 1
+                        
+                        # Get amounts per task from invoice lines
+                        inv_lines = mv.invoice_line_ids.filtered(
+                            lambda l: any(sl.task_id.id == task.id for sl in l.sale_line_ids)
+                        )
+                        task_total = sum(inv_lines.mapped('price_total')) if inv_lines else (total / len(tasks))
+                        task_ratio = (task_total / total) if total else (1.0 / len(tasks))
+                        task_paid = paid * task_ratio
+                        task_due = residual * task_ratio
+                        
+                        # Unit price from SO or invoice lines
+                        unit_price = 0.0
+                        if orders:
+                            so_lines = orders.mapped('order_line').filtered(lambda l: l.task_id.id == task.id)
+                            if so_lines:
+                                unit_price = so_lines[0].price_unit or 0.0
+                        if not unit_price and inv_lines:
+                            unit_price = inv_lines[0].price_unit or 0.0
+                        
+                        # Project name from questionnaire
+                        project_name = ''
+                        ans = self.env['fsm.task.answer.input'].search([('task_id', '=', task.id)], order='id asc', limit=1)
+                        if ans:
+                            project_name = ans.value_answer_id.name or ans.value_text_box or ''
+                        
+                        # Test type
+                        test_type = ''
+                        if getattr(task, 'form_line_ids', False) and task.form_line_ids:
+                            test_type = task.form_line_ids[0].sample_type_id and task.form_line_ids[0].sample_type_id.name or ''
+                        
+                        # Book number
+                        book_number = getattr(task, 'assignment_reference_book_number', '') or \
+                                     getattr(task, 'assignment_book_number', '') or \
+                                     getattr(task, 'book_number', '') or ''
+                        
+                        # Executed by
+                        exec_side = ''
+                        if getattr(task, 'user_ids', False):
+                            names = task.user_ids.mapped('name')
+                            if names:
+                                exec_side = ', '.join(names)
+                        
+                        rows.append({
+                            'seq': seq,
+                            'date': mv.invoice_date or mv.date,
+                            'partner': partner.display_name,
+                            'book_number': book_number,
+                            'total': task_total,
+                            'paid': task_paid,
+                            'due': task_due,
+                            'exec_side': exec_side,
+                            'project': project_name,
+                            'count': getattr(task, 'total_samples_count', 0) or 0,
+                            'price': unit_price or task_total,
+                            'currency': currency,
+                            'test_type': test_type,
+                        })
 
             totals = {
                 'total': sum(r['total'] for r in rows),
@@ -160,4 +200,6 @@ class ReportFormsSummary(models.AbstractModel):
             'grand': grand,
             'format_amount': self._format_amount,
             'is_rtl': is_rtl,
+            'user': self.env.user,
+            'print_datetime': fields.Datetime.context_timestamp(self, datetime.utcnow()),
         }
