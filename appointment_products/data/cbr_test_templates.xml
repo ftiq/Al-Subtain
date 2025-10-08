@@ -33,8 +33,172 @@
       <field name="is_global">True</field>
       <field name="is_required">True</field>
     </record>
+    <!-- Removed generic origin correction and curve points; client uses fixed increments (LDR at standard penetrations) -->
 
     <!-- Per-sample readings at key penetrations -->
+    <!-- Client-style fixed increments: 0, 0.025, 0.05, 0.075, 0.125, 0.15, 0.175, 0.25, 0.3 in -->
+    <record id="crit_cbr_ldr_0_0" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.0 بوصة (LDR)</field>
+      <field name="code">LDR_0_0_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">8</field>
+    </record>
+    <record id="crit_cbr_load_0_0" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.0 بوصة (kN)</field>
+      <field name="code">LOAD_0_0_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">9</field>
+      <field name="computation_formula">result = (LDR_0_0_IN * PRF_FACTOR) if (LDR_0_0_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_0'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+    <record id="crit_cbr_ldr_0_025" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.025 بوصة (LDR)</field>
+      <field name="code">LDR_0_025_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">9</field>
+    </record>
+    <record id="crit_cbr_load_0_025" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.025 بوصة (kN)</field>
+      <field name="code">LOAD_0_025_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">10</field>
+      <field name="computation_formula">result = (LDR_0_025_IN * PRF_FACTOR) if (LDR_0_025_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_025'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+    <record id="crit_cbr_ldr_0_05" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.05 بوصة (LDR)</field>
+      <field name="code">LDR_0_05_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">10</field>
+    </record>
+    <record id="crit_cbr_load_0_05" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.05 بوصة (kN)</field>
+      <field name="code">LOAD_0_05_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">11</field>
+      <field name="computation_formula">result = (LDR_0_05_IN * PRF_FACTOR) if (LDR_0_05_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_05'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+    <record id="crit_cbr_ldr_0_075" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.075 بوصة (LDR)</field>
+      <field name="code">LDR_0_075_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">11</field>
+    </record>
+    <record id="crit_cbr_load_0_075" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.075 بوصة (kN)</field>
+      <field name="code">LOAD_0_075_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">12</field>
+      <field name="computation_formula">result = (LDR_0_075_IN * PRF_FACTOR) if (LDR_0_075_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_075'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+    <record id="crit_cbr_ldr_0_125" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.125 بوصة (LDR)</field>
+      <field name="code">LDR_0_125_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">12</field>
+    </record>
+    <record id="crit_cbr_load_0_125" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.125 بوصة (kN)</field>
+      <field name="code">LOAD_0_125_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">13</field>
+      <field name="computation_formula">result = (LDR_0_125_IN * PRF_FACTOR) if (LDR_0_125_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_125'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+    <record id="crit_cbr_ldr_0_15" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.15 بوصة (LDR)</field>
+      <field name="code">LDR_0_15_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">13</field>
+    </record>
+    <record id="crit_cbr_load_0_15" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.15 بوصة (kN)</field>
+      <field name="code">LOAD_0_15_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">14</field>
+      <field name="computation_formula">result = (LDR_0_15_IN * PRF_FACTOR) if (LDR_0_15_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_15'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+    <record id="crit_cbr_ldr_0_175" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.175 بوصة (LDR)</field>
+      <field name="code">LDR_0_175_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">14</field>
+    </record>
+    <record id="crit_cbr_load_0_175" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.175 بوصة (kN)</field>
+      <field name="code">LOAD_0_175_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">15</field>
+      <field name="computation_formula">result = (LDR_0_175_IN * PRF_FACTOR) if (LDR_0_175_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_175'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+    <record id="crit_cbr_ldr_0_25" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.25 بوصة (LDR)</field>
+      <field name="code">LDR_0_25_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">15</field>
+    </record>
+    <record id="crit_cbr_load_0_25" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.25 بوصة (kN)</field>
+      <field name="code">LOAD_0_25_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">16</field>
+      <field name="computation_formula">result = (LDR_0_25_IN * PRF_FACTOR) if (LDR_0_25_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_25'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
+    <record id="crit_cbr_ldr_0_3" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">قراءة الحلقة 0.3 بوصة (LDR)</field>
+      <field name="code">LDR_0_3_IN</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">16</field>
+    </record>
+    <record id="crit_cbr_load_0_3" model="lab.test.criterion">
+      <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
+      <field name="name">الحمل عند 0.3 بوصة (kN)</field>
+      <field name="code">LOAD_0_3_KN</field>
+      <field name="test_type">computed</field>
+      <field name="is_computed_field">True</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">17</field>
+      <field name="computation_formula">result = (LDR_0_3_IN * PRF_FACTOR) if (LDR_0_3_IN is not None and PRF_FACTOR) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_ldr_0_3'), ref('appointment_products.crit_cbr_prf_factor')])]"/>
+    </record>
     <record id="crit_cbr_ldr_0_1" model="lab.test.criterion">
       <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
       <field name="name">قراءة الحلقة 0.1 بوصة (LDR)</field>
@@ -205,7 +369,7 @@
       <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_wet_density'), ref('appointment_products.crit_cbr_moisture_content')])]"/>
     </record>
 
-    <!-- Summaries -->
+    <!-- Summaries 
     <record id="crit_cbr_best_cbr_summary" model="lab.test.criterion">
       <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
       <field name="name">أعلى قيمة CBR% عبر العينات</field>
@@ -217,6 +381,7 @@
       <field name="is_summary_field">True</field>
       <field name="computation_formula">result = max_series('CBR_MAX_PERCENT')</field>
     </record>
+    -->
 
     <record id="crit_cbr_mdd_95_summary" model="lab.test.criterion">
       <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
@@ -241,7 +406,52 @@ result = (mdd_value * 0.95) if mdd_value else 0</field>
       <field name="sequence">102</field>
       <field name="is_summary_field">True</field>
       <field name="is_critical">True</field>
-      <field name="computation_formula">result = max_series('CBR_MAX_PERCENT')</field>
+      <field name="computation_formula"># Target dry density at 95% of Proctor MDD (kg/m3)
+mdd = sample_avg_across_sets('MDD_KG_M3') or 0
+x_t = (mdd * 0.95) / 1000.0 if mdd else 0  # to gm/cm3
+
+# Collect points (x: dry density gm/cm3, y: CBR_MAX %)
+pairs = []
+for i in range(1, 10):
+    dd = series_value_at('CBR_DRY_DENSITY_KG_M3', i)
+    c = series_value_at('CBR_MAX_PERCENT', i)
+    if dd and dd &gt; 0 and c and c &gt; 0:
+        pairs.append((dd / 1000.0, c))
+
+if x_t &gt; 0 and len(pairs) &gt;= 2:
+    # Sort by x
+    pairs.sort(key=lambda p: p[0])
+    # Interpolate between bracketing points if possible
+    y_t = None
+    for j in range(1, len(pairs)):
+        x0, y0 = pairs[j-1]
+        x1, y1 = pairs[j]
+        if (x0 &lt;= x_t and x_t &lt;= x1) or (x1 &lt;= x_t and x_t &lt;= x0):
+            dx = x1 - x0
+            y_t = y0 + (y1 - y0) * (x_t - x0) / dx if dx != 0 else y1
+            break
+    if y_t is None:
+        # Linear regression fallback: y = m x + b
+        n = len(pairs)
+        sumx = sum(p[0] for p in pairs)
+        sumy = sum(p[1] for p in pairs)
+        sumxy = sum(p[0]*p[1] for p in pairs)
+        sumx2 = sum(p[0]*p[0] for p in pairs)
+        denom = (n*sumx2 - sumx*sumx)
+        if denom != 0:
+            m = (n*sumxy - sumx*sumy) / denom
+            b = (sumy - m*sumx) / n
+            y_t = m*x_t + b
+        else:
+            y_t = max(p[1] for p in pairs)
+    result = y_t if y_t is not None else max(p[1] for p in pairs)
+else:
+    result = max_series('CBR_MAX_PERCENT')</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[
+        ref('appointment_products.crit_cbr_percent_max'),
+        ref('appointment_products.crit_cbr_dry_density'),
+        ref('appointment_products.crit_cbr_mdd_95_summary')
+      ])]"/>
     </record>
 
     <!-- Add CBR stage to Aggregate Quality + Proctor flow -->
