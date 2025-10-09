@@ -419,32 +419,19 @@ for i in range(1, 10):
         pairs.append((dd / 1000.0, c))
 
 if x_t &gt; 0 and len(pairs) &gt;= 2:
-    # Sort by x
-    pairs.sort(key=lambda p: p[0])
-    # Interpolate between bracketing points if possible
-    y_t = None
-    for j in range(1, len(pairs)):
-        x0, y0 = pairs[j-1]
-        x1, y1 = pairs[j]
-        if (x0 &lt;= x_t and x_t &lt;= x1) or (x1 &lt;= x_t and x_t &lt;= x0):
-            dx = x1 - x0
-            y_t = y0 + (y1 - y0) * (x_t - x0) / dx if dx != 0 else y1
-            break
-    if y_t is None:
-        # Linear regression fallback: y = m x + b
-        n = len(pairs)
-        sumx = sum(p[0] for p in pairs)
-        sumy = sum(p[1] for p in pairs)
-        sumxy = sum(p[0]*p[1] for p in pairs)
-        sumx2 = sum(p[0]*p[0] for p in pairs)
-        denom = (n*sumx2 - sumx*sumx)
-        if denom != 0:
-            m = (n*sumxy - sumx*sumy) / denom
-            b = (sumy - m*sumx) / n
-            y_t = m*x_t + b
-        else:
-            y_t = max(p[1] for p in pairs)
-    result = y_t if y_t is not None else max(p[1] for p in pairs)
+    # Always use linear regression like Excel client: y = mx + b
+    n = len(pairs)
+    sumx = sum(p[0] for p in pairs)
+    sumy = sum(p[1] for p in pairs)
+    sumxy = sum(p[0]*p[1] for p in pairs)
+    sumx2 = sum(p[0]*p[0] for p in pairs)
+    denom = (n*sumx2 - sumx*sumx)
+    if denom != 0:
+        m = (n*sumxy - sumx*sumy) / denom
+        b = (sumy - m*sumx) / n
+        result = m*x_t + b
+    else:
+        result = max(p[1] for p in pairs)
 else:
     result = max_series('CBR_MAX_PERCENT')</field>
       <field name="depends_on_criteria_ids" eval="[(6,0,[
