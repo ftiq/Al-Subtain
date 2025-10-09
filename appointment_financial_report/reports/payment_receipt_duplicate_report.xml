@@ -220,7 +220,7 @@
                     <td class="label-cell">عملة /</td>
                     <td class="line-cell"><span t-field="pmt.currency_id.name"/></td>
                     <td class="label-cell">المبلغ /</td>
-                    <td class="line-cell"><span t-field="pmt.amount" t-options="{'widget': 'monetary', 'display_currency': pmt.currency_id}"/></td>
+                    <td class="line-cell"><span t-field="pmt.amount" t-options="{'widget': 'monetary', 'display_currency': (pmt.currency_id or pmt.company_id.currency_id)}"/></td>
                   </tr>
                 </table>
 
@@ -244,13 +244,13 @@
                 <table class="row-table">
                   <tr>
                     <td class="label-cell">المبلغ الكلي /</td>
-                    <td class="line-cell"><span t-field="pmt.amount" t-options="{'widget': 'monetary', 'display_currency': pmt.currency_id}"/></td>
+                    <td class="line-cell"><span t-field="pmt.amount" t-options="{'widget': 'monetary', 'display_currency': (pmt.currency_id or pmt.company_id.currency_id)}"/></td>
                     <td class="label-cell">رقم الاستمارة /</td>
                     <td class="line-cell"><t t-esc="_form_no"/></td>
                   </tr>
                   <tr>
                     <td class="label-cell">المبلغ الوصل /</td>
-                    <td class="line-cell"><span t-field="pmt.amount" t-options="{'widget': 'monetary', 'display_currency': pmt.currency_id}"/></td>
+                    <td class="line-cell"><span t-field="pmt.amount" t-options="{'widget': 'monetary', 'display_currency': (pmt.currency_id or pmt.company_id.currency_id)}"/></td>
                     <td class="label-cell">أمين الصندوق /</td>
                     <td class="line-cell"><span t-field="pmt.create_uid.name"/></td>
                   </tr>
