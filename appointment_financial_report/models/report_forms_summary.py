@@ -61,7 +61,6 @@ class ReportFormsSummary(models.AbstractModel):
 
         groups = defaultdict(list)
 
-        # Group each move by invoice name (form_no = invoice number)
         for mv in moves:
             key = mv.name
             groups[key].append(mv)
@@ -81,7 +80,6 @@ class ReportFormsSummary(models.AbstractModel):
                 orders = self._get_sale_orders_from_moves([mv])
                 tasks = self._get_tasks_from_orders_or_move(mv, orders)
                 
-                # If no tasks, show one row for the invoice
                 if not tasks:
                     seq += 1
                     rows.append({
@@ -100,11 +98,9 @@ class ReportFormsSummary(models.AbstractModel):
                         'test_type': '',
                     })
                 else:
-                    # Show one row per task
                     for task in tasks:
                         seq += 1
                         
-                        # Get amounts per task from invoice lines
                         inv_lines = mv.invoice_line_ids.filtered(
                             lambda l: any(sl.task_id.id == task.id for sl in l.sale_line_ids)
                         )
@@ -113,7 +109,6 @@ class ReportFormsSummary(models.AbstractModel):
                         task_paid = paid * task_ratio
                         task_due = residual * task_ratio
                         
-                        # Unit price from SO or invoice lines
                         unit_price = 0.0
                         if orders:
                             so_lines = orders.mapped('order_line').filtered(lambda l: l.task_id.id == task.id)
@@ -122,23 +117,20 @@ class ReportFormsSummary(models.AbstractModel):
                         if not unit_price and inv_lines:
                             unit_price = inv_lines[0].price_unit or 0.0
                         
-                        # Project name from questionnaire
                         project_name = ''
                         ans = self.env['fsm.task.answer.input'].search([('task_id', '=', task.id)], order='id asc', limit=1)
                         if ans:
                             project_name = ans.value_answer_id.name or ans.value_text_box or ''
                         
-                        # Test type
                         test_type = ''
                         if getattr(task, 'form_line_ids', False) and task.form_line_ids:
                             test_type = task.form_line_ids[0].sample_type_id and task.form_line_ids[0].sample_type_id.name or ''
                         
-                        # Book number
                         book_number = getattr(task, 'assignment_reference_book_number', '') or \
                                      getattr(task, 'assignment_book_number', '') or \
                                      getattr(task, 'book_number', '') or ''
                         
-                        # Executed by
+                        exec_side = ''
                         exec_side = ''
                         if getattr(task, 'user_ids', False):
                             names = task.user_ids.mapped('name')
@@ -184,7 +176,6 @@ class ReportFormsSummary(models.AbstractModel):
             'count': sum(s['totals']['count'] for s in sections) if sections else 0,
         }
 
-        # Determine interface direction from language
         lang_code = self.env.context.get('lang') or self.env.user.lang
         lang = self.env['res.lang'].search([('code', '=', lang_code)], limit=1)
         is_rtl = bool(lang and getattr(lang, 'direction', '') == 'rtl')

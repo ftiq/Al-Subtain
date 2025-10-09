@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+
+    <record id="payment_receipt_duplicate_paperformat" model="report.paperformat">
+      <field name="name">Payment Receipt Duplicate A4</field>
+      <field name="format">A4</field>
+      <field name="orientation">Portrait</field>
+      <field name="margin_top">50</field>
+      <field name="margin_bottom">35</field>
+      <field name="margin_left">7</field>
+      <field name="margin_right">7</field>
+      <field name="header_line" eval="False"/>
+      <field name="header_spacing">35</field>
+      <field name="dpi">90</field>
+    </record>
+
+    <template id="pay_rcpt_dup">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="pmt">
+          <t t-call="custom_report_layout.custom_external_layout">
+            <t t-call="appointment_financial_report.payment_receipt_duplicate_page"/>
+          </t>
+        </t>
+      </t>
+    </template>
+
+    <template id="payment_receipt_duplicate_page">
+      <div class="page" style="direction:rtl; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap');
+          body { 
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #1a202c;
+            background: #f8fafc;
+          }
+          .page { 
+            padding-bottom: 10mm; 
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            margin: 5px auto;
+            max-width: 100%;
+          }
+          .voucher-title {
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+            color: #000 !important;
+            padding: 8px;
+            margin: 0 0 10px 0;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 18px !important;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(211, 47, 47, 0.3);
+            border: 2px solid #b71c1c;
+          }
+          .info-section {
+            background: #fff;
+            border: 2px solid #fff;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            overflow: hidden;
+          }
+          .info-section table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          .info-section td {
+            border: 1px solid #fff;
+            padding: 6px;
+            font-size: 13px;
+          }
+          .info-label {
+            font-weight: bold;
+            background: #f5f5f5;
+          }
+          .data-table { width: 100%; border-collapse: collapse; margin: 8px 0; border: 2px solid #fff; }
+          .data-table thead th { background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%); color: #000; font-weight: bold; padding: 6px 4px; text-align: center; border: 1px solid #fff; font-size: 13px; }
+          .data-table tbody td { padding: 4px 5px; border: 1px solid #fff; text-align: center; font-size: 13px; }
+          .form-badge { background:#ffeb3b; color:#000; border:2px solid #424242; border-radius:6px; padding:6px 10px; font-weight:bold; min-width: 90px; text-align:center; float: right; margin: 5px; }
+          .title { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            display: block;
+            width: fit-content;
+            margin: 0 auto 12px auto;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+            letter-spacing: 0.3px;
+          }
+          .block {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+          }
+          .two { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            padding: 15px;
+          }
+          .company-info {
+            background: #fff;
+            border: 2px solid #424242;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+          }
+          .company-info img { width:80px; height:80px; object-fit:contain; border:1px solid #ccc; border-radius:6px; background:#fff; }
+          .company-info .txt { font-size:12px; line-height:1.4; }
+          .cut { 
+            border-top: 2px dashed #cbd5e0; 
+            margin: 15px 0; 
+            text-align: center; 
+            color: #a0aec0; 
+            position: relative;
+          }
+          .cut:before {
+            content: "✂";
+            background: #ffffff;
+            padding: 0 15px;
+            position: absolute;
+            left: 50%;
+            top: -12px;
+            transform: translateX(-50%);
+            color: #cbd5e0;
+            font-size: 18px;
+          }
+          .lines { 
+            font-size: 14px; 
+            margin-top: 16px; 
+            direction: rtl; 
+            line-height: 1.6;
+          }
+          .row-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 12px 0; 
+            table-layout: auto; 
+            border: 0 !important; 
+          }
+          .row-table td { 
+            border: 0 !important; 
+            background: transparent; 
+            padding: 8px 12px;
+          }
+          .row-table .label-cell { 
+            white-space: nowrap; 
+            font-weight: 600; 
+            text-align: right; 
+            width: 1%; 
+            color: #4a5568;
+            font-size: 13px;
+          }
+          .row-table .line-cell { 
+            border: 0; 
+            border-bottom: 2px solid #e2e8f0; 
+            padding: 8px 12px; 
+            background: #f8fafc;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: #2d3748;
+          }
+          .row-table .line-cell:hover {
+            background: #edf2f7;
+            border-bottom-color: #cbd5e0;
+          }
+          @media print {
+            .page {
+              box-shadow: none;
+              border-radius: 0;
+              margin: 0;
+              padding-bottom: 5mm;
+            }
+            .block {
+              box-shadow: none;
+              border-radius: 0;
+              padding: 8px;
+            }
+            .two {
+              padding: 8px;
+              gap: 10px;
+            }
+            .title {
+              box-shadow: none;
+              margin: 0 auto 8px auto;
+            }
+          }
+        </style>
+
+        <div class="two">
+          <t t-foreach="[1,2]" t-as="copy">
+            <div class="block">
+              <div class="title">وصل قبض</div>
+              <div class="lines">
+                <table class="row-table">
+                  <tr>
+                    <td class="label-cell">استلمنا من السيد /</td>
+                    <td class="line-cell"><span t-field="pmt.partner_id.display_name"/></td>
+                    <td class="label-cell">رقم الوصل /</td>
+                    <td class="line-cell"><span t-field="pmt.name"/></td>
+                  </tr>
+                </table>
+
+                <table class="row-table">
+                  <tr>
+                    <td class="label-cell">تاريخ الوصل /</td>
+                    <td class="line-cell"><span t-field="pmt.date"/></td>
+                    <td class="label-cell">عملة /</td>
+                    <td class="line-cell"><span t-field="pmt.currency_id.name"/></td>
+                    <td class="label-cell">المبلغ /</td>
+                    <td class="line-cell"><span t-field="pmt.amount" t-options="{'widget': 'monetary', 'display_currency': pmt.currency_id}"/></td>
+                  </tr>
+                </table>
+
+                <table class="row-table">
+                  <tr>
+                    <td class="label-cell">المبلغ كتابة /</td>
+                    <td class="line-cell" colspan="5"><t t-esc="amount_to_text_ar(pmt.amount, pmt.currency_id)"/></td>
+                  </tr>
+                </table>
+
+                <table class="row-table">
+                  <tr>
+                    <td class="label-cell">التفاصيل /</td>
+                    <td class="line-cell" colspan="5"><span t-field="pmt.memo"/></td>
+                  </tr>
+                </table>
+
+                <div class="line"/>
+
+                <t t-set="_form_no" t-value="(pmt.move_id and (getattr(pmt.move_id, 'ref', False) or getattr(pmt.move_id, 'name', False))) or ''"/>
+                <table class="row-table">
+                  <tr>
+                    <td class="label-cell">المبلغ الكلي /</td>
+                    <td class="line-cell"><span t-field="pmt.amount" t-options="{'widget': 'monetary', 'display_currency': pmt.currency_id}"/></td>
+                    <td class="label-cell">رقم الاستمارة /</td>
+                    <td class="line-cell"><t t-esc="_form_no"/></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">المبلغ الوصل /</td>
+                    <td class="line-cell"><span t-field="pmt.amount" t-options="{'widget': 'monetary', 'display_currency': pmt.currency_id}"/></td>
+                    <td class="label-cell">أمين الصندوق /</td>
+                    <td class="line-cell"><span t-field="pmt.create_uid.name"/></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">المبلغ المتبقي /</td>
+                    <td class="line-cell">0.00</td>
+                    <td class="label-cell">تاريخ الإصدار /</td>
+                    <td class="line-cell"><span t-field="pmt.create_date"/></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <t t-if="copy == 1">
+              <div class="cut"/>
+            </t>
+          </t>
+        </div>
+      </div>
+    </template>
+
+    <record id="payment_receipt_duplicate_action" model="ir.actions.report">
+      <field name="name">وصل قبض</field>
+      <field name="model">account.payment</field>
+      <field name="report_type">qweb-pdf</field>
+      <field name="report_name">appointment_financial_report.pay_rcpt_dup</field>
+      <field name="binding_model_id" ref="account.model_account_payment"/>
+      <field name="binding_type">report</field>
+      <field name="paperformat_id" ref="appointment_financial_report.payment_receipt_duplicate_paperformat"/>
+      <field name="print_report_name">'Payment-Receipt-' + (object.name or '')</field>
+    </record>
+
+  </data>
+</odoo>

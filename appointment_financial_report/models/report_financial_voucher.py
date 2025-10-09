@@ -89,7 +89,7 @@ class ReportFinancialVoucher(models.AbstractModel):
     def amount_to_text_ar(self, amount, currency):
         try:
             txt = currency.amount_to_text(amount)
-            # Append localized "only" if not already present
+
             if txt:
                 only_tr = _('')
                 lower_txt = txt.lower()
@@ -101,7 +101,7 @@ class ReportFinancialVoucher(models.AbstractModel):
 
     def _get_report_values(self, docids, data=None):
         docs = self.env['account.move'].browse(docids)
-        # Determine interface direction from language
+
         lang_code = self.env.context.get('lang') or self.env.user.lang
         lang = self.env['res.lang'].search([('code', '=', lang_code)], limit=1)
         is_rtl = bool(lang and getattr(lang, 'direction', '') == 'rtl')
