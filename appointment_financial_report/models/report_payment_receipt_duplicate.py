@@ -7,10 +7,10 @@ class ReportPaymentReceiptDuplicate(models.AbstractModel):
     _description = 'Payment Receipt (Duplicated on same page)'
 
     def amount_to_text_ar(self, amount, currency):
+        cur = currency or self.env.company.currency_id
         try:
-            res = currency.amount_to_text(amount)
+            res = cur.amount_to_text(amount) if cur else '{:,.2f}'.format(amount)
         except Exception:
-
             res = '{:,.2f}'.format(amount)
 
         if res and not res.strip().endswith('فقط لا غير'):
