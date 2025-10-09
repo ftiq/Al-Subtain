@@ -1836,6 +1836,31 @@ class LabResultSet(models.Model):
         if not rows:
             return 'pending'
 
+        # قبل التقييم: تحقق من توافر المدخلات الأساسية
+        try:
+            orig_line = self.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'ORIG_WT_GM')[:1]
+            washed_line = self.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'WASHED_WT_GM')[:1]
+            orig_val = float(orig_line[0].value_numeric) if orig_line and orig_line[0].value_numeric is not None else 0.0
+            washed_val = float(washed_line[0].value_numeric) if washed_line and washed_line[0].value_numeric is not None else 0.0
+        except Exception:
+            orig_val = 0.0
+            washed_val = 0.0
+
+        # إذا لم تُدخل الأوزان الأساسية بعد، اعتبر الحالة "في الانتظار"
+        if orig_val <= 0.0 or washed_val <= 0.0:
+            return 'pending'
+
+        # يجب أن يكون هناك على الأقل وزن محتجز مُدخل (>0) على أحد المناخل لاعتبار الفحص قد بدأ فعلاً
+        ret_codes = ['RET_75MM_GM','RET_50MM_GM','RET_25MM_GM','RET_9_5MM_GM','RET_4_75MM_GM','RET_2_36MM_GM','RET_0_3MM_GM','RET_0_075MM_GM']
+        any_ret_input = False
+        for rc in ret_codes:
+            ln = self.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == rc)[:1]
+            if ln and ln[0].value_numeric and float(ln[0].value_numeric) > 0.0:
+                any_ret_input = True
+                break
+        if not any_ret_input:
+            return 'pending'
+
         required_rows = rows.filtered(lambda r: (float(r.effective_min or 0.0) != 0.0) or (float(r.effective_max or 0.0) != 0.0))
         if not required_rows:
             return 'pending'
@@ -1847,7 +1872,8 @@ class LabResultSet(models.Model):
             if not code:
                 continue
             line = self.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == code)[:1]
-            if not line:
+            # اعتبر PASS_% مفقودة حتى تُملأ المدخلات وتُحسب القيمة (غير صفرية)
+            if not line or not line[0].is_filled:
                 any_missing = True
                 continue
             lo = float(r.effective_min or 0.0)
@@ -3135,6 +3161,16 @@ class LabResultLine(models.Model):
                  'criterion_id.min_value', 'criterion_id.max_value')
     def _compute_conformity_status(self):
         for line in self:
+            # إذا كانت النتيجة العامة ناجحة، اعرض المطابقة للمعايير المحسوبة فقط
+            # دون التأثير على منطق is_compliant المستخدم في حساب النتيجة العامة
+            if (
+                getattr(line, 'result_set_id', False)
+                and line.result_set_id.overall_result == 'pass'
+                and line.criterion_id
+                and line.criterion_id.is_computed_field
+            ):
+                line.conformity_status = 'pass' if line.is_filled else 'pending'
+                continue
             # حالة محايدة للمعايير الرقمية غير المحسوبة بدون حدود دنيا/عليا
             is_numeric_plain = (
                 line.criterion_id and
