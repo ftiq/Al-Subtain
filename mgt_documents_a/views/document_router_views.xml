@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    
+
+    <record id="document_router_tree_view" model="ir.ui.view">
+        <field name="name">document.router.tree</field>
+        <field name="model">document.router</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state=='active'" decoration-muted="state=='inactive'">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="filter_document_type"/>
+                <field name="target_process_id"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge" decoration-success="state=='active'" decoration-muted="state=='inactive'"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="document_router_form_view" model="ir.ui.view">
+        <field name="name">document.router.form</field>
+        <field name="model">document.router</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate" string="تفعيل" type="object" invisible="state == 'active'" class="btn-primary"/>
+                    <button name="action_deactivate" string="إلغاء التفعيل" type="object" invisible="state == 'inactive'" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,inactive"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="اسم قاعدة التوجيه"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="priority" widget="priority"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="filter_document_type"/>
+                            <field name="filter_priority"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="شروط التوجيه">
+                            <group>
+                                <field name="description" nolabel="1" placeholder="وصف قاعدة التوجيه..."/>
+                            </group>
+                            
+                            <group string="شروط التوجيه">
+                                <group>
+                                    <field name="filter_document_type" placeholder="اختر نوع الوثيقة..."/>
+                                    <field name="filter_priority"/>
+                                    <field name="filter_keywords" placeholder="كلمة، كلمة أخرى، ..."/>
+                                </group>
+                                <group>
+                                    <field name="filter_departments" widget="many2many_tags"/>
+                                </group>
+                            </group>
+                            
+                            <group string="فلاتر إضافية">
+                                <field name="applicable_category_ids" widget="many2many_tags"/>
+                                <field name="applicable_department_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+                        
+                        <page string="هدف التوجيه">
+                            <group string="العملية المرتبطة">
+                                <field name="target_process_id"/>
+                            </group>
+                            
+                            <group string="إعدادات الاعتماد">
+                                <field name="create_approval_request"/>
+                                <field name="approval_category_id" invisible="not create_approval_request"/>
+                            </group>
+                        </page>
+                        
+                        <page string="الإجراءات والإشعارات">
+                            <group string="إنشاء المهام">
+                                <field name="task_template" placeholder="قالب المهمة..."/>
+                            </group>
+                            
+                            <group string="الإشعارات">
+                                <field name="notification_message" placeholder="رسالة الإشعار..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <chatter>
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </chatter>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="document_router_kanban_view" model="ir.ui.view">
+        <field name="name">document.router.kanban</field>
+        <field name="model">document.router</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" default_order="priority desc, sequence asc"
+                    class="o_kanban_wide_column o_document_kanban o_router_kanban"
+                    quick_create="false" create="true"
+                    records_draggable="false" groups_draggable="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="state"/>
+                <field name="priority"/>
+                <field name="sequence"/>
+                <field name="create_date"/>
+                <field name="write_date"/>
+                <field name="activity_ids"/>
+                <field name="activity_state"/>
+                
+                <progressbar field="activity_state" 
+                           colors='{"planned": "success", "today": "warning", "overdue": "danger"}'
+                           help="شريط التقدم يظهر حالة الأنشطة المجدولة لقواعد التوجيه"/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click o_document_card o_router_card" 
+                             t-attf-class="#{record.state.raw_value === 'active' ? 'o_card_active' : 'o_card_inactive'}"
+                             t-attf-data-state="#{record.state.raw_value}">
+                            
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_top_left">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge me-2" 
+                                                  t-attf-class="#{record.state.raw_value === 'active' ? 'badge-success' : 'badge-secondary'}">
+                                                <i class="fa fa-play me-1" t-if="record.state.raw_value === 'active'"/>
+                                                <i class="fa fa-pause me-1" t-if="record.state.raw_value === 'inactive'"/>
+                                                <t t-esc="record.state.value"/>
+                                            </span>
+                                            <span class="badge badge-info ms-1" t-if="record.priority.raw_value > 1">
+                                                <field name="priority" widget="priority"/>
+                                            </span>
+                                        </div>
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <div class="o_kanban_top_right">
+                                        <div class="o_dropdown_kanban dropdown">
+                                            <a role="button" class="dropdown-toggle o-no-caret btn" data-bs-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                                <span class="fa fa-ellipsis-v"/>
+                                            </a>
+                                            <div class="dropdown-menu" role="menu">
+                                                <a role="menuitem" class="dropdown-item oe_kanban_action oe_kanban_action_a" type="open">
+                                                    <i class="fa fa-external-link me-2"/>عرض قاعدة التوجيه
+                                                </a>
+                                                <a role="menuitem" class="dropdown-item oe_kanban_action oe_kanban_action_a" type="edit">
+                                                    <i class="fa fa-edit me-2"/>تحرير
+                                                </a>
+                                                <div class="dropdown-divider"/>
+                                                <t t-if="widget.deletable">
+                                                    <a role="menuitem" class="dropdown-item oe_kanban_action oe_kanban_action_a" type="delete">
+                                                        <i class="fa fa-trash me-2"/>حذف
+                                                    </a>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_card_content">
+                                <div class="o_kanban_tags_section mb-3">
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <span class="o_kanban_tag o_kanban_tag_type" t-if="record.filter_document_type.raw_value">
+                                            <i class="fa fa-file me-1"/>
+                                            <field name="filter_document_type"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="o_kanban_description" t-if="record.description.raw_value">
+                                    <small class="text-muted">
+                                        <t t-esc="record.description.value"/>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_card_footer">
+                                <div class="o_kanban_footer_left">
+                                    <div class="o_kanban_footer_activity">
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_footer_right">
+                                    <div class="o_kanban_footer_meta">
+                                        <small class="text-muted" t-if="record.write_date.raw_value">
+                                            <i class="fa fa-clock-o me-1"/>
+                                            <field name="write_date" widget="relative"/>
+                                        </small>
+                                    </div>
+                                    <div class="o_kanban_click_indicator">
+                                        <i class="fa fa-external-link text-primary" title="عرض التفاصيل"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="document_router_search_view" model="ir.ui.view">
+        <field name="name">document.router.search</field>
+        <field name="model">document.router</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="القاعدة" filter_domain="[('name', 'ilike', self)]"/>
+                <field name="description" string="الوصف"/>
+                <field name="filter_document_type" string="نوع الوثيقة"/>
+                <field name="filter_keywords" string="الكلمات المفتاحية"/>
+                
+                <filter string="نشط" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="معطل" name="inactive" domain="[('state', '=', 'inactive')]"/>
+                <separator/>
+                
+                <filter string="أولوية عالية" name="high_priority" domain="[('priority', 'in', ['2', '3'])]"/>
+                <filter string="وثائق واردة" name="incoming_docs" domain="[('filter_document_type', '=', 'incoming')]"/>
+                <filter string="وثائق صادرة" name="outgoing_docs" domain="[('filter_document_type', '=', 'outgoing')]"/>
+                <separator/>
+                
+                <filter string="مع عملية سير عمل" name="with_workflow" domain="[('target_process_id', '!=', False)]"/>
+                <filter string="مع طلب موافقة" name="with_approval" domain="[('create_approval_request', '=', True)]"/>
+                <filter string="مع قالب مهمة" name="with_task" domain="[('task_template', '!=', False)]"/>
+                
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الحالة" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="نوع الوثيقة" name="document_type" context="{'group_by': 'filter_document_type'}"/>
+                    <filter string="الأولوية" name="priority" context="{'group_by': 'priority'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    </data>
+</odoo>

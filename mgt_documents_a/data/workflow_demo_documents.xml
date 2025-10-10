@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <!-- Demo Document: Incoming Contract to trigger Legal Review routing -->
+    <record id="demo_doc_contract_1" model="document.document">
+      <field name="name">عقد توريد أجهزة حواسيب</field>
+      <field name="subject">عقد تزويد أجهزة حاسوب لقسم تقنية المعلومات</field>
+      <field name="document_type">contract</field>
+      <field name="category_id" ref="mgt_documents.category_legal_contracts"/>
+      <field name="department_id" ref="mgt_documents.demo_dept_it"/>
+      <field name="priority">1</field>
+      <field name="confidentiality_level">internal</field>
+      <field name="workflow_state">submitted</field>
+      <field name="processing_state">registered</field>
+    </record>
+
+    <!-- Demo Document: Internal Memo to trigger Memo Review routing -->
+    <record id="demo_doc_memo_1" model="document.document">
+      <field name="name">مذكرة: خطة تدريب الموظفين</field>
+      <field name="subject">خطة تدريب الربع الرابع للموارد البشرية</field>
+      <field name="document_type">memo</field>
+      <field name="category_id" ref="mgt_documents.category_memos"/>
+      <field name="department_id" ref="mgt_documents.demo_dept_management"/>
+      <field name="priority">1</field>
+      <field name="confidentiality_level">internal</field>
+      <field name="workflow_state">submitted</field>
+      <field name="processing_state">registered</field>
+    </record>
+
+  </data>
+</odoo>

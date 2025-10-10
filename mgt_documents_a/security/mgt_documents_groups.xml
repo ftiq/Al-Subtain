@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Module category MUST be defined before referencing in groups -->
+        <record id="module_category_document_management" model="ir.module.category">
+            <field name="name">إدارة الوثائق</field>
+            <field name="description">نظام إدارة الوثائق والعمليات</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- Simplified RBAC (V2) -->
+        <record id="group_doc_viewer" model="res.groups">
+            <field name="name">عارض وثائق</field>
+            <field name="category_id" ref="module_category_document_management"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">قراءة وفق قواعد القسم والشركة</field>
+        </record>
+
+        <record id="group_doc_contributor" model="res.groups">
+            <field name="name">مُساهِم وثائق</field>
+            <field name="category_id" ref="module_category_document_management"/>
+            <field name="implied_ids" eval="[(4, ref('mgt_documents.group_doc_viewer'))]"/>
+            <field name="comment">إنشاء وتعديل وثائق ضمن النطاق</field>
+        </record>
+
+        <record id="group_doc_approver" model="res.groups">
+            <field name="name">معتمد وثائق</field>
+            <field name="category_id" ref="module_category_document_management"/>
+            <field name="implied_ids" eval="[(4, ref('mgt_documents.group_doc_viewer'))]"/>
+            <field name="comment">اعتماد/رفض طلبات الموافقة المسندة</field>
+        </record>
+
+        <record id="group_doc_manager" model="res.groups">
+            <field name="name">مدير قسم الوثائق</field>
+            <field name="category_id" ref="module_category_document_management"/>
+            <field name="implied_ids" eval="[(4, ref('mgt_documents.group_doc_contributor')), (4, ref('mgt_documents.group_doc_approver'))]"/>
+            <field name="comment">إدارة وثائق القسم والأقسام التابعة</field>
+        </record>
+
+        <record id="group_doc_records" model="res.groups">
+            <field name="name">مسؤول السجلات والأرشيف</field>
+            <field name="category_id" ref="module_category_document_management"/>
+            <field name="implied_ids" eval="[(4, ref('mgt_documents.group_doc_contributor'))]"/>
+            <field name="comment">الحفظ والأرشفة والاسترجاع</field>
+        </record>
+
+        <record id="group_doc_admin" model="res.groups">
+            <field name="name">مسؤول نظام الوثائق</field>
+            <field name="category_id" ref="module_category_document_management"/>
+            <field name="implied_ids" eval="[(4, ref('mgt_documents.group_doc_manager')), (4, ref('base.group_system'))]"/>
+            <field name="comment">صلاحيات كاملة ضمن النظام</field>
+        </record>
+
+    </data>
+</odoo>
+

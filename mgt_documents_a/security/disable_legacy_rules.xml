@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!-- Delete legacy Document rules -->
+    <delete model="ir.rule" id="rule_document_user_access"/>
+    <delete model="ir.rule" id="rule_document_processor_access"/>
+    <delete model="ir.rule" id="rule_document_supervisor_access"/>
+    <delete model="ir.rule" id="rule_document_manager_own"/>
+    <delete model="ir.rule" id="rule_document_manager_dept"/>
+    <delete model="ir.rule" id="rule_document_director_own"/>
+    <delete model="ir.rule" id="rule_document_director_dept"/>
+    <delete model="ir.rule" id="rule_document_admin_full_access"/>
+    <delete model="ir.rule" id="rule_document_legal_reviewer"/>
+    <delete model="ir.rule" id="rule_document_financial_reviewer"/>
+    <delete model="ir.rule" id="rule_document_auditor_access"/>
+
+    <!-- Delete legacy Approval rules -->
+    <delete model="ir.rule" id="rule_approval_request_owner_or_approver"/>
+    <delete model="ir.rule" id="rule_approval_request_manager_all"/>
+    <delete model="ir.rule" id="rule_approval_approver_self_or_owner"/>
+    <delete model="ir.rule" id="rule_approval_approver_manager_all"/>
+  </data>
+  <!-- Note: other (non-document/approval) legacy rules retained. -->
+</odoo>

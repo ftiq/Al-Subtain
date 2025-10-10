@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="model_approval_request" model="ir.model">
+            <field name="name">approval.request</field>
+            <field name="model">approval.request</field>
+            <field name="info">نموذج طلبات الموافقة الداخلية</field>
+        </record>
+    </data>
+</odoo>

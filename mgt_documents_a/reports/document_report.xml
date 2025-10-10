@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="action_report_document_letter" model="ir.actions.report">
+    <field name="name">طباعة الوثيقة</field>
+    <field name="model">document.document</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">mgt_documents.report_document_letter</field>
+    <field name="print_report_name">'Document-' + (object.reference_number or (object.id and ('#%s' % object.id) or ''))</field>
+    <field name="binding_model_id" ref="mgt_documents.model_document_document"/>
+    <field name="binding_type">report</field>
+  </record>
+</odoo>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Removed obsolete function call to a deleted method to avoid RPC error -->
+    </data>
+</odoo>
