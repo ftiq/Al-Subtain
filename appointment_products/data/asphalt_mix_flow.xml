@@ -5,7 +5,7 @@
     <!-- Flow: Asphalt Mix Acceptance (minimal: Gradation only for now) -->
     <record id="asphalt_mix_flow_template" model="lab.test.flow.template">
       <field name="name">خطة فحص الخلطة الإسفلتية</field>
-      <field name="description">تدرج (T164+T30) كبداية؛ يمكن لاحقاً إضافة Gmm/Gmb/AV/Marshall/ITS</field>
+      <field name="description"> </field>
       <field name="allow_parallel_tests" eval="True"/>
     </record>
 
