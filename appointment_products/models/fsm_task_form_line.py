@@ -395,8 +395,8 @@ class ProjectTask(models.Model):
     main_sample_subtype_id = fields.Many2one(
         'lab.sample.subtype',
         string='النوع الفرعي الرئيسي',
-        domain="[('sample_type_id.code', 'in', ['MASONRY', 'CONCRETE_CORE'])]",
-        help='النوع الفرعي للطابوق أو الكور الخرساني المستخدم في هذه المهمة'
+        domain="[('sample_type_id.code', 'in', ['MASONRY', 'CONCRETE_CORE', 'ASPHALT_MIX'])]",
+        help='النوع الفرعي للطابوق أو الكور الخرساني أو الخلطة الإسفلتية (طبقة رابطة/سطحية/أساس) المستخدم في هذه المهمة'
     )
 
     main_sample_is_masonry = fields.Boolean(
@@ -411,6 +411,13 @@ class ProjectTask(models.Model):
         compute='_compute_main_sample_is_concrete_core',
         store=True,
         help='يحدد ما إذا كان النموذج الرئيسي في المهمة هو كور خرساني'
+    )
+
+    main_sample_is_asphalt_mix = fields.Boolean(
+        string='العينة الرئيسية خلطة إسفلتية',
+        compute='_compute_main_sample_is_asphalt_mix',
+        store=True,
+        help='يحدد ما إذا كان النموذج الرئيسي في المهمة هو خلطة إسفلتية'
     )
 
     @api.depends('form_line_ids.product_id.product_tmpl_id.sample_type_id')
@@ -437,6 +444,18 @@ class ProjectTask(models.Model):
                 )
             else:
                 task.main_sample_is_concrete_core = False
+
+    @api.depends('form_line_ids.product_id.product_tmpl_id.sample_type_id')
+    def _compute_main_sample_is_asphalt_mix(self):
+        """تحديد ما إذا كانت العينة الرئيسية خلطة إسفلتية"""
+        for task in self:
+            asphalt_mix_type = self.env.ref('appointment_products.asphalt_mix_sample_type', raise_if_not_found=False)
+            if asphalt_mix_type and task.form_line_ids:
+                task.main_sample_is_asphalt_mix = any(
+                    line.sample_type_id == asphalt_mix_type for line in task.form_line_ids
+                )
+            else:
+                task.main_sample_is_asphalt_mix = False
 
     @api.model
     def _default_form_lines(self):

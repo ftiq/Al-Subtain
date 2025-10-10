@@ -39,3 +39,4 @@ from . import product_subtype_test_plan_wizard
 from . import project_task_schmidt
 from . import project_task_plr
 from . import agg_quality
+from . import asphalt_grad

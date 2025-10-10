@@ -369,7 +369,6 @@
       <field name="depends_on_criteria_ids" eval="[(6,0,[ref('appointment_products.crit_cbr_wet_density'), ref('appointment_products.crit_cbr_moisture_content')])]"/>
     </record>
 
-    <!-- Summaries 
     <record id="crit_cbr_best_cbr_summary" model="lab.test.criterion">
       <field name="template_id" ref="appointment_products.template_cbr_d1883"/>
       <field name="name">أعلى قيمة CBR% عبر العينات</field>
@@ -381,7 +380,7 @@
       <field name="is_summary_field">True</field>
       <field name="computation_formula">result = max_series('CBR_MAX_PERCENT')</field>
     </record>
-    -->
+
 
     <record id="crit_cbr_mdd_95_summary" model="lab.test.criterion">
       <field name="template_id" ref="appointment_products.template_cbr_d1883"/>

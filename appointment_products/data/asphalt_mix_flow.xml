@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="0">
+
+    <!-- Flow: Asphalt Mix Acceptance (minimal: Gradation only for now) -->
+    <record id="asphalt_mix_flow_template" model="lab.test.flow.template">
+      <field name="name">خطة فحص الخلطة الإسفلتية</field>
+      <field name="description">تدرج (T164+T30) كبداية؛ يمكن لاحقاً إضافة Gmm/Gmb/AV/Marshall/ITS</field>
+      <field name="allow_parallel_tests" eval="True"/>
+    </record>
+
+    <record id="asphalt_mix_flow_stage_grad" model="lab.test.flow.template.line">
+      <field name="template_id" ref="asphalt_mix_flow_template"/>
+      <field name="sequence">10</field>
+      <field name="test_template_id" ref="appointment_products.template_asphalt_gradation"/>
+      <field name="sample_qty">1</field>
+    </record>
+
+    <!-- Add Marshall stage -->
+    <record id="asphalt_mix_flow_stage_marshall" model="lab.test.flow.template.line">
+      <field name="template_id" ref="asphalt_mix_flow_template"/>
+      <field name="sequence">20</field>
+      <field name="test_template_id" ref="appointment_products.template_asphalt_marshall"/>
+      <field name="sample_qty">1</field>
+    </record>
+
+    <!-- Add Density/Voids stage -->
+    <record id="asphalt_mix_flow_stage_density_voids" model="lab.test.flow.template.line">
+      <field name="template_id" ref="asphalt_mix_flow_template"/>
+      <field name="sequence">30</field>
+      <field name="test_template_id" ref="appointment_products.template_asphalt_density_voids"/>
+      <field name="sample_qty">1</field>
+    </record>
+
+    <!-- Add ITS/TSR stage -->
+    <record id="asphalt_mix_flow_stage_its_tsr" model="lab.test.flow.template.line">
+      <field name="template_id" ref="asphalt_mix_flow_template"/>
+      <field name="sequence">40</field>
+      <field name="test_template_id" ref="appointment_products.template_asphalt_its_tsr"/>
+      <field name="sample_qty">1</field>
+    </record>
+
+    <!-- Sample products for each layer (use same flow) -->
+    <record id="product_asphalt_binder_sample" model="product.template">
+      <field name="name">العينة - خلطة إسفلتية </field>
+      <field name="type">consu</field>
+      <field name="is_sample_product" eval="True"/>
+      <field name="tracking">serial</field>
+      <field name="sample_type_id" ref="appointment_products.asphalt_mix_sample_type"/>
+      <field name="test_flow_template_id" ref="asphalt_mix_flow_template"/>
+      <field name="categ_id" ref="product.product_category_all"/>
+    </record>
+
+
+  </data>
+</odoo>

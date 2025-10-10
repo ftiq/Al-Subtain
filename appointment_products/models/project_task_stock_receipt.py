@@ -364,12 +364,6 @@ class ProjectTaskStockReceipt(models.Model):
         مع تعيين group_no فريداً، دون التأثير على الأنواع الأخرى."""
         for task in self.filtered(lambda t: t.stock_receipt_id):
             picking = task.stock_receipt_id
-            total_groups = 0
-            try:
-                total_groups = int(task.total_samples_count or 0)
-            except Exception:
-                total_groups = 0
-            total_groups = max(1, total_groups)
 
             for form_line in task.form_line_ids:
                 product = form_line.product_id
@@ -388,6 +382,14 @@ class ProjectTaskStockReceipt(models.Model):
                 existing_lines = move.move_line_ids
                 used_groups = set([ln.group_no for ln in existing_lines if ln.group_no])
 
+                # Determine required groups from the form line quantity (expected units),
+                # not from total_samples_count, to avoid creating an excessive number
+                # of groups when samples_per_unit is not configured (defaults to 50000).
+                try:
+                    required_groups = int(form_line.quantity or 1)
+                except Exception:
+                    required_groups = 1
+                required_groups = max(1, required_groups)
 
                 next_no = 1
                 for ln in existing_lines:
@@ -398,14 +400,12 @@ class ProjectTaskStockReceipt(models.Model):
                         used_groups.add(next_no)
                         next_no += 1
 
-
-                for g in range(1, total_groups + 1):
+                for g in range(1, required_groups + 1):
                     if g in used_groups:
                         continue
                     vals = {
                         'move_id': move.id,
                         'picking_id': picking.id,
-                        'product_id': move.product_id.id,
                         'product_uom_id': move.product_uom.id if move.product_uom else (move.product_id.uom_id.id if move.product_id and move.product_id.uom_id else self.env.ref('uom.product_uom_unit').id),
                         'location_id': move.location_id.id,
                         'location_dest_id': move.location_dest_id.id,

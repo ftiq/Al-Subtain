@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="0">
+
+    <!-- Sample type and subtypes for Asphalt Mix -->
+    <record id="asphalt_mix_sample_type" model="lab.sample.type">
+      <field name="name">خلطة إسفلتية</field>
+      <field name="code">ASPHALT_MIX</field>
+      <field name="description">فحوصات الخلطة الإسفلتية: استخلاص + تدرج</field>
+      <field name="sequence">70</field>
+      <field name="active">True</field>
+    </record>
+
+    <record id="asphalt_mix_subtype_binder" model="lab.sample.subtype">
+      <field name="name">طبقة رابطة</field>
+      <field name="code">BINDER</field>
+      <field name="sample_type_id" ref="asphalt_mix_sample_type"/>
+      <field name="sequence">10</field>
+    </record>
+
+    <record id="asphalt_mix_subtype_surface" model="lab.sample.subtype">
+      <field name="name">طبقة سطحية</field>
+      <field name="code">SURFACE</field>
+      <field name="sample_type_id" ref="asphalt_mix_sample_type"/>
+      <field name="sequence">20</field>
+    </record>
+
+    <record id="asphalt_mix_subtype_base" model="lab.sample.subtype">
+      <field name="name">طبقة أساس</field>
+      <field name="code">BASE</field>
+      <field name="sample_type_id" ref="asphalt_mix_sample_type"/>
+      <field name="sequence">30</field>
+    </record>
+
+    <!-- Asphalt mix gradation + extraction template (AASHTO T164 + T30) -->
+    <record id="template_asphalt_gradation" model="lab.test.template">
+      <field name="name">تدرج الخلطة الإسفلتية (T164+T30)</field>
+      <field name="code">ASPHALT_GRADATION_T30_T164</field>
+      <field name="description">استخلاص القير ثم تدرج الركام المستخرج؛ حساب %المحتجز و%المار وفق القواعد القياسية.</field>
+      <field name="standard_code">AASHTO T164, AASHTO T30</field>
+      <field name="industry_type">asphalt</field>
+      <field name="state">active</field>
+      <field name="sequence">10</field>
+      <field name="applicable_sample_type_ids" eval="[(6,0,[ref('appointment_products.asphalt_mix_sample_type')])]"/>
+    </record>
+
+    <!-- Global inputs -->
+    <record id="crit_am_orig_wt_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">وزن العينة الأصلية (غم)</field>
+      <field name="code">ORIG_WT_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">5</field>
+      <field name="is_required">True</field>
+      <field name="is_global">True</field>
+    </record>
+
+    <record id="crit_am_washed_wt_gm" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">وزن الركام بعد الغسل (غم) جاف</field>
+      <field name="code">WASHED_WT_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">6</field>
+      <field name="is_required">True</field>
+      <field name="is_global">True</field>
+    </record>
+
+    <!-- Optional filter fines capture -->
+    <record id="crit_am_filter_before" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">وزن الفلتر قبل الغسل (غم)</field>
+      <field name="code">FILTER_BEFORE_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">7</field>
+      <field name="is_required">False</field>
+      <field name="is_global">True</field>
+    </record>
+
+    <record id="crit_am_filter_after" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">وزن الفلتر بعد الغسل والتجفيف (غم)</field>
+      <field name="code">FILTER_AFTER_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">8</field>
+      <field name="is_required">False</field>
+      <field name="is_global">True</field>
+    </record>
+
+    <record id="crit_am_fines_on_filter" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">الغبار العالق بالفلتر (غم)</field>
+      <field name="code">FINES_ON_FILTER_GM</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">9</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_input_field">False</field>
+      <field name="computation_formula">result = (FILTER_AFTER_GM - FILTER_BEFORE_GM) if (FILTER_AFTER_GM and FILTER_BEFORE_GM) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_filter_before'), ref('crit_am_filter_after')])]"/>
+      <field name="is_global">True</field>
+    </record>
+
+    <!-- AC% helpers (optional for now) -->
+    <record id="crit_am_ac_simple" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">نسبة القير % (بسيطة)</field>
+      <field name="code">AC_PERCENT_SIMPLE</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">12</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = ((ORIG_WT_GM - WASHED_WT_GM) / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_orig_wt_gm'), ref('crit_am_washed_wt_gm')])]"/>
+      <field name="is_global">True</field>
+    </record>
+
+    <record id="crit_am_ac_with_filter" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">نسبة القير % (مطروح غبار الفلتر)</field>
+      <field name="code">AC_PERCENT_FILTERED</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">13</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = ((ORIG_WT_GM - (WASHED_WT_GM + (FINES_ON_FILTER_GM or 0))) / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_orig_wt_gm'), ref('crit_am_washed_wt_gm'), ref('crit_am_fines_on_filter')])]"/>
+      <field name="is_global">True</field>
+    </record>
+
+    <!-- Coarse sieves (≥ 4.75 mm) use ORIG_WT_GM -->
+    <!-- 37.5, 25, 19, 12.5, 9.5, 4.75 -->
+    <!-- Helper macro pattern repeated succinctly -->
+    <record id="crit_am_ret_37_5_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained Wt (gm) - 37.5 mm</field><field name="code">RET_37_5MM_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">20</field></record>
+    <record id="crit_am_ret_37_5_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained % - 37.5 mm</field><field name="code">RET_37_5MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">21</field><field name="is_computed_field">True</field><field name="computation_formula">result = (RET_37_5MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_37_5_gm'), ref('crit_am_orig_wt_gm')])]"/></record>
+    <record id="crit_am_pass_37_5_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Passing % - 37.5 mm</field><field name="code">PASS_37_5MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">22</field><field name="is_computed_field">True</field><field name="computation_formula">result = 100 - (RET_37_5MM_PCT or 0)</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_37_5_pct')])]"/></record>
+
+    <record id="crit_am_ret_25_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained Wt (gm) - 25 mm</field><field name="code">RET_25MM_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">30</field></record>
+    <record id="crit_am_ret_25_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained % - 25 mm</field><field name="code">RET_25MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">31</field><field name="is_computed_field">True</field><field name="computation_formula">result = (RET_25MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_25_gm'), ref('crit_am_orig_wt_gm')])]"/></record>
+    <record id="crit_am_pass_25_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Passing % - 25 mm</field><field name="code">PASS_25MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">32</field><field name="is_computed_field">True</field><field name="computation_formula">result = 100 - (RET_25MM_PCT or 0)</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_25_pct')])]"/></record>
+
+    <record id="crit_am_ret_19_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained Wt (gm) - 19 mm</field><field name="code">RET_19MM_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">40</field></record>
+    <record id="crit_am_ret_19_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained % - 19 mm</field><field name="code">RET_19MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">41</field><field name="is_computed_field">True</field><field name="computation_formula">result = (RET_19MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_19_gm'), ref('crit_am_orig_wt_gm')])]"/></record>
+    <record id="crit_am_pass_19_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Passing % - 19 mm</field><field name="code">PASS_19MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">42</field><field name="is_computed_field">True</field><field name="computation_formula">result = 100 - (RET_19MM_PCT or 0)</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_19_pct')])]"/></record>
+
+    <record id="crit_am_ret_12_5_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained Wt (gm) - 12.5 mm</field><field name="code">RET_12_5MM_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">50</field></record>
+    <record id="crit_am_ret_12_5_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained % - 12.5 mm</field><field name="code">RET_12_5MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">51</field><field name="is_computed_field">True</field><field name="computation_formula">result = (RET_12_5MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_12_5_gm'), ref('crit_am_orig_wt_gm')])]"/></record>
+    <record id="crit_am_pass_12_5_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Passing % - 12.5 mm</field><field name="code">PASS_12_5MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">52</field><field name="is_computed_field">True</field><field name="computation_formula">result = 100 - (RET_12_5MM_PCT or 0)</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_12_5_pct')])]"/></record>
+
+    <record id="crit_am_ret_9_5_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained Wt (gm) - 9.5 mm</field><field name="code">RET_9_5MM_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">60</field></record>
+    <record id="crit_am_ret_9_5_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained % - 9.5 mm</field><field name="code">RET_9_5MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">61</field><field name="is_computed_field">True</field><field name="computation_formula">result = (RET_9_5MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_9_5_gm'), ref('crit_am_orig_wt_gm')])]"/></record>
+    <record id="crit_am_pass_9_5_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Passing % - 9.5 mm</field><field name="code">PASS_9_5MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">62</field><field name="is_computed_field">True</field><field name="computation_formula">result = 100 - (RET_9_5MM_PCT or 0)</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_9_5_pct')])]"/></record>
+
+    <record id="crit_am_ret_4_75_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained Wt (gm) - 4.75 mm</field><field name="code">RET_4_75MM_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">70</field></record>
+    <record id="crit_am_ret_4_75_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained % - 4.75 mm</field><field name="code">RET_4_75MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">71</field><field name="is_computed_field">True</field><field name="computation_formula">result = (RET_4_75MM_GM / ORIG_WT_GM * 100) if ORIG_WT_GM else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_4_75_gm'), ref('crit_am_orig_wt_gm')])]"/></record>
+    <record id="crit_am_pass_4_75_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Passing % - 4.75 mm</field><field name="code">PASS_4_75MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">72</field><field name="is_computed_field">True</field><field name="computation_formula">result = 100 - (RET_4_75MM_PCT or 0)</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_4_75_pct')])]"/></record>
+
+    <!-- Fine sieves (< 4.75 mm) use WASHED_WT_GM and scale by PASS_4_75 -->
+    <record id="crit_am_ret_2_36_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained Wt (gm) - 2.36 mm</field><field name="code">RET_2_36MM_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">80</field></record>
+    <record id="crit_am_ret_2_36_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained % - 2.36 mm</field><field name="code">RET_2_36MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">81</field><field name="is_computed_field">True</field><field name="computation_formula">result = (RET_2_36MM_GM / WASHED_WT_GM * 100) if WASHED_WT_GM else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_2_36_gm'), ref('crit_am_washed_wt_gm')])]"/></record>
+    <record id="crit_am_pass_2_36_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Passing % - 2.36 mm</field><field name="code">PASS_2_36MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">82</field><field name="is_computed_field">True</field><field name="computation_formula">result = (100 - (RET_2_36MM_PCT or 0)) * ((PASS_4_75MM_PCT or 0) / 100.0)</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_2_36_pct'), ref('crit_am_pass_4_75_pct')])]"/></record>
+
+    <record id="crit_am_ret_0_3_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained Wt (gm) - 0.3 mm</field><field name="code">RET_0_3MM_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">90</field></record>
+    <record id="crit_am_ret_0_3_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained % - 0.3 mm</field><field name="code">RET_0_3MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">91</field><field name="is_computed_field">True</field><field name="computation_formula">result = (RET_0_3MM_GM / WASHED_WT_GM * 100) if WASHED_WT_GM else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_0_3_gm'), ref('crit_am_washed_wt_gm')])]"/></record>
+    <record id="crit_am_pass_0_3_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Passing % - 0.3 mm</field><field name="code">PASS_0_3MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">92</field><field name="is_computed_field">True</field><field name="computation_formula">result = (100 - (RET_0_3MM_PCT or 0)) * ((PASS_4_75MM_PCT or 0) / 100.0)</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_0_3_pct'), ref('crit_am_pass_4_75_pct')])]"/></record>
+
+    <record id="crit_am_ret_0_075_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained Wt (gm) - 0.075 mm</field><field name="code">RET_0_075MM_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">100</field></record>
+    <record id="crit_am_ret_0_075_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Retained % - 0.075 mm</field><field name="code">RET_0_075MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">101</field><field name="is_computed_field">True</field><field name="computation_formula">result = (RET_0_075MM_GM / WASHED_WT_GM * 100) if WASHED_WT_GM else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_0_075_gm'), ref('crit_am_washed_wt_gm')])]"/></record>
+    <record id="crit_am_pass_0_075_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_gradation"/><field name="name">Passing % - 0.075 mm</field><field name="code">PASS_0_075MM_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">102</field><field name="is_computed_field">True</field><field name="computation_formula">result = (100 - (RET_0_075MM_PCT or 0)) * ((PASS_4_75MM_PCT or 0) / 100.0)</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_ret_0_075_pct'), ref('crit_am_pass_4_75_pct')])]"/></record>
+
+    <!-- =================================== MARSHALL STABILITY & FLOW =================================== -->
+    <record id="template_asphalt_marshall" model="lab.test.template">
+      <field name="name">مارشال - الثبات والزحف</field>
+      <field name="code">ASPHALT_MARSHALL</field>
+      <field name="description">ثبات مارشال وزحف مارشال مع تصحيح السمك</field>
+      <field name="standard_code">ASTM D6927 (Marshall)</field>
+      <field name="industry_type">asphalt</field>
+      <field name="state">active</field>
+      <field name="sequence">20</field>
+      <field name="applicable_sample_type_ids" eval="[(6,0,[ref('appointment_products.asphalt_mix_sample_type')])]"/>
+    </record>
+
+    <!-- Per-sample inputs -->
+    <record id="crit_mar_thk_mm" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">سُمك العينة (مم)</field>
+      <field name="code">MAR_THK_MM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="uom.product_uom_millimeter"/>
+      <field name="sequence">10</field>
+    </record>
+    <record id="crit_mar_stab_kn" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">ثبات مارشال (kN)</field>
+      <field name="code">MAR_STAB_KN</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">20</field>
+    </record>
+    <record id="crit_mar_flow_mm" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">زحف مارشال (مم)</field>
+      <field name="code">MAR_FLOW_MM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="uom.product_uom_millimeter"/>
+      <field name="min_value">2</field>
+      <field name="max_value">4</field>
+      <field name="sequence">30</field>
+    </record>
+    <!-- Corrected stability per sample -->
+    <record id="crit_mar_stab_corr_kn" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">ثبات مُصحح (kN)</field>
+      <field name="code">MAR_STAB_CORR_KN</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="min_value">6.5</field>
+      <field name="sequence">40</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (MAR_STAB_KN or 0) * marshall_correction_factor(MAR_THK_MM or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_mar_stab_kn'), ref('crit_mar_thk_mm')])]"/>
+    </record>
+    <!-- Summaries -->
+    <record id="crit_mar_stab_avg_kn" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">معدل الثبات المُصحح (kN)</field>
+      <field name="code">MAR_STAB_AVG_KN</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_kilonewton_ap"/>
+      <field name="sequence">50</field>
+      <field name="is_summary_field">True</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = avg_series('MAR_STAB_CORR_KN')</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_mar_stab_corr_kn')])]"/>
+    </record>
+    <record id="crit_mar_flow_avg_mm" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">معدل الزحف (مم)</field>
+      <field name="code">MAR_FLOW_AVG_MM</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="uom.product_uom_millimeter"/>
+      <field name="sequence">60</field>
+      <field name="is_summary_field">True</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = avg_series('MAR_FLOW_MM')</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_mar_flow_mm')])]"/>
+    </record>
+
+    <!-- =================================== DENSITY / VOIDS (Gmb, Gmm, AV) =================================== -->
+    <record id="template_asphalt_density_voids" model="lab.test.template">
+      <field name="name">كثافة مارشال والفراغات (Gmb/Gmm/AV)</field>
+      <field name="code">ASPHALT_DENSITY_VOIDS</field>
+      <field name="description">حساب Gmb لكل نموذج مع Gmm (مدخل عام) والفراغات الهوائية AV%</field>
+      <field name="standard_code">ASTM D6926, T166/T275, T209</field>
+      <field name="industry_type">asphalt</field>
+      <field name="state">active</field>
+      <field name="sequence">30</field>
+      <field name="applicable_sample_type_ids" eval="[(6,0,[ref('appointment_products.asphalt_mix_sample_type')])]"/>
+    </record>
+
+    <!-- Global Gmm input -->
+    <record id="crit_gmm_value" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_density_voids"/>
+      <field name="name">Gmm (الكثافة النظرية القصوى)</field>
+      <field name="code">GMM_VALUE</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">5</field>
+      <field name="is_global">True</field>
+    </record>
+
+    <!-- Per-sample inputs for Gmb -->
+    <record id="crit_dry_wt_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_density_voids"/><field name="name">الوزن الجاف (غم)</field><field name="code">DRY_WT_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">10</field></record>
+    <record id="crit_immersed_wt_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_density_voids"/><field name="name">الوزن المغمور (غم)</field><field name="code">IMMERSED_WT_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">11</field></record>
+    <record id="crit_ssd_wt_gm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_density_voids"/><field name="name">وزن مشبع جاف السطح (غم)</field><field name="code">SSD_WT_GM</field><field name="test_type">numeric</field><field name="uom_id" ref="appointment_products.uom_gram_ap"/><field name="sequence">12</field></record>
+
+    <!-- Per-sample Gmb and AV -->
+    <record id="crit_gmb_value" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_density_voids"/>
+      <field name="name">Gmb (الكثافة الحجمية)</field>
+      <field name="code">GMB_VALUE</field>
+      <field name="test_type">computed</field>
+      <field name="sequence">20</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (DRY_WT_GM) / ((SSD_WT_GM) - (IMMERSED_WT_GM)) if (SSD_WT_GM and IMMERSED_WT_GM) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_dry_wt_gm'), ref('crit_ssd_wt_gm'), ref('crit_immersed_wt_gm')])]"/>
+    </record>
+    <record id="crit_av_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_density_voids"/>
+      <field name="name">نسبة الفراغات الهوائية AV %</field>
+      <field name="code">AV_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="min_value">3</field>
+      <field name="max_value">5</field>
+      <field name="sequence">30</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = (1 - (GMB_VALUE or 0) / (GMM_VALUE or 0)) * 100 if GMM_VALUE else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_gmb_value'), ref('crit_gmm_value')])]"/>
+    </record>
+    <!-- Summaries -->
+    <record id="crit_gmb_avg" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_density_voids"/><field name="name">Gmb (معدل)</field><field name="code">GMB_AVG</field><field name="test_type">computed</field><field name="sequence">40</field><field name="is_summary_field">True</field><field name="is_computed_field">True</field><field name="computation_formula">result = avg_series('GMB_VALUE')</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_gmb_value')])]"/></record>
+    <record id="crit_av_avg_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_density_voids"/><field name="name">AV % (معدل)</field><field name="code">AV_AVG_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="sequence">50</field><field name="is_summary_field">True</field><field name="is_computed_field">True</field><field name="computation_formula">result = avg_series('AV_PCT')</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_av_pct')])]"/></record>
+
+    <!-- =================================== INDIRECT TENSILE (ITS) + TSR =================================== -->
+    <record id="template_asphalt_its_tsr" model="lab.test.template">
+      <field name="name">الشد غير المباشر ITS ونسبة القوة المتبقية TSR</field>
+      <field name="code">ASPHALT_ITS_TSR</field>
+      <field name="description">حساب ITS جاف/رطب ونسبة القوة المتبقية TSR%</field>
+      <field name="standard_code">ASTM D6931, AASHTO T283</field>
+      <field name="industry_type">asphalt</field>
+      <field name="state">active</field>
+      <field name="sequence">40</field>
+      <field name="applicable_sample_type_ids" eval="[(6,0,[ref('appointment_products.asphalt_mix_sample_type')])]"/>
+    </record>
+    <record id="crit_its_dry_n" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_its_tsr"/><field name="name">الحمل الجاف (N)</field><field name="code">ITS_DRY_N</field><field name="test_type">numeric</field><field name="sequence">10</field></record>
+    <record id="crit_its_wet_n" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_its_tsr"/><field name="name">الحمل الرطب (N)</field><field name="code">ITS_WET_N</field><field name="test_type">numeric</field><field name="sequence">11</field></record>
+    <record id="crit_its_d_mm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_its_tsr"/><field name="name">القطر D (مم)</field><field name="code">ITS_D_MM</field><field name="test_type">numeric</field><field name="uom_id" ref="uom.product_uom_millimeter"/><field name="sequence">12</field></record>
+    <record id="crit_its_t_mm" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_its_tsr"/><field name="name">السمك T (مم)</field><field name="code">ITS_T_MM</field><field name="test_type">numeric</field><field name="uom_id" ref="uom.product_uom_millimeter"/><field name="sequence">13</field></record>
+    <record id="crit_its_dry_mpa" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_its_tsr"/><field name="name">ITS جاف (MPa)</field><field name="code">ITS_DRY_MPA</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_mpa_ap"/><field name="sequence">20</field><field name="is_computed_field">True</field><field name="computation_formula">result = (2 * (ITS_DRY_N or 0)) / (pi * (ITS_D_MM or 0) * (ITS_T_MM or 0)) if (ITS_D_MM and ITS_T_MM) else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_its_dry_n'), ref('crit_its_d_mm'), ref('crit_its_t_mm')])]"/></record>
+    <record id="crit_its_wet_mpa" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_its_tsr"/><field name="name">ITS رطب (MPa)</field><field name="code">ITS_WET_MPA</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_mpa_ap"/><field name="sequence">21</field><field name="is_computed_field">True</field><field name="computation_formula">result = (2 * (ITS_WET_N or 0)) / (pi * (ITS_D_MM or 0) * (ITS_T_MM or 0)) if (ITS_D_MM and ITS_T_MM) else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_its_wet_n'), ref('crit_its_d_mm'), ref('crit_its_t_mm')])]"/></record>
+    <record id="crit_tsr_pct" model="lab.test.criterion"><field name="template_id" ref="template_asphalt_its_tsr"/><field name="name">TSR % (القوة المتبقية)</field><field name="code">TSR_PCT</field><field name="test_type">computed</field><field name="uom_id" ref="appointment_products.uom_percent_ap"/><field name="min_value">70</field><field name="sequence">30</field><field name="is_computed_field">True</field><field name="is_summary_field">True</field><field name="computation_formula">result = ((ITS_WET_MPA or 0) / (ITS_DRY_MPA or 0)) * 100 if ITS_DRY_MPA else 0</field><field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_its_dry_mpa'), ref('crit_its_wet_mpa')])]"/></record>
+
+
+  </data>
+</odoo>

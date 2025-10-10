@@ -410,6 +410,46 @@ class LabComputationEngine(models.TransientModel):
                 _logger.info(f"نوع قير غير مدعوم: {sample_type} - فشل")
                 return -1  
         
+        def marshall_correction_factor(thickness_mm):
+            """إرجاع عامل تصحيح ثبات مارشال بحسب السمك (مم) مع استيفاء خطي.
+            يعتمد على جدول عوامل التصحيح القياسية:
+            25.4→5.56, 27→5, 28.6→4.55, 30.2→4.17, 31.8→3.85, 33.3→3.57, 34.9→3.33,
+            36.5→3.03, 38.1→2.78, 39.7→2.5, 41.3→2.27, 42.9→2.08, 44.4→1.92, 46→1.79,
+            47.6→1.67, 49.2→1.56, 50.8→1.47, 52.4→1.39, 54→1.32, 55.6→1.25,
+            57.2→1.19, 58.7→1.19, 58.7→1.14, 60.3→1.09, 61.9→1.04, 63.5→1.0,
+            65.1→0.96, 66.7→0.93, 68.3→0.89, 69.9→0.86, 71.4→0.83, 73.0→0.81,
+            74.6→0.78, 76.2→0.76
+            """
+            try:
+                x = float(thickness_mm or 0)
+            except Exception:
+                return 1.0
+            # نقاط الجدول (مم, عامل تصحيح)
+            table = [
+                (25.4, 5.56), (27.0, 5.00), (28.6, 4.55), (30.2, 4.17), (31.8, 3.85),
+                (33.3, 3.57), (34.9, 3.33), (36.5, 3.03), (38.1, 2.78), (39.7, 2.50),
+                (41.3, 2.27), (42.9, 2.08), (44.4, 1.92), (46.0, 1.79), (47.6, 1.67),
+                (49.2, 1.56), (50.8, 1.47), (52.4, 1.39), (54.0, 1.32), (55.6, 1.25),
+                (57.2, 1.19), (58.7, 1.14), (60.3, 1.09), (61.9, 1.04), (63.5, 1.00),
+                (65.1, 0.96), (66.7, 0.93), (68.3, 0.89), (69.9, 0.86), (71.4, 0.83),
+                (73.0, 0.81), (74.6, 0.78), (76.2, 0.76),
+            ]
+            # خارج المجال: قيد على الحدود
+            if x <= table[0][0]:
+                return table[0][1]
+            if x >= table[-1][0]:
+                return table[-1][1]
+            # استيفاء خطي بين نقطتين متتاليتين
+            for i in range(1, len(table)):
+                x0, y0 = table[i-1]
+                x1, y1 = table[i]
+                if x0 <= x <= x1:
+                    if x1 == x0:
+                        return y0
+                    t = (x - x0) / (x1 - x0)
+                    return y0 + t * (y1 - y0)
+            return 1.0
+        
         def get_agg_selected_class():
             """قراءة الفئة المحددة (A/B/C/D) من فحص Proctor أو Aggregate Quality في نفس العينة
             Returns:
@@ -984,6 +1024,7 @@ class LabComputationEngine(models.TransientModel):
             'get_sample_type_code': get_sample_type_code,
             'validate_softening_readings': validate_softening_readings,
             'evaluate_softening_level': evaluate_softening_level,
+            'marshall_correction_factor': marshall_correction_factor,
             
             'pi': math.pi,
             'e': math.e,

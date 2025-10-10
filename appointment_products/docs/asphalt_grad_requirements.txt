@@ -1,0 +1,141 @@
+ملف متطلبات استكمال فحص الخلطة الإسفلتية (Binder/Surface/Base)
+
+القسم 1) نطاق الفحص ومكوناته
+- [الهدف] تنفيذ فحص قبول خلطة إسفلتية بطبقاتها (أساس، رابطة، سطحية) وفق إجراءات الاستخلاص والتدرج ونسبة الفراغات وثبات مارشال و/أو الشد غير المباشر.
+- [المعايير المرجعية]
+  - AASHTO T164 (استخلاص القير) أو بديله D2172/D2172M.
+  - AASHTO T30 (تدرج الركام المستخرج بعد الغسل).
+  - AASHTO T166 (Gmb الكثافة الحجمية للعينة المضغوطة – SSD).
+  - AASHTO T209 (Gmm الكثافة العظمى النظرية بالفراغات صفر).
+  - ASTM D6927 (Marshall Stability & Flow) – إن لزم.
+  - ASTM D6931 (Indirect Tensile Strength – ITS) – إن لزم.
+- [المخرجات المطلوبة]
+  - نسبة %مار لكل منخل بحسب مواصفة الطبقة المختارة + حدود معادلة قابلة للتعديل.
+  - نسبة محتوى القير %AC من الاستخلاص.
+  - Gmb، Gmm، AV% لكل نموذج ومتوسطاتها.
+  - نتائج مارشال (الثبات KN، الزحف mm) ومتوسطاتها، وحدود المطابقة.
+  - نتائج الشد غير المباشر ITS (جاف/مبلل) والمتوسط/الـTSR إن طلب.
+  - تقرير نهائي بنفس شكل الجداول في صور العميل.
+
+القسم 2) ما تم إنجازه في النظام حتى الآن (Ready)
+- [نموذج الحدود الخاصة بالتدرج]
+  - إنشاء الموديل: models/asphalt_grad.py → الكلاس `lab.asphalt.grad.range` لتخزين:
+    - spec_min/max (ثابتة كمواصفة)
+    - formula_min/max (قابلة للتعديل)
+    - effective_min/max (تساوي formula_*) للحساب
+    - actual_passing (% المار) تُسحب أوتوماتيكياً من خطوط النتائج PASS_%
+    - أعلام spec_ok, formula_ok, both_ok
+  - تعريف القواميس:
+    - `SIEVE_CODE_TO_LABEL_ASPHALT` و`ASPHALT_SIEVE_ORDER`
+    - `SIEVE_CODE_TO_PASS_CRIT_ASPHALT` لربط المنخل بحقل PASS_%
+    - حدود افتراضية للطبقة: DEFAULT_SPEC_LIMITS/DEFAULT_FORMULA_LIMITS
+    - دالة `_get_layer_key_from_sample()` لاختيار الطبقة من `sample.sample_subtype_id`
+    - دالة `build_default_asphalt_grad_lines()` لتوليد صفوف الحدود حسب الطبقة.
+- [دمج مع مجموعة النتائج]
+  - models/lab_result_set.py:
+    - فلاغ `is_asphalt_grad_test` مبني على كود القالب `ASPHALT_GRADATION_T30_T164`.
+    - توليد حدود افتراضية تلقائياً عند إنشاء المجموعة: استدعاء `build_default_asphalt_grad_lines()`.
+    - إظهار صفحة “تدرج الخلطة الإسفلتية” في `views/lab_result_set_views.xml` مع جدول قابل للتعديل للحدود.
+    - دالة تقييم `_asphalt_grad_eval_status()` تعيد pass/fail/pending بحسب اكتمال المدخلات وكون القيم ضمن المواصفة AND ضمن المعادلة لكل المناخل.
+  - صلاحيات الوصول: أضيفت في security/ir.model.access.csv (`lab.asphalt.grad.range`).
+- [تحسينات عامة ذات صلة]
+  - معالجة “Pending” قبل تعبئة PASS_% في جودة الركام.
+  - معالجة عرض شارات المطابقة للمعايير المحسوبة بعد نجاح الفحص لتقليل الضوضاء البصرية.
+
+القسم 3) ما تبقى لاستكمال البناء (To‑Do)
+A) ملفات البيانات (XML) – إنشاء قالب الفحص والتدفق والمنتجات
+1. data/asphalt_mix_test_templates.xml (جديد)
+   - تعريف lab.test.template للكود `ASPHALT_GRADATION_T30_T164`:
+     - معايير الإدخال والحساب اللازمة لاستخلاص + تدرج PASS_%:
+       - ORIG_WT_GM: وزن العينة قبل الغسل (مخلوط).
+       - WASHED_WT_GM: وزن الركام الجاف بعد الغسل.
+       - FILTER_BEFORE_GM, FILTER_AFTER_GM, FINES_ON_FILTER_GM (اختياري): لالتقاط الغبار العالق.
+       - RET_37_5MM_GM … RET_0_075MM_GM: أوزان المحتجز لكل منخل.
+       - RET_% والـ PASS_% بحسابات:
+         - للمناخل ≥ 4.75 mm: RET% = RET_x / ORIG_WT_GM ×100، PASS% = 100 − RET%.
+         - للمناخل < 4.75 mm: RET% = RET_x / WASHED_WT_GM ×100، ثم PASS_x = (100 − RET%_x) × (PASS_4_75 / 100).
+       - AC_PERCENT (اختياري الآن، أو في قالب مستقل):
+         - خيار 1: (ORIG_WT_GM − WASHED_WT_GM) / ORIG_WT_GM ×100.
+         - خيار 2: (ORIG_WT_GM − (WASHED_WT_GM + FINES_ON_FILTER_GM)) / ORIG_WT_GM ×100.
+         - إضافة اختيار إعداد لاحقاً لتحديد المعادلة المعتمدة.
+   - ربط هذا القالب بواجهة التدرج عبر الكود المذكور أعلاه.
+   - إضافة قوالب فرعية عند الحاجة:
+     - `ASPHALT_GMB_T166`: معايير Dry, SSD, Submerged, وحساب Gmb = Dry/(SSD−Submerged).
+     - `ASPHALT_GMM_T209`: إدخال كتل البيكنوميتر وحساب Gmm.
+     - `ASPHALT_AV`: AV% = (1 − Gmb/Gmm) × 100، لكل نموذج ومتوسط.
+     - `ASPHALT_MARSHALL_D6927`: ثبات KN، زحف mm، متوسطات، وحدود.
+     - `ASPHALT_ITS_D6931`: P, D, t → ITS = 2P/(π·t·D) بالكيلوﭬاسكال، جاف/مبلل (TSR اختياري).
+2. data/asphalt_mix_flow.xml (جديد)
+   - lab.test.flow.template “خطة فحص الخلطة الإسفلتية”
+     - تسلسل مقترح: تدرج (T164+T30) → Gmm (T209) → Gmb (T166) → AV → Marshall → ITS.
+     - sample_qty بحسب حاجتكم (مثلاً: 2–3).
+3. data/asphalt_mix_sample_types.xml (جديد)
+   - lab.sample.type: `ASPHALT_MIX` اسم “خلطة إسفلتية”.
+   - lab.sample.subtype: `BASE`, `BINDER`, `SURFACE`.
+   - product.template لكل طبقة يحدد sample_type/subtype و`test_flow_template_id`.
+   - ملاحظة: يعتمد اختيار الطبقة في الحساب على `sample.sample_subtype_id` (انظر models/asphalt_grad.py).
+
+B) الواجهات والتقارير
+4. views/lab_result_set_views.xml
+   - إضافة مخطط لعرض منحنى التدرج (مثل تبويب المخططات الحالي) إن رغبت:
+     - تعديل static/src/widgets/lab_charts.js لإضافة نوع `asphalt_grad` وسحب PASS_% من القالب الجديد.
+5. reports/asphalt_mix_standard_report.xml (جديد)
+   - تقرير مطابق لورقة العميل:
+     - جدول التدرج مع حدود المواصفة والمعادلة و%المار P1/P2 إن تطلب.
+     - جدول Gmm/Gmb/AV وحدود AV (مثال 3–5%).
+     - جدول مارشال (ثبات/زحف/المتوسط) وحدود.
+     - جدول ITS (جاف/مبلل) وTSR إن لزم.
+     - ترويسات/تواقيع مماثلة للتقارير الموجودة.
+
+C) منطق المطابقة والحدود
+6. models/asphalt_grad.py
+   - تعبئة حدود DEFAULT_SPEC_LIMITS وDEFAULT_FORMULA_LIMITS للطبقتين Surface وBase (حالياً 0) حسب مواصفتكم المحلية (R9 أو جداول معتمدة). حالياً: الطبقة Binder مملوءة.
+7. models/lab_result_set.py
+   - توسيع `_compute_overall_result` و`_compute_overall_conformity` لاعتبار نجاح/فشل باقي القوالب (Gmm/Gmb/AV/Marshall/ITS) إن أُدرجت ضمن التدفق بنفس نهج جودة الركام.
+   - حالياً `_asphalt_grad_eval_status()` يقيّم التدرج فقط.
+
+D) عوامل مساعدة واختياري
+8. Wizard استيراد CSV للاستخلاص (اختياري)
+   - معالج يستورد ملف مشابه لـ Asphalt Extractor*.csv ويملأ خطوط PASS_% وحقول الأوزان تلقائياً.
+9. إعدادات عامة
+   - res.config.settings:
+     - مفاتيح لتعيين معادلة AC% (خيار 1/2) وحدود AV وMarshall وITS حسب الطبقة.
+     - تمكين/تعطيل تقرير ITS/Marshall إن لم يكن مطلوباً.
+
+القسم 4) أين نحدد نوع الطبقة؟ (نفس فكرة الكور الخرساني)
+- يتم اختيار الطبقة عبر `lab.sample.sample_subtype_id` المرتبطة بمنتج العينة.
+- الدالة `_get_layer_key_from_sample()` في models/asphalt_grad.py تقرأ كود الـsubtype لإسقاط حدود الطبقة المناسبة (BASE/BINDER/SURFACE).
+- المطلوب إنشاء sample.type/subtype ومنتجات افتراضية تربط تلقائياً التدفق والقالب (راجع القسم A-3).
+
+القسم 5) ملاحظات ومعادلات أساسية
+- PASS% ≥ 4.75 mm: 100 − (RET_x / ORIG_WT_GM ×100).
+- PASS% < 4.75 mm: (100 − RET%_x) × (PASS_4_75 / 100).
+- Gmb = Dry / (SSD − Submerged).
+- AV% = (1 − Gmb/Gmm) × 100.
+- Marshall: تخزين KN وmm والمتوسطات، وتطبيق حدود بحسب الطبقة.
+- ITS (D6931): ITS = 2P / (π·t·D) بالكيلوﭬاسكال؛ يمكن إضافة TSR = ITS_wet / ITS_dry ×100.
+
+القسم 6) خطة التنفيذ المقترحة (Sprint‑wise)
+- Sprint 1: ملفات XML للقالب والتدفق والأنواع والمنتجات (A‑1..A‑3) + تعبئة حدود Surface/Base (C‑6).
+- Sprint 2: AV/Gmm/Gmb/Marshall/ITS كقوالب منفصلة أو ضمن القالب الأساسي + ربطها بالتدفق (A‑1, A‑2, C‑7).
+- Sprint 3: التقرير الموحد (B‑5) + الرسوم (B‑4).
+- Sprint 4: Wizard CSV + إعدادات عامة (D‑8, D‑9) إن لزم.
+
+القسم 7) تحقق وظيفي قبل التسليم
+- إنشاء عينة لكل طبقة (أساس/رابطة/سطحية) من منتجات الاختبار الجديدة.
+- تشغيل التدفق، إدخال الأوزان والقراءات.
+- التحقق من:
+  - ظهور %المار في جدول التدرج وحقول both_ok.
+  - حالة المجموعة pending → pass/fail بعد الإدخال.
+  - حساب Gmb/Gmm/AV% ومتوسطاتها.
+  - حساب مارشال/ITS وفق المدخلات.
+  - التقرير يطابق تنسيق العميل.
+
+القسم 8) ما يعتمد على قراركم قبل الإكمال
+- جداول حدود Surface وBase (SPEC وFORMULA) المعتمدة محلياً.
+- حدود AV%، وحدود مارشال (ثبات/زحف)، وحد ITS/TSR لكل طبقة.
+- اختيار معادلة AC% النهائية (مع/بدون طرح غبار الفلتر) وتفعيل تصحيح الرماد إن أردتم.
+
+ملخص الحالة
+- البنية الخلفية لجدول التدرج جاهزة ومتكاملة مع مجموعة النتائج والواجهة والصلاحيات.
+- المتبقي: قوالب البيانات والحسابات التفصيلية (استخلاص/تدرج/AV/Gmm/Gmb/Marshall/ITS)، أنواع/منتجات العينة، التقرير، وحدود الطبقات Surface/Base.

@@ -9,6 +9,10 @@ from odoo import tools
 
 _logger = logging.getLogger(__name__)
 from .agg_quality import build_default_range_lines, SIEVE_CODE_TO_PASS_CRIT
+from .asphalt_grad import (
+    build_default_asphalt_grad_lines,
+    SIEVE_CODE_TO_PASS_CRIT_ASPHALT,
+)
 
 
 class LabResultSet(models.Model):
@@ -61,6 +65,13 @@ class LabResultSet(models.Model):
         ondelete='cascade',
         tracking=True,
         index=True 
+    )
+    sample_subtype_id = fields.Many2one(
+        related='sample_id.sample_subtype_id',
+        string='النوع الفرعي',
+        store=True,
+        readonly=True,
+        help='النوع الفرعي للعينة (مثل: طبقة رابطة/سطحية/أساس)'
     )
     
     template_id = fields.Many2one(
@@ -145,7 +156,7 @@ class LabResultSet(models.Model):
         store=True,
         help='تشير إلى أن نوع العينة هو قابلية الاشتعال (IGNITABILITY)'
     )
-    # الكثافة الموقعية - مؤشر ونقل قيم الوزن/الحجم من العينة/المهمة
+
     is_field_density_sample = fields.Boolean(
         string='عينة كثافة موقعية',
         compute='_compute_is_field_density_sample',
@@ -179,6 +190,12 @@ class LabResultSet(models.Model):
     )
     is_ll_pl_test = fields.Boolean(
         string='حدود السيولة/اللدونة',
+        compute='_compute_test_type_flags',
+        store=True
+    )
+    # Asphalt mix gradation (T164+T30) visibility flag
+    is_asphalt_grad_test = fields.Boolean(
+        string='تدرج خلطة إسفلتية',
         compute='_compute_test_type_flags',
         store=True
     )
@@ -331,6 +348,7 @@ class LabResultSet(models.Model):
             record.is_proctor_test = (code == 'AGG_PROCTOR_D698')
             record.is_agg_sieve_test = (code == 'AGG_QUALITY_SIEVE')
             record.is_ll_pl_test = (code == 'LL_PL_D4318')
+            record.is_asphalt_grad_test = (code == 'ASPHALT_GRADATION_T30_T164')
 
     def _compute_empty_placeholder(self):
         for record in self:
@@ -452,6 +470,12 @@ class LabResultSet(models.Model):
         'lab.agg.quality.range',
         'result_set_id',
         string='حدود التدرج (R6/2003)'
+    )
+    # Asphalt mix gradation SPEC/FORMULA ranges (editable formula)
+    asphalt_grad_range_ids = fields.One2many(
+        'lab.asphalt.grad.range',
+        'result_set_id',
+        string='حدود تدرج الخلطة (SPEC/FORMULA)'
     )
     
     completed_criteria = fields.Integer(
@@ -1089,6 +1113,17 @@ class LabResultSet(models.Model):
             except Exception as e:
                 _logger.warning(f"Failed to copy agg_selected_class to CBR RS {result_set.id}: {e}")
 
+            # إنشاء حدود التدرج الافتراضية لفحص تدرج الخلطة الإسفلتية (SPEC/FORMULA)
+            try:
+                tmpl_code2 = (result_set.template_id.code or '').upper() if result_set.template_id else ''
+                if tmpl_code2 == 'ASPHALT_GRADATION_T30_T164' and not result_set.asphalt_grad_range_ids:
+                    default_lines2 = build_default_asphalt_grad_lines(result_set.sample_id)
+                    for line in default_lines2:
+                        line['result_set_id'] = result_set.id
+                    result_set.env['lab.asphalt.grad.range'].create(default_lines2)
+            except Exception as e:
+                _logger.warning(f"Failed to initialize default ASPHALT ranges for RS {result_set.id}: {e}")
+
         return result_sets
     
     @api.depends('result_line_ids', 'result_line_ids.is_filled', 'result_line_ids.value_numeric', 
@@ -1144,6 +1179,8 @@ class LabResultSet(models.Model):
         'is_ignitability_sample', 'ign_t1_flame_spread', 'ign_t2_flame_spread', 'ign_show_second_table',
         'template_id.code', 'agg_selected_class',
         'agg_quality_range_ids.effective_min', 'agg_quality_range_ids.effective_max',
+        'asphalt_grad_range_ids.effective_min', 'asphalt_grad_range_ids.effective_max',
+        'asphalt_grad_range_ids.spec_min', 'asphalt_grad_range_ids.spec_max',
         'result_line_ids.value_numeric', 'result_line_ids.criterion_id'
     )
     def _compute_overall_result(self):
@@ -1171,6 +1208,17 @@ class LabResultSet(models.Model):
                 tmpl_code = ''
             if tmpl_code == 'AGG_QUALITY_SIEVE':
                 status = result_set._agg_quality_eval_status()
+                if status == 'fail':
+                    result_set.overall_result = 'fail'
+                elif status == 'pass':
+                    result_set.overall_result = 'pass'
+                else:
+                    result_set.overall_result = 'pending'
+                continue
+
+            # منطق تدرج الخلطة الإسفلتية: يتطلب ضمن المواصفة وضمن المعادلة
+            if tmpl_code == 'ASPHALT_GRADATION_T30_T164':
+                status = result_set._asphalt_grad_eval_status()
                 if status == 'fail':
                     result_set.overall_result = 'fail'
                 elif status == 'pass':
@@ -1332,6 +1380,8 @@ class LabResultSet(models.Model):
         'is_ignitability_sample', 'ign_t1_flame_spread', 'ign_t2_flame_spread', 'ign_show_second_table',
         'template_id.code', 'agg_selected_class',
         'agg_quality_range_ids.effective_min', 'agg_quality_range_ids.effective_max',
+        'asphalt_grad_range_ids.effective_min', 'asphalt_grad_range_ids.effective_max',
+        'asphalt_grad_range_ids.spec_min', 'asphalt_grad_range_ids.spec_max',
         'result_line_ids.value_numeric', 'result_line_ids.criterion_id'
     )
     def _compute_overall_conformity(self):
@@ -1358,6 +1408,17 @@ class LabResultSet(models.Model):
                 tmpl_code = ''
             if tmpl_code == 'AGG_QUALITY_SIEVE':
                 status = result_set._agg_quality_eval_status()
+                if status == 'fail':
+                    result_set.overall_conformity = 'fail'
+                elif status == 'pass':
+                    result_set.overall_conformity = 'pass'
+                else:
+                    result_set.overall_conformity = 'pending'
+                continue
+
+            # منطق تدرج الخلطة الإسفلتية
+            if tmpl_code == 'ASPHALT_GRADATION_T30_T164':
+                status = result_set._asphalt_grad_eval_status()
                 if status == 'fail':
                     result_set.overall_conformity = 'fail'
                 elif status == 'pass':
@@ -1880,6 +1941,55 @@ class LabResultSet(models.Model):
             hi = float(r.effective_max or 0.0)
             val = float(getattr(r, 'actual_passing', 0.0) or 0.0)
             if not ((val + tol) >= lo and (val - tol) <= hi):
+                return 'fail'
+
+        if any_missing:
+            return 'pending'
+        return 'pass'
+
+    def _asphalt_grad_eval_status(self):
+        """تقييم مطابقة تدرج الخلطة الإسفلتية.
+        الشرط: القيمة ضمن حدود المواصفة AND ضمن حدود المعادلة. غير ذلك فشل. نقص المدخلات → pending.
+        """
+        self.ensure_one()
+        rows = self.asphalt_grad_range_ids
+        if not rows:
+            return 'pending'
+
+        # إذا لم تكن هناك أي حدود مُعرّفة (لا SPEC ولا FORMULA) على كل الصفوف، اعتبر الحالة "في الانتظار"
+        # لتجنّب إعطاء PASS وهمي عندما تكون الحدود صفرية بشكل افتراضي قبل ضبطها من قبل المستخدم.
+        has_any_defined_limit = False
+        for r in rows:
+            lo_s, hi_s = float(r.spec_min or 0.0), float(r.spec_max or 0.0)
+            lo_f, hi_f = float(r.effective_min or 0.0), float(r.effective_max or 0.0)
+            spec_defined = not ((lo_s == 0.0) and (hi_s == 0.0))
+            formula_defined = not ((lo_f == 0.0) and (hi_f == 0.0))
+            if spec_defined or formula_defined:
+                has_any_defined_limit = True
+                break
+        if not has_any_defined_limit:
+            return 'pending'
+
+        any_missing = False
+        tol = 1e-2
+        for r in rows:
+            code = SIEVE_CODE_TO_PASS_CRIT_ASPHALT.get(r.sieve_code)
+            if not code:
+                continue
+            line = self.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == code)[:1]
+            if not line or not line[0].is_filled:
+                any_missing = True
+                continue
+            val = float(getattr(r, 'actual_passing', 0.0) or 0.0)
+            # Check SPEC
+            lo_s, hi_s = float(r.spec_min or 0.0), float(r.spec_max or 0.0)
+            spec_defined = not ((lo_s == 0.0) and (hi_s == 0.0))
+            spec_ok = (((val + tol) >= lo_s) and ((val - tol) <= hi_s)) if spec_defined else True
+            # Check FORMULA (effective)
+            lo_f, hi_f = float(r.effective_min or 0.0), float(r.effective_max or 0.0)
+            formula_defined = not ((lo_f == 0.0) and (hi_f == 0.0))
+            formula_ok = (((val + tol) >= lo_f) and ((val - tol) <= hi_f)) if formula_defined else True
+            if not (spec_ok and formula_ok):
                 return 'fail'
 
         if any_missing:
@@ -3139,8 +3249,6 @@ class LabResultLine(models.Model):
         readonly=True
     )
     
-
-
     @api.depends('sample_no', 'criterion_id.is_summary_field', 'criterion_id.is_global', 'criterion_id.is_computed_field')
     def _compute_sample_identifier(self):
         for line in self:
@@ -3153,16 +3261,13 @@ class LabResultLine(models.Model):
                 line.sample_identifier = f"ن-{line.sample_no}"
             else:
                 line.sample_identifier = f"عينة {line.sample_no}"
-    
-
 
     @api.depends('is_compliant', 'is_filled',
                  'criterion_id.test_type', 'criterion_id.is_computed_field',
                  'criterion_id.min_value', 'criterion_id.max_value')
     def _compute_conformity_status(self):
         for line in self:
-            # إذا كانت النتيجة العامة ناجحة، اعرض المطابقة للمعايير المحسوبة فقط
-            # دون التأثير على منطق is_compliant المستخدم في حساب النتيجة العامة
+            
             if (
                 getattr(line, 'result_set_id', False)
                 and line.result_set_id.overall_result == 'pass'
@@ -3171,7 +3276,7 @@ class LabResultLine(models.Model):
             ):
                 line.conformity_status = 'pass' if line.is_filled else 'pending'
                 continue
-            # حالة محايدة للمعايير الرقمية غير المحسوبة بدون حدود دنيا/عليا
+
             is_numeric_plain = (
                 line.criterion_id and
                 line.criterion_id.test_type == 'numeric' and
@@ -3183,7 +3288,7 @@ class LabResultLine(models.Model):
             if not line.is_filled:
                 line.conformity_status = 'pending'
             elif is_numeric_plain:
-                # لا نعرض نجاح/فشل عندما لا توجد حدود، نُظهر ∞ كحالة محايدة
+
                 line.conformity_status = 'infinity'
             elif line.is_compliant:
                 line.conformity_status = 'pass'
