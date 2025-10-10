@@ -236,6 +236,19 @@
                             
                         </page>
 
+                        <page string="ملخص الخلطة الإسفلتية" name="asphalt_mix_summary" 
+                              invisible="not is_asphalt_mix_sample">
+                            <field name="is_asphalt_mix_sample" invisible="1"/>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <field name="asphalt_mix_results_summary" widget="html" readonly="1" nolabel="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </page>
 
                         <page string="ملخص نتائج الكور" name="core_summary"
                               invisible="not is_core_ui">
