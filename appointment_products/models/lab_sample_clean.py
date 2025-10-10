@@ -278,6 +278,19 @@ class LabSample(models.Model):
         help='عرض ملخص منظم لنتائج الكثافة الموقعية لكل مجموعة'
     )
 
+    # ---- Asphalt Mix Summary ----
+    is_asphalt_mix_sample = fields.Boolean(
+        string='عينة خلطة إسفلتية',
+        compute='_compute_is_asphalt_mix_sample',
+        store=True
+    )
+    asphalt_mix_results_summary = fields.Html(
+        string='ملخص نتائج الخلطة الإسفلتية',
+        compute='_compute_asphalt_mix_results_summary',
+        store=False,
+        sanitize=False
+    )
+
     # ---- Aggregate Quality (Sieve + Proctor + CBR + LL/PL) Summary ----
     is_agg_quality_sample_flag = fields.Boolean(
         string='عينة جودة الركام',
@@ -1937,7 +1950,156 @@ class LabSample(models.Model):
             </div>
             """
 
-            record.bitumen_results_summary = html
+    @api.depends('product_id.product_tmpl_id.sample_type_id.code')
+    def _compute_is_asphalt_mix_sample(self):
+        for sample in self:
+            try:
+                st_code = (sample.product_id.product_tmpl_id.sample_type_id.code or '').upper() if sample.product_id and sample.product_id.product_tmpl_id and sample.product_id.product_tmpl_id.sample_type_id else ''
+            except Exception:
+                st_code = ''
+            sample.is_asphalt_mix_sample = (st_code == 'ASPHALT_MIX')
+
+    @api.depends(
+        'is_asphalt_mix_sample',
+        'sample_subtype_id.code',
+        'result_set_ids.template_id.code',
+        'result_set_ids.test_group_no',
+        'result_set_ids.result_line_ids.value_numeric',
+        'result_set_ids.result_line_ids.result_value_computed'
+    )
+    def _compute_asphalt_mix_results_summary(self):
+        for sample in self:
+            # Default
+            sample.asphalt_mix_results_summary = False
+
+            if not sample.is_asphalt_mix_sample:
+                continue
+
+            # Collect only ASPHALT_* result sets for this sample
+            try:
+                asp_sets = sample.result_set_ids.filtered(lambda r: (r.template_id and (r.template_id.code or '').upper().startswith('ASPHALT_')))
+            except Exception:
+                asp_sets = self.env['lab.result.set']
+
+            if not asp_sets:
+                sample.asphalt_mix_results_summary = '<p>لا توجد نتائج فحص مرتبطة بالعينة بعد</p>'
+                continue
+
+            group_nos = sorted(set([(rs.test_group_no or 1) for rs in asp_sets]))
+
+            # Layer thresholds
+            layer_code = (sample.sample_subtype_id.code or '').upper() if sample.sample_subtype_id else ''
+            ac_min = 8.0 if layer_code == 'SURFACE' else (5.0 if layer_code == 'BASE' else None)
+            av_range = (3.0, 5.0) if layer_code == 'SURFACE' else ((3.0, 6.0) if layer_code == 'BASE' else None)
+            mar_min = 5.0 if layer_code == 'BASE' else None  # BASE ≥ 5.0 kN
+            tsr_min = 70.0  # default per template
+
+            def get_val(g, tmpl_code, crit_code):
+                rs = asp_sets.filtered(lambda r: (r.template_id and (r.template_id.code or '').upper() == tmpl_code) and ((r.test_group_no or 1) == g))[:1]
+                if not rs:
+                    return None
+                line = rs.result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == crit_code)[:1]
+                if not line:
+                    return None
+                val = line.value_numeric
+                if (val is None or val is False) and hasattr(line, 'result_value_computed'):
+                    val = line.result_value_computed
+                try:
+                    return float(val) if val not in (None, False) else None
+                except Exception:
+                    return None
+
+            def get_class(g):
+                rs = asp_sets.filtered(lambda r: (r.template_id and (r.template_id.code or '').upper() == 'ASPHALT_GRADATION_T30_T164') and ((r.test_group_no or 1) == g))[:1]
+                return rs.asphalt_selected_class if rs else None
+
+            # Build HTML summary table
+            rows_html = ''
+            for g in group_nos:
+                ac_val = get_val(g, 'ASPHALT_GRADATION_T30_T164', 'AC_PERCENT_FILTERED') or get_val(g, 'ASPHALT_GRADATION_T30_T164', 'AC_PERCENT_SIMPLE')
+                gmb_avg = get_val(g, 'ASPHALT_DENSITY_VOIDS', 'GMB_AVG')
+                av_avg = get_val(g, 'ASPHALT_DENSITY_VOIDS', 'AV_AVG_PCT')
+                mar_avg = get_val(g, 'ASPHALT_MARSHALL', 'MAR_STAB_AVG_KN')
+                flow_avg = get_val(g, 'ASPHALT_MARSHALL', 'MAR_FLOW_AVG_MM')
+                tsr_pct = get_val(g, 'ASPHALT_ITS_TSR', 'TSR_PCT')
+                cls = get_class(g) or '-'
+
+                # Compliance checks (missing values are neutral)
+                def fmt(val, decimals=2):
+                    return (f"{val:.{decimals}f}" if val is not None else '—')
+
+                ac_ok = True if (ac_min is None or ac_val is None) else (ac_val >= ac_min)
+                av_ok = True if (av_range is None or av_avg is None) else (av_range[0] <= av_avg <= av_range[1])
+                mar_ok = True if (mar_min is None or mar_avg is None) else (mar_avg >= mar_min)
+                tsr_ok = True if (tsr_pct is None) else (tsr_pct >= tsr_min)
+
+                checks = [ac_ok, av_ok, mar_ok, tsr_ok]
+                present = [v is not None for v in [ac_val, av_avg, mar_avg, tsr_pct]]
+                if not any(present):
+                    group_status = ('غير مكتمل', 'secondary')
+                else:
+                    group_status = (('ناجح', 'success') if all(checks) else ('فاشل', 'danger'))
+
+                # Notes for specs (avoid nested f-strings/backslashes)
+                ac_note = ''
+                if (ac_min is not None) and (ac_val is not None):
+                    ac_note = ' <small class="text-muted">(≥ {:.1f})</small>'.format(ac_min)
+                av_note = ''
+                if (av_range is not None) and (av_avg is not None):
+                    av_note = ' <small class="text-muted">({:.1f}–{:.1f})</small>'.format(av_range[0], av_range[1])
+                mar_note = ''
+                if (mar_min is not None) and (mar_avg is not None):
+                    mar_note = ' <small class="text-muted">(≥ {:.1f})</small>'.format(mar_min)
+                tsr_note = ' <small class="text-muted">(≥ {:.0f})</small>'.format(tsr_min)
+
+                ac_cell = f"{fmt(ac_val, 1)}{ac_note}"
+                gmb_cell = fmt(gmb_avg, 3)
+                av_cell = f"{fmt(av_avg, 2)}{av_note}"
+                mar_cell = f"{fmt(mar_avg, 2)}{mar_note}"
+                flow_cell = fmt(flow_avg, 2)
+                tsr_cell = f"{fmt(tsr_pct, 0)}{tsr_note}"
+
+                rows_html += (
+                    f"<tr>"
+                    f"<td style='vertical-align:middle;text-align:center;'>{g}</td>"
+                    f"<td style='vertical-align:middle;text-align:center;'>{cls}</td>"
+                    f"<td style='text-align:center;'>{ac_cell}</td>"
+                    f"<td style='text-align:center;'>{gmb_cell}</td>"
+                    f"<td style='text-align:center;'>{av_cell}</td>"
+                    f"<td style='text-align:center;'>{mar_cell}</td>"
+                    f"<td style='text-align:center;'>{flow_cell}</td>"
+                    f"<td style='text-align:center;'>{tsr_cell}</td>"
+                    f"<td style='vertical-align:middle;text-align:center;'><span class='badge bg-{group_status[1]}'>{group_status[0]}</span></td>"
+                    f"</tr>"
+                )
+
+            header_info = (
+                f"<p><b>نوع الطبقة:</b> {(sample.sample_subtype_id.name or '-') if sample.sample_subtype_id else '-'} "
+                f"&nbsp; | &nbsp; <b>الرمز الحقلي:</b> {sample.field_serial or ''}</p>"
+            )
+
+            html = [
+                "<div class='card'><div class='card-body'>",
+                header_info,
+                "<table class='table table-sm table-bordered' style='font-size:12px;text-align:center;'>",
+                "<thead><tr>",
+                "<th style='width:8%;'>المجموعة</th>",
+                "<th style='width:8%;'>الفئة</th>",
+                "<th style='width:12%;'>AC %</th>",
+                "<th style='width:12%;'>Gmb (معدل)</th>",
+                "<th style='width:12%;'>AV % (معدل)</th>",
+                "<th style='width:14%;'>ثبات مُصحح (kN)</th>",
+                "<th style='width:12%;'>الزحف (مم)</th>",
+                "<th style='width:10%;'>TSR %</th>",
+                "<th style='width:12%;'>نتيجة المجموعة</th>",
+                "</tr></thead><tbody>",
+                rows_html or "",
+                "</tbody></table>",
+                "<div style='font-size:11px;color:#666;'><div><strong>ملاحظة:</strong> القيم الناقصة لا تؤثر على الحكم النهائي للمجموعة وتُظهر (غير مكتمل).</div></div>",
+                "</div></div>"
+            ]
+            sample.asphalt_mix_results_summary = ''.join(html)
+
 
     @api.depends('is_core_ui',
                  'result_set_ids.template_id.code',
