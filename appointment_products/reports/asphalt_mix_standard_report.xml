@@ -12,8 +12,9 @@
               .compact-table tbody td { padding: 3px 2px; font-size: 12px; line-height: 1.2; }
             </style>
 
+            <t t-set="layer_name" t-value="(sample.sample_subtype_id and sample.sample_subtype_id.name) or ''"/>
             <div class="custom-main-title" style="background:#eef3ff;border:1px solid #cdd9ff;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center;font-size:24px;font-weight:700;">
-              تقرير فحوصات الخلطة الإسفلتية
+              م/ تقرير فحص نوعية اسفلت - <t t-esc="layer_name or 'غير محدد'"/>
             </div>
 
             <t t-set="task" t-value="sample.task_id"/>
