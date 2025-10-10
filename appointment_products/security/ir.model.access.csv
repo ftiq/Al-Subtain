@@ -73,10 +73,11 @@ access_project_task_schmidt_point_manager,project.task.schmidt.point.manager,mod
 access_schmidt_readings_wizard_user,schmidt.readings.wizard.user,model_schmidt_readings_wizard,base.group_user,1,1,1,1
 access_project_task_plr_segment_user,project.task.plr.segment.user,model_project_task_plr_segment,industry_fsm.group_fsm_user,1,1,1,1
 access_plr_segment_input_wizard_user,plr.segment.input.wizard.user,model_plr_segment_input_wizard,industry_fsm.group_fsm_user,1,1,1,1
-access_plr_segment_input_wizard_manager,plr.segment.input.wizard.manager,model_plr_segment_input_wizard,industry_fsm.group_fsm_manager,1,1,1,1
 access_plr_segment_input_line_wizard_user,plr.segment.input.line.wizard.user,model_plr_segment_input_line_wizard,industry_fsm.group_fsm_user,1,1,1,1
 access_plr_segment_input_line_wizard_manager,plr.segment.input.line.wizard.manager,model_plr_segment_input_line_wizard,industry_fsm.group_fsm_manager,1,1,1,1
 access_project_task_plr_reading_user,project.task.plr.reading.user,model_project_task_plr_reading,industry_fsm.group_fsm_user,1,1,1,1
 access_project_task_plr_reading_manager,project.task.plr.reading.manager,model_project_task_plr_reading,industry_fsm.group_fsm_manager,1,1,1,1
 access_lab_agg_quality_range_manager,lab.agg.quality.range.manager,model_lab_agg_quality_range,appointment_products.group_lab_manager,1,1,1,1
 access_lab_agg_quality_range_technician,lab.agg.quality.range.technician,model_lab_agg_quality_range,appointment_products.group_lab_technician,1,1,0,0
+access_lab_asphalt_grad_range_manager,lab.asphalt.grad.range.manager,model_lab_asphalt_grad_range,appointment_products.group_lab_manager,1,1,1,1
+access_lab_asphalt_grad_range_technician,lab.asphalt.grad.range.technician,model_lab_asphalt_grad_range,appointment_products.group_lab_technician,1,1,0,0

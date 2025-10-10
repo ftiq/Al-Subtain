@@ -5,7 +5,7 @@
     'description': "System for appointments and field services with dynamic laboratory tests.",
     'author': "Salah Alhjany",
     'website': "https://wa.me/967711778764",
-    'category': 'Laboratory/AI',
+    'category': 'Laboratory',
     'version': '18.0.2.1.0',
     'depends': [
         'appointment', 
@@ -37,6 +37,7 @@
         'data/stock_picking_lab_actions.xml',
         'data/brick_test_templates.xml',
         'data/bitumen_test_templates.xml',
+        'data/asphalt_mix_test_templates.xml',
         'data/coarse_aggregate_test_templates.xml',
         'data/core_test_templates.xml',
         'data/schmidt_test_templates.xml',
@@ -110,6 +111,7 @@
         'data/ignitability_test_templates.xml',
         'data/ll_pl_test_templates.xml',
         'data/cbr_test_templates.xml',
+        'data/asphalt_mix_flow.xml',
 
     ],
     'assets': {

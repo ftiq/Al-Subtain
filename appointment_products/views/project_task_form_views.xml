@@ -12,6 +12,7 @@
                             <field name="product_id" string="المنتج" 
                                    options="{'no_create': True}" 
                                    domain="[('is_sample_product', '=', True)]"/>
+                            <field name="sample_subtype_id" string="النوع"/>
 
                             <field name="quantity" string="الكمية"/>
                             <button name="open_move" type="object" class="btn btn-link" icon="fa-bars" string="عرض الحركة"/>
@@ -198,8 +199,8 @@
                 <field name="total_samples_count" string="العدد الكلي للعينات" 
                        invisible="not is_fsm" groups="industry_fsm.group_fsm_user"/>
                 <field name="main_sample_subtype_id" string="النوع الفرعي" 
-                       invisible="not is_fsm or not (main_sample_is_masonry or main_sample_is_concrete_core)"
-                       domain="[('sample_type_id.code', 'in', ['MASONRY', 'CONCRETE_CORE'])]" groups="industry_fsm.group_fsm_user"/>
+                       invisible="not is_fsm or not (main_sample_is_masonry or main_sample_is_concrete_core or main_sample_is_asphalt_mix)"
+                       domain="[('sample_type_id.code', 'in', ['MASONRY', 'CONCRETE_CORE', 'ASPHALT_MIX'])]" groups="industry_fsm.group_fsm_user"/>
             </xpath>
         </field>
     </record>

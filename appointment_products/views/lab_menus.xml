@@ -10,7 +10,7 @@
     </record>
 
     <menuitem id="menu_lab_root" 
-              name="LAP" 
+              name="Lab" 
               web_icon="appointment_products,static/description/lab_icon.png"
               sequence="10"
               groups="appointment_products.group_lab_technician,appointment_products.group_lab_manager"/>

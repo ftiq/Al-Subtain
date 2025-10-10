@@ -36,7 +36,9 @@
                         <group name="basic_info">
                             <field name="name" readonly="1"/>
                             <field name="product_id" readonly="1"/>
-                            <field name="sample_subtype_id" options="{'no_create_edit': True}" domain="[]" string="نوع العينة الفرعي" invisible="1"/>
+                            <field name="sample_subtype_id" options="{'no_create_edit': True}"
+                                   domain="[('sample_type_id', '=', product_id.product_tmpl_id.sample_type_id)]"
+                                   string="النوع الفرعي"/>
                             <field name="quantity" invisible="1"/>
                             <field name="lab_code" placeholder="الرمز المختبري" readonly="1" string="الرمز المختبري"/>
                             <field name="field_serial" placeholder="الرمز الحقلي" readonly="1" string="الرمز الحقلي"/>

@@ -8,6 +8,7 @@
             <list>
                 <field name="name"/>
                 <field name="sample_id"/>
+                <field name="sample_subtype_id" string="النوع الفرعي"/>
                 <field name="test_group_no" string="المجموعة"/>
                 <field name="concrete_field_code" string="الرمز المختبري"/>
                 <field name="concrete_field_serial" string="الرمز الحقلي"/>
@@ -129,6 +130,7 @@
                         <group string="معلومات أساسية">
                             <field name="name" readonly="1"/>
                             <field name="sample_id" readonly="1"/>
+                            <field name="sample_subtype_id" readonly="1"/>
                             <field name="template_id" readonly="1"/>
                             <field name="bitumen_type" readonly="1" invisible="not bitumen_type"/>
                             <field name="test_group_no" readonly="1"/>
@@ -354,6 +356,27 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="تدرج الخلطة الإسفلتية" invisible="not is_asphalt_grad_test">
+                            <group>
+                                <div class="alert alert-secondary" role="alert">
+                                    سيتم تقييم المطابقة على حدود المواصفة وحدود المعادلة معاً. يمكن تعديل حدود المعادلة من الجدول أدناه، بينما حدود المواصفة ثابتة للمرجع.
+                                </div>
+                            </group>
+                            <field name="asphalt_grad_range_ids" create="false" delete="false" readonly="state != 'in_progress'">
+                                <list editable="bottom" create="false" delete="false" options="{'no_create': True, 'no_quick_create': True, 'no_create_edit': True}">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="sieve_label" string="المنخل" readonly="1"/>
+                                    <field name="actual_passing" string="% المار الفعلي" readonly="1"/>
+                                    <field name="spec_min" string="حد المواصفة الأدنى" readonly="1"/>
+                                    <field name="spec_max" string="حد المواصفة الأعلى" readonly="1"/>
+                                    <field name="formula_min" string="حد المعادلة الأدنى"/>
+                                    <field name="formula_max" string="حد المعادلة الأعلى"/>
+                                    <field name="spec_ok" string="ضمن المواصفة" widget="boolean_toggle" readonly="1"/>
+                                    <field name="formula_ok" string="ضمن المعادلة" widget="boolean_toggle" readonly="1"/>
+                                    <field name="both_ok" string="مطابق (كلاهما)" widget="boolean_toggle" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="📈 المخططات">
                             <group>
                                 <div class="o_lab_charts_container">
@@ -432,6 +455,7 @@
                     <group>
                         <group string="معلومات العينة">
                             <field name="sample_id" readonly="1"/>
+                            <field name="sample_subtype_id" readonly="1"/>
                             <field name="concrete_group_no" readonly="state != 'draft'" widget="badge" decoration-info="True" invisible="is_concrete_core"/>
                             <field name="concrete_age_days" readonly="state != 'draft'" widget="badge" invisible="is_concrete_core"/>
                             <field name="concrete_field_code" readonly="state != 'draft'" string="الرمز المختبري"/>
