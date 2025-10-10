@@ -96,6 +96,7 @@
         'views/dynamic_lab_results_template.xml',
         
         'reports/bitumen_standard_report.xml',
+        'reports/asphalt_mix_standard_report.xml',
         'reports/ignitability_standard_report.xml',
         'reports/brick_standard_report.xml',
         'reports/concrete_core_standard_report.xml',

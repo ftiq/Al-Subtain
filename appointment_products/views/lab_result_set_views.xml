@@ -361,6 +361,9 @@
                                 <div class="alert alert-secondary" role="alert">
                                     سيتم تقييم المطابقة على حدود المواصفة وحدود المعادلة معاً. يمكن تعديل حدود المعادلة من الجدول أدناه، بينما حدود المواصفة ثابتة للمرجع.
                                 </div>
+                                <group string="فئة الحدود (A/B/C/D)" col="2">
+                                    <field name="asphalt_selected_class" widget="radio"/>
+                                </group>
                             </group>
                             <field name="asphalt_grad_range_ids" create="false" delete="false" readonly="state != 'in_progress'">
                                 <list editable="bottom" create="false" delete="false" options="{'no_create': True, 'no_quick_create': True, 'no_create_edit': True}">
