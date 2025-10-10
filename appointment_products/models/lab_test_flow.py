@@ -138,6 +138,17 @@ class LabTestFlow(models.Model):
         except Exception:
             is_bitumen = False
 
+        # Asphalt mix flows (ASPHALT_GRADATION_T30_T164, etc.) should also repeat per group
+        is_asphalt_mix = False
+        try:
+            if self.sample_id and self.sample_id.product_id and getattr(self.sample_id.product_id.product_tmpl_id, 'sample_type_id', False):
+                st_code = (self.sample_id.product_id.product_tmpl_id.sample_type_id.code or '').upper()
+                is_asphalt_mix = (st_code == 'ASPHALT_MIX')
+            if not is_asphalt_mix and self.template_id and self.template_id.line_ids:
+                is_asphalt_mix = any('ASPHALT_' in (l.test_template_id.code or '').upper() for l in self.template_id.line_ids)
+        except Exception:
+            is_asphalt_mix = False
+
         is_ignitability = False
         is_field_density = False
         try:
@@ -155,7 +166,23 @@ class LabTestFlow(models.Model):
             is_ignitability = False
             is_field_density = False
 
-        total_count = max(1, total_count_cfg) if (is_bitumen or is_ignitability or is_field_density) else 1
+        # Determine groups count from stock move lines (group_no) when available for bitumen/asphalt/ignitability/field-density
+        total_count = 1
+        if (is_bitumen or is_asphalt_mix or is_ignitability or is_field_density):
+            groups_from_task = max(1, total_count_cfg)
+            groups_from_moves = 0
+            try:
+                picking = self.sample_id.task_id.stock_receipt_id if (self.sample_id and self.sample_id.task_id) else False
+                if picking and self.sample_id.product_id:
+                    mls = self.env['stock.move.line'].search([
+                        ('picking_id', '=', picking.id),
+                        ('product_id', '=', self.sample_id.product_id.id),
+                    ])
+                    gset = set([int(ln.group_no) for ln in mls if ln.group_no])
+                    groups_from_moves = len(gset)
+            except Exception:
+                groups_from_moves = 0
+            total_count = max(1, groups_from_moves or groups_from_task)
 
         for group_no in range(1, total_count + 1):
             for tmpl_line in self.template_id.line_ids:
@@ -194,9 +221,9 @@ class LabTestFlow(models.Model):
         if self.state == 'draft' and self.template_id:
 
             try:
-                total_count = int(self.sample_id.task_id.total_samples_count or 1)
+                total_count_cfg = int(self.sample_id.task_id.total_samples_count or 1)
             except Exception:
-                total_count = 1
+                total_count_cfg = 1
 
             is_bitumen = False
             try:
@@ -205,6 +232,16 @@ class LabTestFlow(models.Model):
                     is_bitumen = any('BITUMEN' in (l.test_template_id.code or '').upper() for l in self.template_id.line_ids)
             except Exception:
                 is_bitumen = False
+
+            is_asphalt_mix = False
+            try:
+                if self.sample_id and self.sample_id.product_id and getattr(self.sample_id.product_id.product_tmpl_id, 'sample_type_id', False):
+                    st_code = (self.sample_id.product_id.product_tmpl_id.sample_type_id.code or '').upper()
+                    is_asphalt_mix = (st_code == 'ASPHALT_MIX')
+                if not is_asphalt_mix and self.template_id and self.template_id.line_ids:
+                    is_asphalt_mix = any('ASPHALT_' in (l.test_template_id.code or '').upper() for l in self.template_id.line_ids)
+            except Exception:
+                is_asphalt_mix = False
 
             is_ignitability = False
             is_field_density = False
@@ -222,7 +259,23 @@ class LabTestFlow(models.Model):
                 is_ignitability = False
                 is_field_density = False
 
-            need_groups = max(1, total_count) if (is_bitumen or is_ignitability or is_field_density) else 1
+            # Determine required groups
+            need_groups = 1
+            if (is_bitumen or is_asphalt_mix or is_ignitability or is_field_density):
+                groups_from_task = max(1, total_count_cfg)
+                groups_from_moves = 0
+                try:
+                    picking = self.sample_id.task_id.stock_receipt_id if (self.sample_id and self.sample_id.task_id) else False
+                    if picking and self.sample_id.product_id:
+                        mls = self.env['stock.move.line'].search([
+                            ('picking_id', '=', picking.id),
+                            ('product_id', '=', self.sample_id.product_id.id),
+                        ])
+                        gset = set([int(ln.group_no) for ln in mls if ln.group_no])
+                        groups_from_moves = len(gset)
+                except Exception:
+                    groups_from_moves = 0
+                need_groups = max(1, groups_from_moves or groups_from_task)
             max_group = max([l.group_no or 1 for l in lines], default=1) if lines else 1
             if need_groups > 1 and max_group == 1 and lines and len(lines) == len(self.template_id.line_ids):
 

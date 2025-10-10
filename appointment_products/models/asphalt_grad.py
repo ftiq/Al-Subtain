@@ -31,7 +31,8 @@ ASPHALT_SIEVE_ORDER = [
     '37_5MM', '25MM', '19MM', '12_5MM', '9_5MM', '4_75MM', '2_36MM', '0_3MM', '0_075MM'
 ]
 
-# Default SPEC limits per layer. Start with Binder (رابطة) from user's sheet. Others left as zeros (to be set by user).
+# Default SPEC limits per layer. Binder (رابطة) مأخوذة من ورقة العميل.
+# SURFACE و BASE تمت تعبئتها وفق الجداول الظاهرة في الصور/CSV (عمود A كحدود أساسية قابلة للتعديل لاحقاً).
 DEFAULT_SPEC_LIMITS = {
     'BINDER': {  # طبقة رابطة
         '37_5MM': (100.0, 100.0),
@@ -44,12 +45,33 @@ DEFAULT_SPEC_LIMITS = {
         '0_3MM': (5.0, 17.0),
         '0_075MM': (2.0, 8.0),
     },
-    # To be provided/confirmed; initialized to zeros so UI shows unspecified until user sets them
-    'SURFACE': {code: (0.0, 0.0) for code in ASPHALT_SIEVE_ORDER},  # سطحية
-    'BASE': {code: (0.0, 0.0) for code in ASPHALT_SIEVE_ORDER},     # أساس
+    # طبقة سطحية (من الصور/CSV - عمود A)
+    'SURFACE': {  # سطحية
+        '37_5MM': (100.0, 100.0),
+        '25MM': (0.0, 0.0),
+        '19MM': (30.0, 65.0),
+        '12_5MM': (25.0, 55.0),
+        '9_5MM': (16.0, 42.0),
+        '4_75MM': (7.0, 18.0),
+        '2_36MM': (2.0, 8.0),
+        '0_3MM': (5.0, 15.0),
+        '0_075MM': (2.0, 8.0),
+    },
+    # طبقة أساس (من الصور/CSV - عمود A)
+    'BASE': {     # أساس
+        '37_5MM': (100.0, 100.0),
+        '25MM': (100.0, 100.0),
+        '19MM': (30.0, 65.0),
+        '12_5MM': (25.0, 55.0),
+        '9_5MM': (16.0, 42.0),
+        '4_75MM': (7.0, 18.0),
+        '2_36MM': (2.0, 8.0),
+        '0_3MM': (3.5, 7.5),
+        '0_075MM': (2.0, 6.0),
+    },
 }
 
-# Default FORMULA limits for Binder from user's sheet (editable by user). Others mirror SPEC by default (or zeros).
+# Default FORMULA limits. Binder من ورقة العميل. لبقية الطبقات اعتمدنا نفس حدود SPEC كقيمة ابتدائية قابلة للتعديل في الواجهة.
 DEFAULT_FORMULA_LIMITS = {
     'BINDER': {
         '37_5MM': (100.0, 100.0),
@@ -62,9 +84,170 @@ DEFAULT_FORMULA_LIMITS = {
         '0_3MM': (5.7, 13.7),
         '0_075MM': (2.5, 6.5),
     },
-    'SURFACE': {code: (0.0, 0.0) for code in ASPHALT_SIEVE_ORDER},
-    'BASE': {code: (0.0, 0.0) for code in ASPHALT_SIEVE_ORDER},
+    'SURFACE': {
+        '37_5MM': (100.0, 100.0),
+        '25MM': (0.0, 0.0),
+        '19MM': (30.0, 65.0),
+        '12_5MM': (25.0, 55.0),
+        '9_5MM': (16.0, 42.0),
+        '4_75MM': (7.0, 18.0),
+        '2_36MM': (2.0, 8.0),
+        '0_3MM': (5.0, 15.0),
+        '0_075MM': (2.0, 8.0),
+    },
+    'BASE': {
+        '37_5MM': (100.0, 100.0),
+        '25MM': (100.0, 100.0),
+        '19MM': (30.0, 65.0),
+        '12_5MM': (25.0, 55.0),
+        '9_5MM': (16.0, 42.0),
+        '4_75MM': (7.0, 18.0),
+        '2_36MM': (2.0, 8.0),
+        '0_3MM': (3.5, 7.5),
+        '0_075MM': (2.0, 6.0),
+    },
 }
+
+
+def _make_by_class(base_map):
+    """Create a per-class dict {'A': map, 'B': map, 'C': map, 'D': map}.
+    Initially we duplicate A into B/C/D so the user can later adjust them
+    in code based on images/CSVs. This avoids empty (0,0) bounds.
+    """
+    by_class = {}
+    for layer_key, sieve_map in base_map.items():
+        # shallow copy per class to allow independent edits
+        a_map = {k: tuple(v) for k, v in sieve_map.items()}
+        by_class[layer_key] = {
+            'A': {k: tuple(v) for k, v in a_map.items()},
+            'B': {k: tuple(v) for k, v in a_map.items()},
+            'C': {k: tuple(v) for k, v in a_map.items()},
+            'D': {k: tuple(v) for k, v in a_map.items()},
+        }
+    return by_class
+
+
+# Class-based defaults. A is the current DEFAULT_* content; B/C/D are placeholders
+# initially equal to A until the user updates them to match client sheets (columns B/C/D).
+DEFAULT_SPEC_LIMITS_BY_CLASS = _make_by_class(DEFAULT_SPEC_LIMITS)
+DEFAULT_FORMULA_LIMITS_BY_CLASS = _make_by_class(DEFAULT_FORMULA_LIMITS)
+
+
+def get_asphalt_class_maps(sample, cls='A'):
+    """Return (spec_map, formula_map) for the asphalt mix based on sample layer and class A/B/C/D.
+    Falls back to class 'A' and then to DEFAULT_* if class not found.
+    """
+    layer = _get_layer_key_from_sample(sample) if sample else 'BINDER'
+    sel = (cls or 'A').upper()
+    spec_by_layer = DEFAULT_SPEC_LIMITS_BY_CLASS.get(layer) or {}
+    form_by_layer = DEFAULT_FORMULA_LIMITS_BY_CLASS.get(layer) or {}
+    spec_map = spec_by_layer.get(sel) or DEFAULT_SPEC_LIMITS.get(layer, {})
+    formula_map = form_by_layer.get(sel) or DEFAULT_FORMULA_LIMITS.get(layer, {})
+    return spec_map, formula_map
+
+# Override SURFACE per-class limits based on provided A/B/C/D table
+try:
+    surf_spec = DEFAULT_SPEC_LIMITS_BY_CLASS.get('SURFACE', {})
+    surf_form = DEFAULT_FORMULA_LIMITS_BY_CLASS.get('SURFACE', {})
+    # 37.5 mm: B/C/D are unspecified
+    for k in ('B', 'C', 'D'):
+        if k in surf_spec:
+            surf_spec[k]['37_5MM'] = (0.0, 0.0)
+        if k in surf_form:
+            surf_form[k]['37_5MM'] = (0.0, 0.0)
+    # 25 mm
+    if 'B' in surf_spec:
+        surf_spec['B']['25MM'] = (75.0, 95.0)
+    if 'B' in surf_form:
+        surf_form['B']['25MM'] = (75.0, 95.0)
+    if 'C' in surf_spec:
+        surf_spec['C']['25MM'] = (100.0, 100.0)
+    if 'C' in surf_form:
+        surf_form['C']['25MM'] = (100.0, 100.0)
+    if 'D' in surf_spec:
+        surf_spec['D']['25MM'] = (100.0, 100.0)
+    if 'D' in surf_form:
+        surf_form['D']['25MM'] = (100.0, 100.0)
+    # 19 mm
+    for k, rng in {
+        'A': (30.0, 65.0),
+        'B': (40.0, 75.0),
+        'C': (50.0, 85.0),
+        'D': (60.0, 100.0),
+    }.items():
+        if k in surf_spec:
+            surf_spec[k]['19MM'] = rng
+        if k in surf_form:
+            surf_form[k]['19MM'] = rng
+    # 12.5 mm
+    for k, rng in {
+        'A': (25.0, 55.0),
+        'B': (30.0, 60.0),
+        'C': (35.0, 65.0),
+        'D': (50.0, 85.0),
+    }.items():
+        if k in surf_spec:
+            surf_spec[k]['12_5MM'] = rng
+        if k in surf_form:
+            surf_form[k]['12_5MM'] = rng
+    # 9.5 mm
+    for k, rng in {
+        'A': (16.0, 42.0),
+        'B': (21.0, 47.0),
+        'C': (26.0, 52.0),
+        'D': (42.0, 72.0),
+    }.items():
+        if k in surf_spec:
+            surf_spec[k]['9_5MM'] = rng
+        if k in surf_form:
+            surf_form[k]['9_5MM'] = rng
+    # 4.75 mm
+    for k, rng in {
+        'A': (7.0, 18.0),
+        'B': (14.0, 28.0),
+        'C': (14.0, 28.0),
+        'D': (23.0, 42.0),
+    }.items():
+        if k in surf_spec:
+            surf_spec[k]['4_75MM'] = rng
+        if k in surf_form:
+            surf_form[k]['4_75MM'] = rng
+    # 2.36 mm
+    for k, rng in {
+        'A': (2.0, 8.0),
+        'B': (5.0, 15.0),
+        'C': (5.0, 15.0),
+        'D': (5.0, 20.0),
+    }.items():
+        if k in surf_spec:
+            surf_spec[k]['2_36MM'] = rng
+        if k in surf_form:
+            surf_form[k]['2_36MM'] = rng
+except Exception:
+    # حماية من أي خطأ أثناء الاستيراد
+    pass
+
+# Temporary: mirror SURFACE class overrides into BINDER and BASE so toggle A/B/C/D affects all layers
+try:
+    surf_spec = DEFAULT_SPEC_LIMITS_BY_CLASS.get('SURFACE', {})
+    surf_form = DEFAULT_FORMULA_LIMITS_BY_CLASS.get('SURFACE', {})
+    for layer_key in ('BINDER', 'BASE'):
+        lspec = DEFAULT_SPEC_LIMITS_BY_CLASS.get(layer_key)
+        lform = DEFAULT_FORMULA_LIMITS_BY_CLASS.get(layer_key)
+        if not lspec or not lform:
+            continue
+        for cls in ('A', 'B', 'C', 'D'):
+            sm = surf_spec.get(cls)
+            fm = surf_form.get(cls)
+            if sm:
+                # keep existing keys not in SURFACE map (e.g., 0.3/0.075 unchanged)
+                for k, v in sm.items():
+                    lspec[cls][k] = v
+            if fm:
+                for k, v in fm.items():
+                    lform[cls][k] = v
+except Exception:
+    pass
 
 
 def _get_layer_key_from_sample(sample):
@@ -102,14 +285,12 @@ def _get_layer_key_from_sample(sample):
     return 'BINDER'
 
 
-def build_default_asphalt_grad_lines(sample=None):
+def build_default_asphalt_grad_lines(sample=None, cls='A'):
     """Build default rows for asphalt gradation table.
-    If sample is provided, seed SPEC/FORMULA from the appropriate layer dictionary.
+    If sample is provided, seed SPEC/FORMULA from the appropriate layer and selected class (A/B/C/D).
     Returns list of dicts ready for create().
     """
-    layer = _get_layer_key_from_sample(sample) if sample else 'BINDER'
-    spec_map = DEFAULT_SPEC_LIMITS.get(layer, DEFAULT_SPEC_LIMITS['BINDER'])
-    formula_map = DEFAULT_FORMULA_LIMITS.get(layer, DEFAULT_FORMULA_LIMITS['BINDER'])
+    spec_map, formula_map = get_asphalt_class_maps(sample, cls or 'A')
     lines = []
     for idx, code in enumerate(ASPHALT_SIEVE_ORDER, start=1):
         s_lo, s_hi = spec_map.get(code, (0.0, 0.0))

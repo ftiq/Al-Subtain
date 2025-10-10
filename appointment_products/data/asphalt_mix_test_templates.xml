@@ -131,6 +131,18 @@
       <field name="is_global">True</field>
     </record>
 
+    <!-- Crushed aggregate percentage (global input, per mix) -->
+    <record id="crit_am_crushed_agg_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">نسبة الحصى المكسر %</field>
+      <field name="code">CRUSHED_AGG_PCT</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">14</field>
+      <field name="is_global">True</field>
+      <field name="help_text">يدخل فنياً كنسبة % للحصى المكسر. سيتم تقييم المطابقة تلقائياً حسب الطبقة (سطحية ≥ 90%، أساس ≥ 70%).</field>
+    </record>
+
     <!-- Coarse sieves (≥ 4.75 mm) use ORIG_WT_GM -->
     <!-- 37.5, 25, 19, 12.5, 9.5, 4.75 -->
     <!-- Helper macro pattern repeated succinctly -->

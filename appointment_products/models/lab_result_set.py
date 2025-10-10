@@ -12,6 +12,7 @@ from .agg_quality import build_default_range_lines, SIEVE_CODE_TO_PASS_CRIT
 from .asphalt_grad import (
     build_default_asphalt_grad_lines,
     SIEVE_CODE_TO_PASS_CRIT_ASPHALT,
+    get_asphalt_class_maps,
 )
 
 
@@ -472,6 +473,12 @@ class LabResultSet(models.Model):
         string='حدود التدرج (R6/2003)'
     )
     # Asphalt mix gradation SPEC/FORMULA ranges (editable formula)
+    asphalt_selected_class = fields.Selection(
+        [('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D')],
+        string='فئة حدود الخلطة (A/B/C/D)',
+        default='A',
+        tracking=True
+    )
     asphalt_grad_range_ids = fields.One2many(
         'lab.asphalt.grad.range',
         'result_set_id',
@@ -1117,7 +1124,8 @@ class LabResultSet(models.Model):
             try:
                 tmpl_code2 = (result_set.template_id.code or '').upper() if result_set.template_id else ''
                 if tmpl_code2 == 'ASPHALT_GRADATION_T30_T164' and not result_set.asphalt_grad_range_ids:
-                    default_lines2 = build_default_asphalt_grad_lines(result_set.sample_id)
+                    cls = (result_set.asphalt_selected_class or 'A')
+                    default_lines2 = build_default_asphalt_grad_lines(result_set.sample_id, cls)
                     for line in default_lines2:
                         line['result_set_id'] = result_set.id
                     result_set.env['lab.asphalt.grad.range'].create(default_lines2)
@@ -2645,6 +2653,38 @@ class LabResultSet(models.Model):
             if rec.bitumen_type == 'قير أساس' and rec.bitumen_comparison_level == '4':
                 rec.bitumen_comparison_level = '3'
 
+    @api.onchange('asphalt_selected_class')
+    def _onchange_asphalt_selected_class(self):
+        """تغيير فئة حدود الخلطة الإسفلتية (A/B/C/D) يعيد ضبط حدود SPEC/FORMULA لكل منخل.
+        إذا كانت الأسطر غير موجودة، يتم إنشاؤها للفئة المختارة.
+        """
+        for rec in self:
+            # اعتمد على العلم المحسوب بدلاً من مطابقة كود القالب حرفياً
+            if not getattr(rec, 'is_asphalt_grad_test', False):
+                continue
+            sel = (rec.asphalt_selected_class or 'A')
+            # إنشاء الأسطر إذا كانت غير موجودة
+            if not rec.asphalt_grad_range_ids:
+                defaults = build_default_asphalt_grad_lines(rec.sample_id, sel)
+                rec.asphalt_grad_range_ids = [(0, 0, d) for d in defaults]
+                continue
+            # تحديث الحدود على الأسطر الحالية
+            spec_map, formula_map = get_asphalt_class_maps(rec.sample_id, sel)
+            cmds = []
+            for row in rec.asphalt_grad_range_ids:
+                code = row.sieve_code
+                s_lo, s_hi = spec_map.get(code, (row.spec_min, row.spec_max))
+                f_lo, f_hi = formula_map.get(code, (row.formula_min, row.formula_max))
+                vals = {
+                    'spec_min': s_lo,
+                    'spec_max': s_hi,
+                    'formula_min': f_lo,
+                    'formula_max': f_hi,
+                }
+                cmds.append((1, row.id, vals))
+            if cmds:
+                rec.asphalt_grad_range_ids = cmds
+
     def write(self, vals):
         result = super(LabResultSet, self).write(vals)
         
@@ -2761,8 +2801,6 @@ class LabResultLine(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'result_set_id, summary_sort_key, criterion_sort_type, criterion_timer_sequence, sequence, criterion_id, id'
 
-
-
     def init(self):
         """إنشاء الفهرس المركّب (result_set_id, is_filled, is_compliant) مرة واحدة فقط"""
         tools.create_index(
@@ -2783,7 +2821,6 @@ class LabResultLine(models.Model):
         index=True
     )
     
-
     _sql_constraints = [
         ('unique_result_line', 
          'unique(result_set_id, sample_no, criterion_id)', 
@@ -2916,7 +2953,6 @@ class LabResultLine(models.Model):
             _logger.info(f"_validate_softening_readings: Skipping - new_value={new_value}, criterion_code={self.criterion_id.code}")
             return
             
-
         other_criteria_codes = ['SOFTENING_1', 'SOFTENING_2']
         other_criteria_codes.remove(self.criterion_id.code)
         
@@ -3419,8 +3455,29 @@ class LabResultLine(models.Model):
                 continue
             
             test_type = line.test_type
+            # تحديد طبقة الخلطة الإسفلتية من النوع الفرعي للعينة (SURFACE/BASE/BINDER)
+            layer_code = ''
+            try:
+                st = getattr(line.result_set_id, 'sample_subtype_id', False)
+                if st and st.code:
+                    layer_code = (st.code or '').upper()
+            except Exception:
+                layer_code = ''
             
             if test_type == 'numeric':
+                # نسبة الحصى المكسر % - مطابقة بالحد الأدنى حسب الطبقة (SURFACE≥90, BASE≥70)
+                if line.criterion_id.code == 'CRUSHED_AGG_PCT':
+                    try:
+                        val = float(line.value_numeric or 0.0)
+                    except Exception:
+                        val = 0.0
+                    # اعتبر 0 كقيمة غير مُقيَّمة كي لا تُفشل النتيجة قبل الإدخال
+                    if val == 0.0:
+                        line.is_compliant = True
+                    else:
+                        min_req = 90.0 if ('SURFACE' in layer_code) else (70.0 if ('BASE' in layer_code) else 70.0)
+                        line.is_compliant = (val >= min_req)
+                    continue
                 if line.criterion_id.code == 'EFFLOR_GRADE' and line.result_set_id.sample_id.sample_subtype_id:
                     sample_subtype = line.result_set_id.sample_id.sample_subtype_id
                     efflorescence_value = line.value_numeric
@@ -3482,6 +3539,50 @@ class LabResultLine(models.Model):
                 line.is_compliant = True
                 
             elif test_type == 'computed':
+                # --- فحوصات الخلطة الإسفلتية (مطابقة بحسب الطبقة) ---
+                # AC%: سطحية ≥ 8%، أساس ≥ 5% (قيمة 0 تعتبر غير مُقيَّمة)
+                if line.criterion_id.code in ['AC_PERCENT_SIMPLE', 'AC_PERCENT_FILTERED']:
+                    try:
+                        val = float(line.value_numeric or 0.0)
+                    except Exception:
+                        val = 0.0
+                    if val == 0.0:
+                        line.is_compliant = True
+                    else:
+                        if 'SURFACE' in layer_code:
+                            ac_min = 8.0
+                        elif 'BASE' in layer_code:
+                            ac_min = 5.0
+                        else:
+                            ac_min = 0.0
+                        line.is_compliant = (val >= ac_min)
+                    continue
+
+                # AV%: سطحية 3–5، أساس 3–6 (قيمة 0 تعتبر غير مُقيَّمة)
+                if line.criterion_id.code in ['AV_PCT', 'AV_AVG_PCT']:
+                    try:
+                        val = float(line.value_numeric or 0.0)
+                    except Exception:
+                        val = 0.0
+                    if val == 0.0:
+                        line.is_compliant = True
+                    else:
+                        lo = 3.0
+                        hi = 6.0 if ('BASE' in layer_code) else 5.0
+                        line.is_compliant = (val >= lo and val <= hi)
+                    continue
+
+                # ثبات مارشال المُصحح: لطبقة الأساس حد أدنى 5.0 kN (غير ذلك يُطبَّق حد القالب الافتراضي)
+                if line.criterion_id.code == 'MAR_STAB_CORR_KN' and ('BASE' in layer_code):
+                    try:
+                        val = float(line.value_numeric or 0.0)
+                    except Exception:
+                        val = 0.0
+                    if val == 0.0:
+                        line.is_compliant = True
+                    else:
+                        line.is_compliant = (val >= 5.0)
+                    continue
                 # CBR criterion is computed; apply class-based limits here
                 if line.criterion_id.code == 'CBR_AT_95_PERCENT_COMPACTION':
                     selected_class = line.result_set_id.get_agg_selected_class_from_sample()

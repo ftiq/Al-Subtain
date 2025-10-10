@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="asphalt_mix_standard_report">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="sample">
+        <t t-call="web.external_layout">
+          <div class="page">
+            <div class="oe_structure"/>
+            <style>
+              * { font-family: Arial, sans-serif !important; }
+              .compact-table thead th { padding: 6px 4px; font-size: 13px; }
+              .compact-table tbody td { padding: 3px 2px; font-size: 12px; line-height: 1.2; }
+            </style>
+
+            <div class="custom-main-title" style="background:#eef3ff;border:1px solid #cdd9ff;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center;font-size:24px;font-weight:700;">
+              تقرير فحوصات الخلطة الإسفلتية
+            </div>
+
+            <t t-set="task" t-value="sample.task_id"/>
+            <t t-set="all_rs" t-value="sample.result_set_ids"/>
+            <t t-set="mix_rs" t-value="all_rs.filtered(lambda r: r.template_id and (r.template_id.code or '').startswith('ASPHALT_'))"/>
+            <t t-set="group_nos" t-value="sorted(set([rs.test_group_no or 1 for rs in mix_rs])) if mix_rs else [1]"/>
+            <t t-set="group_count" t-value="len(group_nos)"/>
+
+            <div class="lab-section">
+              <table class="table table-bordered">
+                <thead>
+                  <tr style="background-color: #DDDDDD;">
+                    <th style="text-align:center;padding:8px;font-weight:bold;color:black;background-color:#DDDDDD;font-size:16px;">رقم الكتاب</th>
+                    <th style="text-align:center;padding:8px;font-weight:bold;color:black;background-color:#DDDDDD;font-size:16px;">تاريخ الكتاب</th>
+                    <th style="text-align:center;padding:8px;font-weight:bold;color:black;background-color:#DDDDDD;font-size:16px;">رقم الطلب</th>
+                    <th style="text-align:center;padding:8px;font-weight:bold;color:black;background-color:#DDDDDD;font-size:16px;">تاريخ الطلب</th>
+                    <th style="text-align:center;padding:8px;font-weight:bold;color:black;background-color:#DDDDDD;font-size:16px;">تاريخ الاستلام</th>
+                    <th style="text-align:center;padding:8px;font-weight:bold;color:black;background-color:#DDDDDD;font-size:16px;">عدد النماذج</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="text-align:center;padding:6px;border:1px solid #dee2e6;" t-esc="task.book_number if task and task.book_number else ''"/>
+                    <td style="text-align:center;padding:6px;border:1px solid #dee2e6;" t-esc="task.book_date.strftime('%Y-%m-%d') if task and task.book_date else ''"/>
+                    <td style="text-align:center;padding:6px;border:1px solid #dee2e6;" t-esc="sample.sale_order_id.name if sample.sale_order_id else ''"/>
+                    <td style="text-align:center;padding:6px;border:1px solid #dee2e6;" t-esc="sample.sale_order_id.date_order.strftime('%Y-%m-%d') if sample.sale_order_id and sample.sale_order_id.date_order else ''"/>
+                    <td style="text-align:center;padding:6px;border:1px solid #dee2e6;" t-esc="sample.create_date.strftime('%Y-%m-%d') if sample.create_date else ''"/>
+                    <td style="text-align:center;padding:6px;border:1px solid #dee2e6;" t-esc="group_count"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Gradation table -->
+            <t t-set="grad_rs0" t-value="mix_rs.filtered(lambda r: (r.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164')[:1]"/>
+            <t t-if="grad_rs0">
+              <div class="lab-section" style="margin:8px 0;">
+                <table class="table table-bordered compact-table" style="width:100%;border:1px solid #cfd9c9;border-collapse:collapse;font-size:12px;text-align:center;">
+                  <thead>
+                    <tr style="background:#DDDDDD;">
+                      <th rowspan="2" style="text-align:center;vertical-align:middle;width:18%;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">المنخل</th>
+                      <th colspan="2" style="text-align:center;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">حدود المواصفة %</th>
+                      <th t-att-colspan="group_count" style="text-align:center;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">النسبة المارة وزناً %</th>
+                    </tr>
+                    <tr style="background:#DDDDDD;">
+                      <th style="text-align:center;font-weight:bold;border:1px solid #bdbdbd;">الأدنى</th>
+                      <th style="text-align:center;font-weight:bold;border:1px solid #bdbdbd;">الأعلى</th>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <t t-set="rs_any" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
+                        <t t-set="serial_raw" t-value="(rs_any and (rs_any[0].concrete_field_serial or rs_any[0].concrete_field_code)) or ''"/>
+                        <t t-set="display_serial" t-value="serial_raw.split('/')[-1] if serial_raw else (('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i]) if i &lt; 26 else str(i+1))"/>
+                        <th style="text-align:center;padding:4px 3px;font-weight:bold;border:1px solid #bdbdbd;"><t t-esc="display_serial"/></th>
+                      </t>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <t t-foreach="grad_rs0[0].asphalt_grad_range_ids.sorted('sequence')" t-as="row">
+                      <tr>
+                        <td style="text-align:center;padding:4px 3px;" t-esc="row.sieve_label or ''"/>
+                        <td style="text-align:center;padding:4px 3px;" t-esc="'{:.0f}'.format(row.spec_min or 0)"/>
+                        <td style="text-align:center;padding:4px 3px;" t-esc="'{:.0f}'.format(row.spec_max or 0)"/>
+                        <t t-foreach="range(0, group_count)" t-as="i">
+                          <t t-set="grpno" t-value="group_nos[i]"/>
+                          <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
+                          <t t-if="rs">
+                            <t t-set="match" t-value="rs[0].asphalt_grad_range_ids.filtered(lambda rr: rr.sieve_code == row.sieve_code)"/>
+                            <td style="text-align:center;padding:4px 3px;" t-esc="'{:.0f}'.format((match and match[0].actual_passing) or 0)"/>
+                          </t>
+                          <t t-else="">
+                            <td style="text-align:center;padding:4px 3px;">—</td>
+                          </t>
+                        </t>
+                      </tr>
+                    </t>
+                  </tbody>
+                </table>
+              </div>
+            </t>
+
+            <!-- Marshall summary -->
+            <div class="lab-section" style="margin:8px 0;">
+              <table class="table table-bordered compact-table" style="width:100%;border:1px solid #cfd9c9;border-collapse:collapse;font-size:12px;text-align:center;">
+                <thead>
+                  <tr style="background:#DDDDDD;">
+                    <th style="text-align:center;vertical-align:middle;width:30%;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">مارشال</th>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <th style="text-align:center;padding:4px 3px;font-weight:bold;border:1px solid #bdbdbd;">مجموعة <t t-esc="grpno"/></th>
+                    </t>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-weight:bold;padding:4px 3px;">ثبات مُصحح (kN)</td>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_MARSHALL' and (x.test_group_no or 1) == grpno)"/>
+                      <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'MAR_STAB_AVG_KN')) or False"/>
+                      <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.2f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                    </t>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold;padding:4px 3px;">الزحف (مم)</td>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_MARSHALL' and (x.test_group_no or 1) == grpno)"/>
+                      <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'MAR_FLOW_AVG_MM')) or False"/>
+                      <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.2f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                    </t>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Density/Voids summary -->
+            <div class="lab-section" style="margin:8px 0;">
+              <table class="table table-bordered compact-table" style="width:100%;border:1px solid #cfd9c9;border-collapse:collapse;font-size:12px;text-align:center;">
+                <thead>
+                  <tr style="background:#DDDDDD;">
+                    <th style="text-align:center;vertical-align:middle;width:30%;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">الكثافة/الفراغات</th>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <th style="text-align:center;padding:4px 3px;font-weight:bold;border:1px solid #bdbdbd;">مجموعة <t t-esc="grpno"/></th>
+                    </t>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-weight:bold;padding:4px 3px;">Gmb (معدل)</td>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_DENSITY_VOIDS' and (x.test_group_no or 1) == grpno)"/>
+                      <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'GMB_AVG')) or False"/>
+                      <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.3f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                    </t>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold;padding:4px 3px;">AV % (معدل)</td>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_DENSITY_VOIDS' and (x.test_group_no or 1) == grpno)"/>
+                      <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'AV_AVG_PCT')) or False"/>
+                      <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.2f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                    </t>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- ITS/TSR summary -->
+            <div class="lab-section" style="margin:8px 0;">
+              <table class="table table-bordered compact-table" style="width:100%;border:1px solid #cfd9c9;border-collapse:collapse;font-size:12px;text-align:center;">
+                <thead>
+                  <tr style="background:#DDDDDD;">
+                    <th style="text-align:center;vertical-align:middle;width:30%;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">ITS/TSR</th>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <th style="text-align:center;padding:4px 3px;font-weight:bold;border:1px solid #bdbdbd;">مجموعة <t t-esc="grpno"/></th>
+                    </t>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-weight:bold;padding:4px 3px;">ITS جاف (MPa)</td>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_ITS_TSR' and (x.test_group_no or 1) == grpno)"/>
+                      <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'ITS_DRY_MPA')) or False"/>
+                      <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.2f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                    </t>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold;padding:4px 3px;">ITS رطب (MPa)</td>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_ITS_TSR' and (x.test_group_no or 1) == grpno)"/>
+                      <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'ITS_WET_MPA')) or False"/>
+                      <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.2f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                    </t>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold;padding:4px 3px;">TSR %</td>
+                    <t t-foreach="range(0, group_count)" t-as="i">
+                      <t t-set="grpno" t-value="group_nos[i]"/>
+                      <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_ITS_TSR' and (x.test_group_no or 1) == grpno)"/>
+                      <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'TSR_PCT')) or False"/>
+                      <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.0f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                    </t>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <t t-if="sample.notes">
+              <div class="lab-section" style="page-break-inside: avoid;">
+                <h3>الملاحظات</h3>
+                <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                  <div style="font-size: 14px; line-height: 1.6;" t-field="sample.notes"/>
+                </div>
+              </div>
+            </t>
+
+            <!-- Signatures -->
+            <div class="lab-section" style="page-break-inside: avoid; margin-top: 16px;">
+              <table style="width:100%;border-collapse:collapse;direction:rtl;">
+                <tr>
+                  <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                    <div style="margin-bottom:6px;font-weight:bold;">مسؤول الوحدة</div>
+                    <t t-if="sample.exec_signature">
+                      <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                        <img t-att-src="image_data_uri(sample.exec_signature)" style="max-width:100%;max-height:100%;"/>
+                      </div>
+                      <div style="font-size:12px;" t-esc="sample.exec_signer_name or ''"/>
+                    </t>
+                    <t t-else="">
+                      <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                      <div style="font-size:12px;">الاسم/ ____________</div>
+                    </t>
+                  </td>
+                  <td style="width:10px;"/>
+                  <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                    <div style="margin-bottom:6px;font-weight:bold;">مسؤول الجودة</div>
+                    <t t-if="sample.super_signature">
+                      <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                        <img t-att-src="image_data_uri(sample.super_signature)" style="max-width:100%;max-height:100%;"/>
+                      </div>
+                      <div style="font-size:12px;" t-esc="sample.super_signer_name or ''"/>
+                    </t>
+                    <t t-else="">
+                      <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                      <div style="font-size:12px;">الاسم/ ____________</div>
+                    </t>
+                  </td>
+                  <td style="width:10px;"/>
+                  <td style="width:33.33%;text-align:center;padding:10px;border:1px solid #e2e2e2;background:#ffffff;">
+                    <div style="margin-bottom:6px;font-weight:bold;">المدير التنفيذي</div>
+                    <t t-if="sample.company_signature">
+                      <div style="height:70px;border:1px solid #ddd;margin:8px 0;display:flex;align-items:center;justify-content:center;">
+                        <img t-att-src="image_data_uri(sample.company_signature)" style="max-width:100%;max-height:100%;"/>
+                      </div>
+                      <div style="font-size:12px;" t-esc="sample.company_signer_name or ''"/>
+                    </t>
+                    <t t-else="">
+                      <div style="height:70px;border:1px solid #ddd;margin:8px 0;"/>
+                      <div style="font-size:12px;">الاسم/ ____________</div>
+                    </t>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+          </div>
+        </t>
+      </t>
+    </t>
+  </template>
+</odoo>

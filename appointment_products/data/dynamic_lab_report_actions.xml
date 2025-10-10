@@ -85,6 +85,20 @@
         <field name="groups_id" eval="[(6,0,[ref('appointment_products.group_lab_manager'), ref('appointment_products.group_lab_technician')])]"/>
     </record>
 
+    <record id="action_asphalt_mix_standard_report" model="ir.actions.report">
+        <field name="name">تقرير الخلطة الإسفلتية</field>
+        <field name="model">lab.sample</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">appointment_products.asphalt_mix_standard_report</field>
+        <field name="report_file">appointment_products.asphalt_mix_standard_report</field>
+        <field name="binding_model_id" ref="model_lab_sample"/>
+        <field name="binding_type">report</field>
+        <field name="domain">['|', ('sample_subtype_id.sample_type_id.code', '=', 'ASPHALT_MIX'), ('product_id.product_tmpl_id.sample_type_id.code', '=', 'ASPHALT_MIX')]</field>
+        <field name="paperformat_id" ref="lab_sample_comprehensive_report_paperformat"/>
+        <field name="print_report_name">'تقرير_الخلطة_الإسفلتية_%s' % (object.name)</field>
+        <field name="groups_id" eval="[(6,0,[ref('appointment_products.group_lab_manager'), ref('appointment_products.group_lab_technician')])]"/>
+    </record>
+
 
     <record id="action_concrete_core_standard_report" model="ir.actions.report">
         <field name="name">تقرير فحص الكور الخرساني</field>
