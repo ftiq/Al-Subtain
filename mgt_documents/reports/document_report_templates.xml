@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="report_document_letter">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="doc">
+        <t t-call="web.external_layout">
+          <div class="doc-wrapper" style="direction: rtl; font-family: 'Tahoma', 'DejaVu Sans', sans-serif;">
+            <!-- Header -->
+            <div class="header" style="border-bottom: 2px solid #d9a46f; margin-bottom: 16px; padding-bottom: 8px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div>
+                  <img t-if="doc.company_id and doc.company_id.logo" t-attf-src="/web/image/res.company/#{doc.company_id.id}/logo" style="max-height:60px;"/>
+                  <div style="font-weight:700; font-size:16px; margin-top:4px;">
+                    <span t-esc="doc.company_id.name or ''"/>
+                  </div>
+                </div>
+                <div style="text-align:left; font-size:12px;">
+                  <div><strong>التاريخ:</strong> <span t-esc="doc.date and doc.date.strftime('%Y-%m-%d %H:%M') or ''"/></div>
+                  <div><strong>الرقم:</strong> <span t-esc="doc.reference_number or doc.id"/></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Title -->
+            <div style="text-align:center; margin-bottom: 10px;">
+              <h3 style="margin: 0;">مذكرة</h3>
+              <div style="font-size: 14px; color: #666;" t-esc="doc.subject or doc.name"/>
+            </div>
+
+            <!-- Addresses -->
+            <div style="margin-bottom: 16px; line-height:1.9;">
+              <div>
+                <strong>إلى:</strong>
+                <span t-esc="doc.recipient_employee_id and doc.recipient_employee_id.name or (doc.department_id and doc.department_id.name) or '...'"/>
+              </div>
+              <div>
+                <strong>من:</strong>
+                <span t-esc="doc.department_id and doc.department_id.name or doc.sender_employee_id and doc.sender_employee_id.name or doc.create_uid.name"/>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="body" style="min-height: 300px;">
+              <div t-if="doc.content" t-field="doc.content"/>
+              <div t-if="not doc.content" style="white-space: pre-wrap;" t-esc="doc.summary or doc.name"/>
+            </div>
+
+            <!-- Signature and Notes -->
+            <div style="margin-top: 24px;">
+              <div style="margin-bottom: 8px;">
+                <strong>المُعد:</strong>
+                <span t-esc="doc.sender_employee_id and doc.sender_employee_id.name or doc.create_uid.name"/>
+              </div>
+            </div>
+
+            <!-- Approval Boxes -->
+            <div style="margin-top: 24px; border-top: 1px solid #ddd; padding-top: 12px;">
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="border:1px solid #aaa; padding:10px; min-height:80px;">
+                  <div style="font-weight:600; margin-bottom:6px;">ملاحظات رئيس قسم المختص أو مدير الدائرة</div>
+                  <div style="height:50px;"/>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; color:#555;">
+                    <span>الاسم: ____________</span>
+                    <span>التوقيع: ____________</span>
+                    <span>التاريخ: ____________</span>
+                  </div>
+                </div>
+                <div style="border:1px solid #aaa; padding:10px; min-height:80px;">
+                  <div style="font-weight:600; margin-bottom:6px;">ملاحظات السيد المدير الفني المحترم</div>
+                  <div style="height:50px;"/>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; color:#555;">
+                    <span>الاسم: ____________</span>
+                    <span>التوقيع: ____________</span>
+                    <span>التاريخ: ____________</span>
+                  </div>
+                </div>
+                <div style="border:1px solid #aaa; padding:10px; min-height:80px;">
+                  <div style="font-weight:600; margin-bottom:6px;">ملاحظات السيد المدير العام المحترم</div>
+                  <div style="height:50px;"/>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; color:#555;">
+                    <span>الاسم: ____________</span>
+                    <span>التوقيع: ____________</span>
+                    <span>التاريخ: ____________</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer" style="border-top: 2px solid #d9a46f; margin-top: 20px; padding-top: 8px; font-size: 11px; color: #777;">
+              <div t-if="doc.company_id and doc.company_id.partner_id">
+                <span t-esc="doc.company_id.partner_id.contact_address or ''"/>
+                <span t-if="doc.company_id.phone"> | هاتف: <t t-esc="doc.company_id.phone"/></span>
+                <span t-if="doc.company_id.email"> | بريد: <t t-esc="doc.company_id.email"/></span>
+              </div>
+            </div>
+          </div>
+        </t>
+      </t>
+    </t>
+  </template>
+</odoo>

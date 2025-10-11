@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="mgt_documents.DocumentDashboard" owl="1">
+        <div class="modern_dashboard_container o_action_manager_fullscreen">
+        <div t-if="state.loading" class="modern_loading">
+            <div class="spinner"></div>
+            <p>جاري تحميل البيانات...</p>
+        </div>
+
+
+            <div t-else="" class="modern_cards_grid">
+                
+                <div class="modern_card card_incoming" t-on-click="() => this.openDocumentsByType('incoming')">
+                    <div class="card_header">
+                        <div class="card_icon">📬</div>
+                        <h3 class="card_title">وارد</h3>
+                    </div>
+                    <div class="card_number" t-esc="state.stats.incoming_total || 0"/>
+                    <div class="card_footer">
+                        <span class="card_subtitle">الوثائق الواردة</span>
+                    </div>
+                </div>
+
+                <div class="modern_card card_outgoing" t-on-click="() => this.openDocumentsByType('outgoing')">
+                    <div class="card_header">
+                        <div class="card_icon">📤</div>
+                        <h3 class="card_title">صادر</h3>
+                    </div>
+                    <div class="card_number" t-esc="state.stats.outgoing_total || 0"/>
+                    <div class="card_footer">
+                        <span class="card_subtitle">الوثائق الصادرة</span>
+                    </div>
+                </div>
+
+                <div class="modern_card card_internal" t-on-click="() => this.openDocumentsByType('internal')">
+                    <div class="card_header">
+                        <div class="card_icon">🏢</div>
+                        <h3 class="card_title">داخلي</h3>
+                    </div>
+                    <div class="card_number" t-esc="state.stats.internal_total || 0"/>
+                    <div class="card_footer">
+                        <span class="card_subtitle">الوثائق الداخلية</span>
+                    </div>
+                </div>
+
+                <div class="modern_card card_report" t-on-click="() => this.openDocumentsByType('report')">
+                    <div class="card_header">
+                        <div class="card_icon">📊</div>
+                        <h3 class="card_title">تقرير</h3>
+                    </div>
+                    <div class="card_number" t-esc="state.stats.report_total || 0"/>
+                    <div class="card_footer">
+                        <span class="card_subtitle">التقارير</span>
+                    </div>
+                </div>
+
+                <div class="modern_card card_memo" t-on-click="() => this.openDocumentsByType('memo')">
+                    <div class="card_header">
+                        <div class="card_icon">📝</div>
+                        <h3 class="card_title">مذكرة</h3>
+                    </div>
+                    <div class="card_number" t-esc="state.stats.memo_total || 0"/>
+                    <div class="card_footer">
+                        <span class="card_subtitle">المذكرات</span>
+                    </div>
+                </div>
+
+                <div class="modern_card" t-on-click="() => this.openDocumentsByType('circular')">
+                    <div class="card_header">
+                        <div class="card_icon card_circular">📢</div>
+                        <div class="card_footer">
+                            <div class="card_title">تعميم</div>
+                            <div class="card_number" t-esc="state.stats.circular_total || 0"/>
+                        </div>
+                    </div>
+                    <div class="card_actions">
+                        <button class="card_btn btn_view" t-on-click.stop="() => this.openDocumentsByPriority('circular', '0')">
+                            عادي
+                        </button>
+                        <button class="card_btn btn_add" t-on-click.stop="() => this.openDocumentsByPriority('circular', '1')">
+                            مهم
+                        </button>
+                        <button class="card_btn btn_urgent" t-on-click.stop="() => this.openDocumentsByPriority('circular', '2')">
+                            عاجل
+                        </button>
+                        <button class="card_btn btn_very_urgent" t-on-click.stop="() => this.openDocumentsByPriority('circular', '3')">
+                            عاجل جداً
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modern_card" t-on-click="() => this.openDocumentsByType('letter')">
+                    <div class="card_header">
+                        <div class="card_icon card_letter">✉️</div>
+                        <div class="card_footer">
+                            <div class="card_title">رسالة</div>
+                            <div class="card_number" t-esc="state.stats.letter_total || 0"/>
+                        </div>
+                    </div>
+                    <div class="card_actions">
+                        <button class="card_btn btn_view" t-on-click.stop="() => this.openDocumentsByPriority('letter', '0')">
+                            عادي
+                        </button>
+                        <button class="card_btn btn_add" t-on-click.stop="() => this.openDocumentsByPriority('letter', '1')">
+                            مهم
+                        </button>
+                        <button class="card_btn btn_urgent" t-on-click.stop="() => this.openDocumentsByPriority('letter', '2')">
+                            عاجل
+                        </button>
+                        <button class="card_btn btn_very_urgent" t-on-click.stop="() => this.openDocumentsByPriority('letter', '3')">
+                            عاجل جداً
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modern_card" t-on-click="() => this.openDocumentsByType('contract')">
+                    <div class="card_header">
+                        <div class="card_icon card_contract">📜</div>
+                        <div class="card_footer">
+                            <div class="card_title">عقد</div>
+                            <div class="card_number" t-esc="state.stats.contract_total || 0"/>
+                        </div>
+                    </div>
+                    <div class="card_actions">
+                        <button class="card_btn btn_view" t-on-click.stop="() => this.openDocumentsByPriority('contract', '0')">
+                            عادي
+                        </button>
+                        <button class="card_btn btn_add" t-on-click.stop="() => this.openDocumentsByPriority('contract', '1')">
+                            مهم
+                        </button>
+                        <button class="card_btn btn_urgent" t-on-click.stop="() => this.openDocumentsByPriority('contract', '2')">
+                            عاجل
+                        </button>
+                        <button class="card_btn btn_very_urgent" t-on-click.stop="() => this.openDocumentsByPriority('contract', '3')">
+                            عاجل جداً
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modern_card" t-on-click="() => this.openDocumentsByType('invoice')">
+                    <div class="card_header">
+                        <div class="card_icon card_invoice">🧾</div>
+                        <div class="card_footer">
+                            <div class="card_title">فاتورة</div>
+                            <div class="card_number" t-esc="state.stats.invoice_total || 0"/>
+                        </div>
+                    </div>
+                    <div class="card_actions">
+                        <button class="card_btn btn_view" t-on-click.stop="() => this.openDocumentsByPriority('invoice', '0')">
+                            عادي
+                        </button>
+                        <button class="card_btn btn_add" t-on-click.stop="() => this.openDocumentsByPriority('invoice', '1')">
+                            مهم
+                        </button>
+                        <button class="card_btn btn_urgent" t-on-click.stop="() => this.openDocumentsByPriority('invoice', '2')">
+                            عاجل
+                        </button>
+                        <button class="card_btn btn_very_urgent" t-on-click.stop="() => this.openDocumentsByPriority('invoice', '3')">
+                            عاجل جداً
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modern_card" t-on-click="() => this.openDocumentsByType('other')">
+                    <div class="card_header">
+                        <div class="card_icon card_other">📄</div>
+                        <div class="card_footer">
+                            <div class="card_title">أخرى</div>
+                            <div class="card_number" t-esc="state.stats.other_total || 0"/>
+                        </div>
+                    </div>
+                    <div class="card_actions">
+                        <button class="card_btn btn_view" t-on-click.stop="() => this.openDocumentsByPriority('other', '0')">
+                            عادي
+                        </button>
+                        <button class="card_btn btn_add" t-on-click.stop="() => this.openDocumentsByPriority('other', '1')">
+                            مهم
+                        </button>
+                        <button class="card_btn btn_urgent" t-on-click.stop="() => this.openDocumentsByPriority('other', '2')">
+                            عاجل
+                        </button>
+                        <button class="card_btn btn_very_urgent" t-on-click.stop="() => this.openDocumentsByPriority('other', '3')">
+                            عاجل جداً
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modern_card" t-on-click="() => this.openDocuments('all', [['processing_state', '=', 'draft']])">
+                    <div class="card_icon card_pending">📝</div>
+                    <div class="card_title">المسودات</div>
+                    <div class="card_number" t-esc="state.stats.draft_documents || 0"/>
+                    <div class="card_actions">
+                        <button class="card_btn btn_view" t-on-click.stop="() => this.openDocuments('all', [['processing_state', '=', 'draft']])">
+                            عرض الكل
+                        </button>
+                        <button class="card_btn btn_add" t-on-click.stop="() => this.createDocument()">
+                            إضافة جديد
+                        </button>
+                        <button class="card_btn btn_pending" t-on-click.stop="() => this.openAllDocumentsByState('submitted')">
+                            قيد المراجعة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="quick_info_section">
+                
+
+                <div class="info_panel">
+                    <h3>
+                        <i class="fa fa-clock-o"/>
+                        آخر الوثائق
+                    </h3>
+                    <div class="recent_items">
+                        <t t-if="state.recent_documents.length === 0">
+                            <div style="text-align: center; color: #7f8c8d; padding: 20px;">
+                                لا توجد وثائق حديثة
+                            </div>
+                        </t>
+                        <t t-foreach="state.recent_documents.slice(0, 5)" t-as="doc" t-key="doc.id">
+                            <div class="recent_item">
+                                <div>
+                                    <div class="item_title" t-esc="doc.name"/>
+                                    <div class="item_date" t-esc="formatDate(doc.date)"/>
+                                </div>
+                                <div>
+                                    <span class="item_status" t-att-class="getStatusClass(doc.processing_state)" 
+                                          t-esc="getStatusName(doc.processing_state)"/>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <div class="info_panel">
+                    <h3>
+                        <i class="fa fa-exclamation-triangle"/>
+                        طلبات الموافقة المعلقة
+                    </h3>
+                    <div class="recent_items">
+                        <t t-if="state.pending_approvals.length === 0">
+                            <div style="text-align: center; color: #7f8c8d; padding: 20px;">
+                                لا توجد طلبات موافقة معلقة
+                            </div>
+                        </t>
+                        <t t-foreach="state.pending_approvals.slice(0, 5)" t-as="approval" t-key="approval.id">
+                            <div class="recent_item" t-on-click="() => this.openPendingApprovals()">
+                                <div>
+                                    <div class="item_title" t-esc="approval.name"/>
+                                    <div class="item_date" t-esc="formatDate(approval.request_date)"/>
+                                </div>
+                                <div>
+                                    <span class="item_status status_submitted" t-esc="approval.status || 'معلقة'"/>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="refresh_btn" t-on-click="refreshData" title="تحديث البيانات">
+                <i class="fa fa-refresh"/>
+            </button>
+            <div class="dashboard_note">
+
+            </div>
+        </div>
+    </t>
+</templates>

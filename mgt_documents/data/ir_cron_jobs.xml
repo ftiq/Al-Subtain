@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+
+        <record id="cron_auto_escalate_tasks" model="ir.cron">
+            <field name="name">تصعيد المهام المتأخرة</field>
+            <field name="model_id" ref="mgt_documents.model_approval_request"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_auto_escalate_overdue_approvals()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="priority">5</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+        
+
+        <record id="cron_auto_archive_documents" model="ir.cron">
+            <field name="name">أرشفة الوثائق التلقائية</field>
+            <field name="model_id" ref="mgt_documents.model_document_document"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_archive_expired_documents()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+            <field name="priority">3</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+        
+
+        <record id="cron_send_reminders" model="ir.cron">
+            <field name="name">إرسال التذكيرات</field>
+            <field name="model_id" ref="mgt_documents.model_approval_request"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_send_approval_reminders()</field>
+            <field name="interval_number">2</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="priority">4</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_notify_pre_archive" model="ir.cron">
+            <field name="name">تنبيه قبل الأرشفة</field>
+            <field name="model_id" ref="mgt_documents.model_document_document"/>
+            <field name="state">code</field>
+            <field name="code">model.notify_pre_archive_candidates()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+            <field name="priority">4</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <!-- تعطيل توجيه الوثائق تلقائياً -->
+        
+
+        <record id="cron_update_performance_metrics" model="ir.cron">
+            <field name="name">تحديث مؤشرات الأداء</field>
+            <field name="model_id" ref="mgt_documents.model_document_document"/>
+            <field name="state">code</field>
+            <field name="code">model.update_performance_metrics()</field>
+            <field name="interval_number">6</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="priority">2</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+        
+
+        <record id="cron_cleanup_temp_data" model="ir.cron">
+            <field name="name">تنظيف البيانات المؤقتة</field>
+            <field name="model_id" ref="mgt_documents.model_document_document"/>
+            <field name="state">code</field>
+            <field name="code">model.cleanup_temporary_data()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="active">True</field>
+            <field name="priority">1</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+        
+
+        
+        <!-- تعطيل مهام نسخ سير العمل -->
+        
+        
+        <!-- تعطيل تنظيف نسخ الاختبار -->
+        
+        
+        <!-- تعطيل تحديث إحصائيات العمليات - workflow removed -->
+        <!-- <record id="cron_update_process_statistics" model="ir.cron">
+            <field name="name">تحديث إحصائيات العمليات</field>
+            <field name="model_id" ref="mgt_documents.model_workflow_process"/>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+active_processes = model.search([('state', '=', 'active')])
+log('تم تحديث إحصائيات %s عملية' % len(active_processes))
+            ]]></field>
+            <field name="interval_number">6</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="priority">3</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record> -->
+        
+        
+        <record id="cron_send_task_due_reminders" model="ir.cron">
+            <field name="name">إرسال تذكيرات المهام القريبة من الانتهاء</field>
+            <field name="model_id" ref="mgt_documents.model_admin_task"/>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+# إرسال تذكيرات للمهام التي تنتهي خلال 24 ساعة
+model.send_due_task_reminders()
+            ]]></field>
+            <field name="interval_number">12</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="priority">5</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+        
+        
+        <!-- تعطيل تفعيل العمليات الجاهزة - workflow removed -->
+        <!-- <record id="cron_auto_trigger_ready_processes" model="ir.cron">
+            <field name="name">تفعيل العمليات الجاهزة تلقائياً</field>
+            <field name="model_id" ref="mgt_documents.model_document_document"/>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+ready_documents = model.search([('processing_state', '=', 'registered'), ('workflow_id', '=', False)])
+log('تم معالجة %s وثيقة' % len(ready_documents))
+            ]]></field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="priority">6</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record> -->
+        
+        
+        <record id="cron_query_optimization" model="ir.cron">
+            <field name="name">فحص وتحسين الاستعلامات</field>
+            <field name="model_id" ref="mgt_documents.model_document_document"/>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+documents_with_tasks = model.search([('task_ids', '!=', False)], limit=50)
+log('تم تحديث %s وثيقة' % len(documents_with_tasks))
+            ]]></field>
+            <field name="interval_number">6</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="priority">3</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+        
+
+        <record id="cron_transaction_health_check" model="ir.cron">
+            <field name="name">فحص سلامة المعاملات</field>
+            <field name="model_id" ref="mgt_documents.model_admin_task"/>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+completed_tasks = model.search([('state', '=', 'completed'), ('progress_percentage', '<', 100)])
+completed_tasks.write({'progress_percentage': 100.0})
+progress_tasks = model.search([('state', '=', 'in_progress'), ('progress_percentage', '=', 0)])
+progress_tasks.write({'progress_percentage': 10.0})
+log('تم تصحيح %s مهمة' % (len(completed_tasks) + len(progress_tasks)))
+            ]]></field>
+            <field name="interval_number">4</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="priority">4</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+        
+
+        <record id="cron_sla_optimization" model="ir.cron">
+            <field name="name">مراجعة إعدادات SLA</field>
+            <field name="model_id" ref="mgt_documents.model_document_category"/>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+categories = model.search([])
+log('تم مراجعة %s فئة' % len(categories))
+            ]]></field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+            <field name="priority">2</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+        
+    </data>
+</odoo>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record id="action_document_document" model="ir.actions.act_window">
+            <field name="name">الوثائق</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+        </record>
+        
+        <record id="action_document_incoming" model="ir.actions.act_window">
+            <field name="name">المخاطبات الواردة</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_direction', '=', 'incoming')]</field>
+            <field name="context">{'default_document_direction': 'incoming'}</field>
+        </record>
+        
+        <record id="action_document_outgoing" model="ir.actions.act_window">
+            <field name="name">المخاطبات الصادرة</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_direction', '=', 'outgoing')]</field>
+            <field name="context">{'default_document_direction': 'outgoing'}</field>
+        </record>
+        
+        <record id="action_document_internal" model="ir.actions.act_window">
+            <field name="name">المخاطبات الداخلية</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_direction', '=', 'internal')]</field>
+            <field name="context">{'default_document_direction': 'internal'}</field>
+        </record>
+        
+        <record id="action_document_circulars" model="ir.actions.act_window">
+            <field name="name">التعاميم</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('document_type', '=', 'circular')]</field>
+            <field name="context">{'default_document_type': 'circular'}</field>
+        </record>
+
+        <record id="action_approval_request" model="ir.actions.act_window">
+            <field name="name">طلبات الموافقة</field>
+            <field name="res_model">approval.request</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('document_id', '!=', False)]</field>
+        </record>
+
+        <record id="action_document_related_tasks" model="ir.actions.act_window">
+            <field name="name">المهام المرتبطة بالوثيقة</field>
+            <field name="res_model">admin.task</field>
+            <field name="view_mode">list,form,kanban</field>
+            <field name="domain">[("request_document_id", "=", active_id)]</field>
+            <field name="context">{"default_request_document_id": active_id}</field>
+        </record>
+        
+
+        <record id="action_my_pending_approvals" model="ir.actions.act_window">
+            <field name="name">طلبات الموافقة المعلقة - المخصصة لي</field>
+            <field name="res_model">approval.request</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[
+                ('request_status', 'in', ['new', 'pending', 'under_approval']),
+                ('approver_ids.user_id', '=', uid)
+            ]</field>
+            <field name="context">{'show_my_approvals_only': True}</field>
+        </record>
+
+        <record id="action_my_approval_requests" model="ir.actions.act_window">
+            <field name="name">طلبات موافقتي</field>
+            <field name="res_model">approval.request</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('document_id', '!=', False), ('approver_ids.user_id', '=', uid)]</field>
+        </record>
+
+
+
+
+
+        <record id="action_archive_management" model="ir.actions.act_window">
+            <field name="name">إدارة الأرشيف</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('processing_state', '=', 'archived')]</field>
+        </record>
+
+
+        <record id="action_document_category" model="ir.actions.act_window">
+            <field name="name">فئات الوثائق</field>
+            <field name="res_model">document.category</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+
+        <record id="action_document_history" model="ir.actions.act_window">
+            <field name="name">سجل التغييرات</field>
+            <field name="res_model">document.history</field>
+            <field name="view_mode">list,form</field>
+        </record>
+        
+        <!-- تعطيل عرض العمليات -->
+        
+        <!-- تعطيل عرض خطوات العمليات -->
+        
+        <!-- تعطيل نسخ سير العمل -->
+        
+        <!-- تعطيل قائمة عمليات سير العمل -->
+        
+        <!-- Legacy action_process_step_execution removed - use document.workflow.instance instead -->
+        
+        <!-- Workflow action disabled -->
+        <!-- <record id="action_bmp_overview" model="ir.actions.act_window">
+            <field name="name">لوحة مراقبة العمليات</field>
+            <field name="res_model">workflow.process</field>
+            <field name="view_mode">kanban,list,form,graph,pivot</field>
+            <field name="context">{'search_default_active_processes': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    لوحة مراقبة شاملة لجميع العمليات
+                </p>
+                <p>
+                    مراقبة وإدارة جميع عملياتك  من مكان واحد
+                </p>
+            </field>
+        </record> -->
+        
+        <record id="action_admin_task" model="ir.actions.act_window">
+            <field name="name">المهام الإدارية</field>
+            <field name="res_model">admin.task</field>
+            <field name="view_mode">kanban,list,form,graph,pivot</field>
+            <field name="context">{'search_default_my_tasks': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    لا توجد مهام نشطة
+                </p>
+                <p>
+                    يتم إنشاء المهام تلقائياً من عمليات سير العمل
+                </p>
+            </field>
+        </record>
+
+        <record id="action_document_dashboard" model="ir.actions.act_window">
+            <field name="name">لوحة المعلومات</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,graph,pivot</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    لوحة المعلومات الرئيسية
+                </p>
+                <p>
+                    عرض شامل لجميع الوثائق والإحصائيات
+                </p>
+            </field>
+        </record>
+
+        <!-- تعطيل قواعد التوجيه -->
+
+        <record id="document_version_action" model="ir.actions.act_window">
+            <field name="name">إصدارات الوثائق</field>
+            <field name="res_model">document.version</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    لا توجد إصدارات وثائق بعد!
+                </p>
+                <p>
+                    سيتم إنشاء إصدارات الوثائق تلقائياً عند التعديل
+                </p>
+            </field>
+        </record>
+
+        <record id="action_my_created_documents" model="ir.actions.act_window">
+            <field name="name">الوثائق التي أنشأتها</field>
+            <field name="res_model">document.document</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('create_uid', '=', uid)]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    لم تقم بإنشاء أي وثائق بعد
+                </p>
+                <p>
+                    ابدأ بإنشاء وثيقة جديدة لتظهر هنا
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo> 
