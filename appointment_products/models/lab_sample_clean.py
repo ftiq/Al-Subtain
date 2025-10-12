@@ -1950,6 +1950,8 @@ class LabSample(models.Model):
             </div>
             """
 
+            record.bitumen_results_summary = html
+
     @api.depends('product_id.product_tmpl_id.sample_type_id.code')
     def _compute_is_asphalt_mix_sample(self):
         for sample in self:
