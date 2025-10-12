@@ -104,6 +104,46 @@
       <field name="is_global">True</field>
     </record>
 
+    <!-- Ash inputs and total ash% calculation -->
+    <record id="crit_am_crucible_vol" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">حجم الجفنة (مل)</field>
+      <field name="code">CRUCIBLE_VOL_ML</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">10</field>
+      <field name="is_global">True</field>
+      <field name="help_text">القيمة الافتراضية 85 مل إذا تُركت فارغة</field>
+    </record>
+    <record id="crit_am_pan_residue_vol" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">حجم المتبقي بالطاسة</field>
+      <field name="code">PAN_RES_VOL</field>
+      <field name="test_type">numeric</field>
+      <field name="sequence">11</field>
+      <field name="is_global">True</field>
+    </record>
+    <record id="crit_am_ash_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">نسبة الآش %</field>
+      <field name="code">ASH_PCT</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">11</field>
+      <field name="is_global">True</field>
+    </record>
+    <record id="crit_am_ash_total_pct" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">نسبة الآش الكلية %</field>
+      <field name="code">ASH_TOTAL_PCT</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
+      <field name="sequence">14</field>
+      <field name="is_computed_field">True</field>
+      <field name="is_global">True</field>
+      <field name="computation_formula">result = ((PAN_RES_VOL or 0) * (ASH_PCT or 0)) / (CRUCIBLE_VOL_ML or 85)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_pan_residue_vol'), ref('crit_am_ash_pct'), ref('crit_am_crucible_vol')])]"/>
+    </record>
+
     <!-- AC% helpers (optional for now) -->
     <record id="crit_am_ac_simple" model="lab.test.criterion">
       <field name="template_id" ref="template_asphalt_gradation"/>
@@ -131,16 +171,37 @@
       <field name="is_global">True</field>
     </record>
 
-    <!-- Crushed aggregate percentage (global input, per mix) -->
+    <!-- Crushed aggregate: weights + computed percentage (Binder/Surface only) -->
+    <record id="crit_am_crushed_agg_wt" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">وزن الحصى المكسر (غم)</field>
+      <field name="code">CRUSHED_AGG_WT_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">15</field>
+      <field name="is_global">True</field>
+    </record>
+    <record id="crit_am_total_agg_wt" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_gradation"/>
+      <field name="name">وزن الحصى الكلي (غم)</field>
+      <field name="code">TOTAL_AGG_WT_GM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="appointment_products.uom_gram_ap"/>
+      <field name="sequence">16</field>
+      <field name="is_global">True</field>
+    </record>
     <record id="crit_am_crushed_agg_pct" model="lab.test.criterion">
       <field name="template_id" ref="template_asphalt_gradation"/>
       <field name="name">نسبة الحصى المكسر %</field>
       <field name="code">CRUSHED_AGG_PCT</field>
-      <field name="test_type">numeric</field>
+      <field name="test_type">computed</field>
       <field name="uom_id" ref="appointment_products.uom_percent_ap"/>
-      <field name="sequence">14</field>
+      <field name="sequence">17</field>
       <field name="is_global">True</field>
-      <field name="help_text">يدخل فنياً كنسبة % للحصى المكسر. سيتم تقييم المطابقة تلقائياً حسب الطبقة (سطحية ≥ 90%، أساس ≥ 70%).</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = ((CRUSHED_AGG_WT_GM or 0) / (TOTAL_AGG_WT_GM or 0) * 100) if (TOTAL_AGG_WT_GM) else 0</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_am_crushed_agg_wt'), ref('crit_am_total_agg_wt')])]"/>
+      <field name="help_text">تحسب فقط لطبقتي الرابطة والسطحية؛ لا تُقيّم لطبقة الأساس</field>
     </record>
 
     <!-- Coarse sieves (≥ 4.75 mm) use ORIG_WT_GM -->
@@ -195,14 +256,41 @@
       <field name="applicable_sample_type_ids" eval="[(6,0,[ref('appointment_products.asphalt_mix_sample_type')])]"/>
     </record>
 
-    <!-- Per-sample inputs -->
-    <record id="crit_mar_thk_mm" model="lab.test.criterion">
+    <!-- Per-sample inputs: Thickness 1/2/3 and computed average -->
+    <record id="crit_mar_thk1_mm" model="lab.test.criterion">
       <field name="template_id" ref="template_asphalt_marshall"/>
-      <field name="name">سُمك العينة (مم)</field>
-      <field name="code">MAR_THK_MM</field>
+      <field name="name">السُمك 1 (مم)</field>
+      <field name="code">MAR_THK1_MM</field>
       <field name="test_type">numeric</field>
       <field name="uom_id" ref="uom.product_uom_millimeter"/>
       <field name="sequence">10</field>
+    </record>
+    <record id="crit_mar_thk2_mm" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">السُمك 2 (مم)</field>
+      <field name="code">MAR_THK2_MM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="uom.product_uom_millimeter"/>
+      <field name="sequence">11</field>
+    </record>
+    <record id="crit_mar_thk3_mm" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">السُمك 3 (مم)</field>
+      <field name="code">MAR_THK3_MM</field>
+      <field name="test_type">numeric</field>
+      <field name="uom_id" ref="uom.product_uom_millimeter"/>
+      <field name="sequence">12</field>
+    </record>
+    <record id="crit_mar_thk_mm" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">السُمك (متوسط) (مم)</field>
+      <field name="code">MAR_THK_MM</field>
+      <field name="test_type">computed</field>
+      <field name="uom_id" ref="uom.product_uom_millimeter"/>
+      <field name="sequence">13</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = ((MAR_THK1_MM or 0) + (MAR_THK2_MM or 0) + (MAR_THK3_MM or 0)) / max(1, (1 if MAR_THK1_MM else 0) + (1 if MAR_THK2_MM else 0) + (1 if MAR_THK3_MM else 0))</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_mar_thk1_mm'), ref('crit_mar_thk2_mm'), ref('crit_mar_thk3_mm')])]"/>
     </record>
     <record id="crit_mar_stab_kn" model="lab.test.criterion">
       <field name="template_id" ref="template_asphalt_marshall"/>
@@ -221,6 +309,17 @@
       <field name="min_value">2</field>
       <field name="max_value">4</field>
       <field name="sequence">30</field>
+    </record>
+    <!-- Expose correction factor used for transparency -->
+    <record id="crit_mar_corr_factor" model="lab.test.criterion">
+      <field name="template_id" ref="template_asphalt_marshall"/>
+      <field name="name">معامل التصحيح</field>
+      <field name="code">MAR_CORR_FACTOR</field>
+      <field name="test_type">computed</field>
+      <field name="sequence">35</field>
+      <field name="is_computed_field">True</field>
+      <field name="computation_formula">result = marshall_correction_factor(MAR_THK_MM or 0)</field>
+      <field name="depends_on_criteria_ids" eval="[(6,0,[ref('crit_mar_thk_mm')])]"/>
     </record>
     <!-- Corrected stability per sample -->
     <record id="crit_mar_stab_corr_kn" model="lab.test.criterion">

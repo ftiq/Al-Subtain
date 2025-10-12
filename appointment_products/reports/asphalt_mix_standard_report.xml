@@ -8,11 +8,15 @@
             <div class="oe_structure"/>
             <style>
               * { font-family: Arial, sans-serif !important; }
-              .compact-table thead th { padding: 6px 4px; font-size: 13px; }
-              .compact-table tbody td { padding: 3px 2px; font-size: 12px; line-height: 1.2; }
+              .compact-table thead th { padding: 4px 3px; font-size: 12px; }
+              .compact-table tbody td { padding: 2px 2px; font-size: 11px; line-height: 1.15; }
+              .compact-table { table-layout: fixed; }
+              .compact-table td, .compact-table th { white-space: nowrap; }
+              .value-star sup { color: #d00; font-weight: 700; }
             </style>
 
             <t t-set="layer_name" t-value="(sample.sample_subtype_id and sample.sample_subtype_id.name) or ''"/>
+            <t t-set="layer_code" t-value="(sample.sample_subtype_id and (sample.sample_subtype_id.code or '').upper()) or ''"/>
             <div class="custom-main-title" style="background:#eef3ff;border:1px solid #cdd9ff;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center;font-size:24px;font-weight:700;">
               م/ تقرير فحص نوعية اسفلت - <t t-esc="layer_name or 'غير محدد'"/>
             </div>
@@ -48,7 +52,7 @@
               </table>
             </div>
 
-            <!-- Gradation table -->
+            <!-- Gradation table with SPEC and FORMULA limits + star markers -->
             <t t-set="grad_rs0" t-value="mix_rs.filtered(lambda r: (r.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164')[:1]"/>
             <t t-if="grad_rs0">
               <div class="lab-section" style="margin:8px 0;">
@@ -57,16 +61,19 @@
                     <tr style="background:#DDDDDD;">
                       <th rowspan="2" style="text-align:center;vertical-align:middle;width:18%;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">المنخل</th>
                       <th colspan="2" style="text-align:center;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">حدود المواصفة %</th>
+                      <th colspan="2" style="text-align:center;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">حدود المعادلة %</th>
                       <th t-att-colspan="group_count" style="text-align:center;font-weight:bold;font-size:14px;border:1px solid #bdbdbd;">النسبة المارة وزناً %</th>
                     </tr>
                     <tr style="background:#DDDDDD;">
+                      <th style="text-align:center;font-weight:bold;border:1px solid #bdbdbd;">الأدنى</th>
+                      <th style="text-align:center;font-weight:bold;border:1px solid #bdbdbd;">الأعلى</th>
                       <th style="text-align:center;font-weight:bold;border:1px solid #bdbdbd;">الأدنى</th>
                       <th style="text-align:center;font-weight:bold;border:1px solid #bdbdbd;">الأعلى</th>
                       <t t-foreach="range(0, group_count)" t-as="i">
                         <t t-set="grpno" t-value="group_nos[i]"/>
                         <t t-set="rs_any" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
                         <t t-set="serial_raw" t-value="(rs_any and (rs_any[0].concrete_field_serial or rs_any[0].concrete_field_code)) or ''"/>
-                        <t t-set="display_serial" t-value="serial_raw.split('/')[-1] if serial_raw else (('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i]) if i &lt; 26 else str(i+1))"/>
+                        <t t-set="display_serial" t-value="serial_raw.split('/')[-1] if serial_raw else (( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i] ) if i &lt; 26 else str(i+1))"/>
                         <th style="text-align:center;padding:4px 3px;font-weight:bold;border:1px solid #bdbdbd;"><t t-esc="display_serial"/></th>
                       </t>
                     </tr>
@@ -77,12 +84,22 @@
                         <td style="text-align:center;padding:4px 3px;" t-esc="row.sieve_label or ''"/>
                         <td style="text-align:center;padding:4px 3px;" t-esc="'{:.0f}'.format(row.spec_min or 0)"/>
                         <td style="text-align:center;padding:4px 3px;" t-esc="'{:.0f}'.format(row.spec_max or 0)"/>
+                        <td style="text-align:center;padding:4px 3px;" t-esc="'{:.0f}'.format(row.effective_min or 0)"/>
+                        <td style="text-align:center;padding:4px 3px;" t-esc="'{:.0f}'.format(row.effective_max or 0)"/>
                         <t t-foreach="range(0, group_count)" t-as="i">
                           <t t-set="grpno" t-value="group_nos[i]"/>
                           <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
                           <t t-if="rs">
                             <t t-set="match" t-value="rs[0].asphalt_grad_range_ids.filtered(lambda rr: rr.sieve_code == row.sieve_code)"/>
-                            <td style="text-align:center;padding:4px 3px;" t-esc="'{:.0f}'.format((match and match[0].actual_passing) or 0)"/>
+                            <t t-set="s_ok" t-value="(match and bool(match[0].spec_ok)) or False"/>
+                            <t t-set="f_ok" t-value="(match and bool(match[0].formula_ok)) or False"/>
+                            <t t-set="star" t-value="('**' if ((not s_ok) and (not f_ok)) else ('*' if ((not s_ok) and f_ok) else ''))"/>
+                            <td style="text-align:center;padding:4px 3px;">
+                              <t t-esc="'{:.0f}'.format((match and match[0].actual_passing) or 0)"/>
+                              <t t-if="star">
+                                <span class="value-star"><sup><t t-esc="star"/></sup></span>
+                              </t>
+                            </td>
                           </t>
                           <t t-else="">
                             <td style="text-align:center;padding:4px 3px;">—</td>
@@ -90,6 +107,131 @@
                         </t>
                       </tr>
                     </t>
+                  </tbody>
+                </table>
+              </div>
+            </t>
+
+            <!-- Crushed Aggregate % summary per group (Binder/Surface only; Base = N/A) -->
+            <t t-if="grad_rs0">
+              <div class="lab-section" style="margin:6px 0;">
+                <table class="table table-bordered compact-table" style="width:100%;border:1px solid #cfd9c9;border-collapse:collapse;font-size:12px;text-align:center;">
+                  <thead>
+                    <tr style="background:#F2F2F2;">
+                      <th style="text-align:center;vertical-align:middle;width:30%;font-weight:bold;border:1px solid #bdbdbd;">نسبة الحصى المكسر %</th>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <th style="text-align:center;padding:4px 3px;font-weight:bold;border:1px solid #bdbdbd;">مجموعة <t t-esc="grpno"/></th>
+                      </t>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="font-weight:bold;padding:4px 3px;">القيمة</td>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
+                        <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'CRUSHED_AGG_PCT')) or False"/>
+                        <td style="text-align:center;padding:4px 3px;">
+                          <t t-if="layer_code == 'BASE'">—</t>
+                          <t t-if="layer_code != 'BASE'">
+                            <t t-set="val" t-value="(line and line[0].value_numeric)"/>
+                            <t t-esc="'{:.0f}'.format(val) if (val not in (None, False)) else '—'"/>
+                            <t t-set="thr" t-value="90"/>
+                            <t t-if="val not in (None, False) and (val &lt; thr)">
+                              <span class="value-star"><sup>*</sup></span>
+                            </t>
+                          </t>
+                        </td>
+                      </t>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </t>
+
+            <!-- Ash / Extraction quick details and AC% summary (layer thresholds) -->
+            <t t-if="grad_rs0">
+              <div class="lab-section" style="margin:6px 0;">
+                <table class="table table-bordered compact-table" style="width:100%;border:1px solid #cfd9c9;border-collapse:collapse;font-size:12px;text-align:center;">
+                  <thead>
+                    <tr style="background:#F9F9F9;">
+                      <th style="text-align:center;vertical-align:middle;width:30%;font-weight:bold;border:1px solid #bdbdbd;">استخلاص/آش</th>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <th style="text-align:center;padding:4px 3px;font-weight:bold;border:1px solid #bdbdbd;">مجموعة <t t-esc="grpno"/></th>
+                      </t>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="font-weight:bold;padding:4px 3px;">حجم الجفنة (مل)</td>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
+                        <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id.code == 'CRUCIBLE_VOL_ML')) or False"/>
+                        <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.0f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '85'"/></td>
+                      </t>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold;padding:4px 3px;">حجم المتبقي بالطاسة</td>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
+                        <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id.code == 'PAN_RES_VOL')) or False"/>
+                        <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.0f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                      </t>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold;padding:4px 3px;">نسبة الآش %</td>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
+                        <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id.code == 'ASH_PCT')) or False"/>
+                        <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.2f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                      </t>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold;padding:4px 3px;">نسبة الآش الكلية %</td>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
+                        <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id.code == 'ASH_TOTAL_PCT')) or False"/>
+                        <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.2f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                      </t>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold;padding:4px 3px;">AC% (بسيطة)</td>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
+                        <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id.code == 'AC_PERCENT_SIMPLE')) or False"/>
+                        <td style="text-align:center;padding:4px 3px;">
+                          <t t-set="val" t-value="(line and line[0].value_numeric)"/>
+                          <t t-esc="'{:.2f}'.format(val) if (val not in (None, False)) else '—'"/>
+                          <t t-set="min_ac" t-value="8 if (layer_code in ('SURFACE','BINDER')) else (5 if layer_code == 'BASE' else 0)"/>
+                          <t t-if="val not in (None, False) and min_ac and val &lt; min_ac">
+                            <span class="value-star"><sup>*</sup></span>
+                          </t>
+                        </td>
+                      </t>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold;padding:4px 3px;">AC% (مطروح غبار الفلتر)</td>
+                      <t t-foreach="range(0, group_count)" t-as="i">
+                        <t t-set="grpno" t-value="group_nos[i]"/>
+                        <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_GRADATION_T30_T164' and (x.test_group_no or 1) == grpno)"/>
+                        <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id.code == 'AC_PERCENT_FILTERED')) or False"/>
+                        <td style="text-align:center;padding:4px 3px;">
+                          <t t-set="val" t-value="(line and line[0].value_numeric)"/>
+                          <t t-esc="'{:.2f}'.format(val) if (val not in (None, False)) else '—'"/>
+                          <t t-set="min_ac" t-value="8 if (layer_code in ('SURFACE','BINDER')) else (5 if layer_code == 'BASE' else 0)"/>
+                          <t t-if="val not in (None, False) and min_ac and val &lt; min_ac">
+                            <span class="value-star"><sup>*</sup></span>
+                          </t>
+                        </td>
+                      </t>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -130,6 +272,83 @@
               </table>
             </div>
 
+            <!-- Marshall details per replicate (Thickness 1/2/3, Avg, Corr. Factor, Stability, Corrected, Flow) -->
+            <div class="lab-section" style="margin:8px 0;">
+              <t t-foreach="range(0, group_count)" t-as="i">
+                <t t-set="grpno" t-value="group_nos[i]"/>
+                <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_MARSHALL' and (x.test_group_no or 1) == grpno)"/>
+                <t t-if="rs">
+                  <h4 style="margin:8px 0; font-size:14px;">تفاصيل مارشال - مجموعة <t t-esc="grpno"/></h4>
+                  <table class="table table-bordered compact-table" style="width:100%;border:1px solid #cfd9c9;border-collapse:collapse;font-size:12px;text-align:center;">
+                    <thead>
+                      <tr style="background:#f1f1f1;">
+                        <th style="text-align:center;border:1px solid #bdbdbd;">التكرار</th>
+                        <th style="text-align:center;border:1px solid #bdbdbd;">سُمك 1 (مم)</th>
+                        <th style="text-align:center;border:1px solid #bdbdbd;">سُمك 2 (مم)</th>
+                        <th style="text-align:center;border:1px solid #bdbdbd;">سُمك 3 (مم)</th>
+                        <th style="text-align:center;border:1px solid #bdbdbd;">المتوسط (مم)</th>
+                        <th style="text-align:center;border:1px solid #bdbdbd;">معامل التصحيح</th>
+                        <th style="text-align:center;border:1px solid #bdbdbd;">الثبات (kN)</th>
+                        <th style="text-align:center;border:1px solid #bdbdbd;">الثبات المُصحح (kN)</th>
+                        <th style="text-align:center;border:1px solid #bdbdbd;">الزحف (مم)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <t t-set="n" t-value="rs[0].number_of_samples or 0"/>
+                      <t t-foreach="range(1, n+1)" t-as="rep">
+                        <t t-set="l_th1" t-value="rs[0].result_line_ids.filtered(lambda l: l.sample_no == rep and l.criterion_id.code == 'MAR_THK1_MM')[:1]"/>
+                        <t t-set="l_th2" t-value="rs[0].result_line_ids.filtered(lambda l: l.sample_no == rep and l.criterion_id.code == 'MAR_THK2_MM')[:1]"/>
+                        <t t-set="l_th3" t-value="rs[0].result_line_ids.filtered(lambda l: l.sample_no == rep and l.criterion_id.code == 'MAR_THK3_MM')[:1]"/>
+                        <t t-set="l_tha" t-value="rs[0].result_line_ids.filtered(lambda l: l.sample_no == rep and l.criterion_id.code == 'MAR_THK_MM')[:1]"/>
+                        <t t-set="l_fac" t-value="rs[0].result_line_ids.filtered(lambda l: l.sample_no == rep and l.criterion_id.code == 'MAR_CORR_FACTOR')[:1]"/>
+                        <t t-set="l_stb" t-value="rs[0].result_line_ids.filtered(lambda l: l.sample_no == rep and l.criterion_id.code == 'MAR_STAB_KN')[:1]"/>
+                        <t t-set="l_stc" t-value="rs[0].result_line_ids.filtered(lambda l: l.sample_no == rep and l.criterion_id.code == 'MAR_STAB_CORR_KN')[:1]"/>
+                        <t t-set="l_flw" t-value="rs[0].result_line_ids.filtered(lambda l: l.sample_no == rep and l.criterion_id.code == 'MAR_FLOW_MM')[:1]"/>
+                        <tr>
+                          <td style="text-align:center;">P<t t-esc="rep"/></td>
+                          <td>
+                            <t t-esc="'{:.2f}'.format(l_th1[0].value_numeric) if (l_th1 and l_th1[0].value_numeric not in (None, False)) else '—'"/>
+                          </td>
+                          <td>
+                            <t t-esc="'{:.2f}'.format(l_th2[0].value_numeric) if (l_th2 and l_th2[0].value_numeric not in (None, False)) else '—'"/>
+                          </td>
+                          <td>
+                            <t t-esc="'{:.2f}'.format(l_th3[0].value_numeric) if (l_th3 and l_th3[0].value_numeric not in (None, False)) else '—'"/>
+                          </td>
+                          <td>
+                            <t t-esc="'{:.2f}'.format(l_tha[0].value_numeric) if (l_tha and l_tha[0].value_numeric not in (None, False)) else '—'"/>
+                          </td>
+                          <td>
+                            <t t-esc="'{:.3f}'.format(l_fac[0].value_numeric) if (l_fac and l_fac[0].value_numeric not in (None, False)) else '—'"/>
+                          </td>
+                          <td>
+                            <t t-esc="'{:.1f}'.format(l_stb[0].value_numeric) if (l_stb and l_stb[0].value_numeric not in (None, False)) else '—'"/>
+                          </td>
+                          <td>
+                            <t t-set="min_stc" t-value="(l_stc and l_stc[0].criterion_id.min_value) or 0"/>
+                            <t t-set="stc_val" t-value="(l_stc and l_stc[0].value_numeric)"/>
+                            <t t-esc="'{:.1f}'.format(stc_val) if (stc_val not in (None, False)) else '—'"/>
+                            <t t-if="stc_val not in (None, False) and min_stc and stc_val &lt; min_stc">
+                              <span class="value-star"><sup>*</sup></span>
+                            </t>
+                          </td>
+                          <td>
+                            <t t-set="flw_val" t-value="(l_flw and l_flw[0].value_numeric)"/>
+                            <t t-set="flw_min" t-value="(l_flw and l_flw[0].criterion_id.min_value) or 0"/>
+                            <t t-set="flw_max" t-value="(l_flw and l_flw[0].criterion_id.max_value) or 0"/>
+                            <t t-esc="'{:.2f}'.format(flw_val) if (flw_val not in (None, False)) else '—'"/>
+                            <t t-if="flw_val not in (None, False) and ((flw_min and flw_val &lt; flw_min) or (flw_max and flw_val &gt; flw_max))">
+                              <span class="value-star"><sup>*</sup></span>
+                            </t>
+                          </td>
+                        </tr>
+                      </t>
+                    </tbody>
+                  </table>
+                </t>
+              </t>
+            </div>
+
             <!-- Density/Voids summary -->
             <div class="lab-section" style="margin:8px 0;">
               <table class="table table-bordered compact-table" style="width:100%;border:1px solid #cfd9c9;border-collapse:collapse;font-size:12px;text-align:center;">
@@ -158,7 +377,15 @@
                       <t t-set="grpno" t-value="group_nos[i]"/>
                       <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_DENSITY_VOIDS' and (x.test_group_no or 1) == grpno)"/>
                       <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'AV_AVG_PCT')) or False"/>
-                      <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.2f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                      <td style="text-align:center;padding:4px 3px;">
+                        <t t-set="val" t-value="(line and line[0].value_numeric)"/>
+                        <t t-set="lo" t-value="(line and line[0].criterion_id.min_value) or 0"/>
+                        <t t-set="hi" t-value="(line and line[0].criterion_id.max_value) or 0"/>
+                        <t t-esc="'{:.2f}'.format(val) if (val not in (None, False)) else '—'"/>
+                        <t t-if="val not in (None, False) and ((lo and val &lt; lo) or (hi and val &gt; hi))">
+                          <span class="value-star"><sup>*</sup></span>
+                        </t>
+                      </td>
                     </t>
                   </tr>
                 </tbody>
@@ -202,7 +429,14 @@
                       <t t-set="grpno" t-value="group_nos[i]"/>
                       <t t-set="rs" t-value="mix_rs.filtered(lambda x: (x.template_id.code or '') == 'ASPHALT_ITS_TSR' and (x.test_group_no or 1) == grpno)"/>
                       <t t-set="line" t-value="(rs and rs[0].result_line_ids.filtered(lambda l: l.criterion_id and l.criterion_id.code == 'TSR_PCT')) or False"/>
-                      <td style="text-align:center;padding:4px 3px;"><t t-esc="'{:.0f}'.format(line[0].value_numeric) if (line and line[0].value_numeric not in (None, False)) else '—'"/></td>
+                      <td style="text-align:center;padding:4px 3px;">
+                        <t t-set="val" t-value="(line and line[0].value_numeric)"/>
+                        <t t-set="lo" t-value="(line and line[0].criterion_id.min_value) or 0"/>
+                        <t t-esc="'{:.0f}'.format(val) if (val not in (None, False)) else '—'"/>
+                        <t t-if="val not in (None, False) and lo and val &lt; lo">
+                          <span class="value-star"><sup>*</sup></span>
+                        </t>
+                      </td>
                     </t>
                   </tr>
                 </tbody>

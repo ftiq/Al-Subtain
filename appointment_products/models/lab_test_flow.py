@@ -411,17 +411,18 @@ class LabTestFlowLine(models.Model):
         if self.result_set_id:
             return
 
-
-
-
-
-        # عدد العينات داخل مجموعة النتائج يجب أن يتبع عدد العينات المحدد في سطر الخطة
-        # بغض النظر عن نوع الفحص (طابوق/قير/خرسانة...).
         effective_samples = 1
         try:
             effective_samples = max(1, int(self.sample_qty or 1))
         except Exception:
             effective_samples = 1
+
+        try:
+            tcode = (self.test_template_id.code or '').upper()
+        except Exception:
+            tcode = ''
+        if tcode == 'ASPHALT_MARSHALL':
+            effective_samples = max(effective_samples, 3)
 
 
         lab_code = False
@@ -451,14 +452,11 @@ class LabTestFlowLine(models.Model):
             'concrete_field_code': lab_code,
             'concrete_field_serial': field_serial,
         })
-        # Avoid duplicate generation: create() already creates result lines.
-        # Call the action only if, for any reason, lines were not created.
+
         if not rs.result_line_ids:
             rs.action_generate_result_lines()
 
         self.result_set_id = rs.id
-
-
 
     def _open_result_set(self):
         self.ensure_one()

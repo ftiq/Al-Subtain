@@ -5,7 +5,7 @@
     <!-- Flow: Asphalt Mix Acceptance (minimal: Gradation only for now) -->
     <record id="asphalt_mix_flow_template" model="lab.test.flow.template">
       <field name="name">خطة فحص الخلطة الإسفلتية</field>
-      <field name="description"> </field>
+      <field name="description"></field>
       <field name="allow_parallel_tests" eval="True"/>
     </record>
 
@@ -21,7 +21,7 @@
       <field name="template_id" ref="asphalt_mix_flow_template"/>
       <field name="sequence">20</field>
       <field name="test_template_id" ref="appointment_products.template_asphalt_marshall"/>
-      <field name="sample_qty">1</field>
+      <field name="sample_qty">3</field>
     </record>
 
     <!-- Add Density/Voids stage -->

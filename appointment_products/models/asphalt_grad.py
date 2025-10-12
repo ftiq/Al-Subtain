@@ -12,6 +12,7 @@ SIEVE_CODE_TO_LABEL_ASPHALT = {
     '2_36MM': '2.36 mm',
     '0_3MM': '0.3 mm',
     '0_075MM': '0.075 mm',
+    'PAN': 'PAN',
 }
 
 # Map sieve code -> criterion code that stores %Passing value in result lines for asphalt mix template
@@ -28,7 +29,7 @@ SIEVE_CODE_TO_PASS_CRIT_ASPHALT = {
 }
 
 ASPHALT_SIEVE_ORDER = [
-    '37_5MM', '25MM', '19MM', '12_5MM', '9_5MM', '4_75MM', '2_36MM', '0_3MM', '0_075MM'
+    '37_5MM', '25MM', '19MM', '12_5MM', '9_5MM', '4_75MM', '2_36MM', '0_3MM', '0_075MM', 'PAN'
 ]
 
 # Default SPEC limits per layer. Binder (رابطة) مأخوذة من ورقة العميل.
