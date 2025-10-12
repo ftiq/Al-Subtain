@@ -36,9 +36,7 @@
                         <group name="basic_info">
                             <field name="name" readonly="1"/>
                             <field name="product_id" readonly="1"/>
-                            <field name="sample_subtype_id" options="{'no_create_edit': True}"
-                                   domain="[('sample_type_id', '=', product_id.product_tmpl_id.sample_type_id)]"
-                                   string="النوع الفرعي"/>
+                            <field name="sample_subtype_id" options="{'no_create_edit': True}" string="النوع الفرعي" invisible="1"/>
                             <field name="quantity" invisible="1"/>
                             <field name="lab_code" placeholder="الرمز المختبري" readonly="1" string="الرمز المختبري"/>
                             <field name="field_serial" placeholder="الرمز الحقلي" readonly="1" string="الرمز الحقلي"/>
@@ -58,10 +56,10 @@
                             <field name="is_core_ui" invisible="1"/>
                             <field name="reference_general_limit" string="المعدل" readonly="1" 
                                    invisible="not concrete_sample_type_id"/>
-                            <!-- نسبة الحدل تظهر فقط عند عينة كور خرساني -->
+
                             <field name="core_compaction_ratio" string="نسبة الحدل (%)" readonly="1"
                                    invisible="not is_core_ui"/>
-                            <!-- الكثافة الموقعية: الوزن والحجم (قراءة فقط) -->
+
                             <field name="is_field_density_sample" invisible="1"/>
                             <field name="field_density_weight" string="الوزن" readonly="1"
                                    invisible="not is_field_density_sample"/>
@@ -320,7 +318,6 @@
         </field>
     </record>
 
-
     <record id="view_lab_sample_form_improve" model="ir.ui.view">
         <field name="name">lab.sample.form.improve</field>
         <field name="model">lab.sample</field>
@@ -349,7 +346,7 @@
                            decoration-danger="overall_result == 'fail'"
                            decoration-warning="overall_result == 'pending'"/>
                     <field name="state" widget="badge" readonly="1"/>
-                    <!-- إظهار أيام الخرسانة فقط لعينات الخرسانة -->
+
                     <field name="concrete_age_days" string="أيام الخرسانة" widget="badge" readonly="1" 
                            column_invisible="not parent.is_concrete_sample"/>
                     
@@ -450,7 +447,6 @@
                                         </span>
                                     </div>
                                     
-                                    <!-- عرض المكلفين والحالات بعد الرموز مباشرة -->
                                     <div class="o_kanban_tag_row mt-2">
                                         <div class="o_kanban_testers_compact">
                                             <small class="text-muted d-block mb-1">المكلفون والحالات:</small>
