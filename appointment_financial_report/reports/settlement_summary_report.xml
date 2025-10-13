@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <template id="settlement_summary_template">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="move">
+          <t t-call="custom_report_layout.custom_external_layout">
+            <t t-call="appointment_financial_report.settlement_summary_page"/>
+          </t>
+        </t>
+      </t>
+    </template>
+
+    <template id="settlement_summary_page">
+      <div class="page" t-att-dir="is_rtl and 'rtl' or 'ltr'" style="font-family: Arial, sans-serif;">
+        <style>
+          .page { padding-bottom: 25mm; }
+          .voucher-title { text-align:center; font-weight:bold; font-size:18px; margin:0 0 10px; padding:8px; border:2px solid #b71c1c; border-radius:6px; background:linear-gradient(135deg,#d32f2f 0%,#c62828 100%); color:#000; }
+          .info-section { background:#fff; border:2px solid #424242; border-radius:4px; margin-bottom:8px; overflow:hidden; }
+          .info-section table { width:100%; border-collapse:collapse; }
+          .info-section td { border:1px solid #757575; padding:6px; font-size:13px; }
+          .info-label { font-weight:bold; background:#f5f5f5; }
+          .data-table { width:100%; border-collapse:collapse; margin:8px 0; border:2px solid #424242; }
+          .data-table thead th { background:linear-gradient(135deg,#e0e0e0 0%,#f5f5f5 100%); color:#000; font-weight:bold; padding:6px 4px; text-align:center; border:1px solid #424242; font-size:13px; }
+          .data-table tbody td, .data-table tfoot td { padding:6px 4px; border:1px solid #757575; text-align:center; font-size:13px; }
+          .data-table tfoot td { font-weight:bold; background:#f5f5f5; color:#d32f2f; }
+          .amount-text { background:#fff3e0; border:2px solid #ff9800; padding:8px; text-align:center; color:#e65100; font-weight:bold; font-size:14px; border-radius:4px; margin:8px 0; }
+          .signatures-section { margin-top:15px; margin-bottom:10px; page-break-inside:avoid; }
+          .signatures-section h4 { background:linear-gradient(135deg,#1976d2 0%,#1565c0 100%); color:#fff; padding:6px; text-align:center; border-radius:4px; margin-bottom:8px; font-size:14px; }
+          .signatures-table { width:100%; border-collapse:collapse; }
+          .signature-cell { width:33.33%; text-align:center; padding:8px; border:2px solid #90caf9; border-radius:8px; background:#ffffff; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+          .signature-cell strong { display:block; margin-bottom:5px; font-size:13px; color:#1565c0; }
+          .signature-box { height:50px; border:1px solid #bdbdbd; margin:5px auto; background:#fafafa; border-radius:4px; }
+          .signature-name { font-size:13px; color:#616161; margin-top:8px; }
+        </style>
+
+        <t t-set="project_name" t-value="get_project_name(move)"/>
+        <t t-set="book_no" t-value="get_book_number(move)"/>
+
+        <div class="voucher-title">قيد تسوية</div>
+
+        <div class="info-section">
+          <table>
+            <tr>
+              <td class="info-label" style="width:20%">رقم النموذج:</td>
+              <td style="width:30%" t-esc="move.name or ''"/>
+              <td class="info-label" style="width:20%">المشروع:</td>
+              <td style="width:30%" t-esc="project_name"/>
+            </tr>
+            <tr>
+              <td class="info-label">التاريخ:</td>
+              <td t-esc="(move.invoice_date or move.date).strftime('%Y/%m/%d') if (move.invoice_date or move.date) else ''"/>
+              <td class="info-label">العملة:</td>
+              <td t-esc="move.currency_id.display_name"/>
+            </tr>
+            <tr>
+              <td class="info-label">رقم الكتاب:</td>
+              <td t-esc="book_no"/>
+              <td class="info-label">مركز التكلفة:</td>
+              <td t-esc="get_cost_center(move)"/>
+            </tr>
+          </table>
+        </div>
+
+
+        <t t-set="lines_to_show" t-value="move.line_ids.filtered(lambda l: l.account_id)"/>
+        <t t-set="total_debit" t-value="sum(lines_to_show.mapped('debit')) or 0.0"/>
+        <t t-set="total_credit" t-value="sum(lines_to_show.mapped('credit')) or 0.0"/>
+        <t t-set="rows" t-value="get_summary_lines(move)"/>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:5%">م</th>
+              <th style="width:45%">اسم الحساب</th>
+              <th style="width:25%">مدين</th>
+              <th style="width:25%">دائن</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <t t-set="accounts" t-value="set(lines_to_show.mapped('account_id'))"/>
+            <t t-set="i" t-value="0"/>
+            <t t-foreach="accounts" t-as="account">
+              <t t-set="i" t-value="i+1"/>
+              <t t-set="acc_lines" t-value="lines_to_show.filtered(lambda l: l.account_id == account)"/>
+              <t t-set="acc_debit" t-value="sum(acc_lines.mapped('debit')) or 0.0"/>
+              <t t-set="acc_credit" t-value="sum(acc_lines.mapped('credit')) or 0.0"/>
+              <tr>
+                <td t-esc="i"/>
+                <td style="text-align:right; padding-right:10px" t-esc="account.name or ''"/>
+                <td style="font-size:13px" t-esc="'{:,.0f}'.format(acc_debit) if acc_debit else '0'"/>
+                <td style="font-size:13px" t-esc="'{:,.0f}'.format(acc_credit) if acc_credit else '0'"/>
+              </tr>
+            </t>
+            <t t-if="len(lines_to_show) == 0">
+              <tr>
+                <td colspan="4" style="text-align:center; padding:15px; color:#999; font-style:italic">لا توجد قيود يومية</td>
+              </tr>
+            </t>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" style="font-weight:bold;">الإجمالي</td>
+              <td style="font-weight:bold;" t-esc="'{:,.0f}'.format(sum(lines_to_show.mapped('debit')) or 0.0)"/>
+              <td style="font-weight:bold;" t-esc="'{:,.0f}'.format(sum(lines_to_show.mapped('credit')) or 0.0)"/>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="amount-text">
+          <t t-set="total_amount" t-value="max(total_debit, total_credit)"/>
+          <t t-esc="amount_to_text_ar(total_amount, move.currency_id)"/> <t>فقط</t>
+        </div>
+
+        <div t-if="move.narration" style="margin:8px 0; padding:6px; border:1px solid #ddd; border-radius:4px; background:#f9f9f9;">
+          <strong style="color:#424242; font-size:12px;">ملاحظة:</strong>
+          <div style="margin-top:3px; font-size:12px;" t-esc="move.narration"/>
+        </div>
+
+        <div class="signatures-section">
+          <h4>
+            <t t-if="env.context.get('lang') == 'ar_001'">التواقيع والاعتمادات</t>
+            <t t-else="">Signatures and credentials</t>
+          </h4>
+          <table class="signatures-table">
+            <tr>
+              <td class="signature-cell">
+                <strong>
+                  <t t-if="env.context.get('lang') == 'ar_001'">المحاسب</t>
+                  <t t-else="">Accountant</t>
+                </strong>
+                <div class="signature-box"></div>
+              </td>
+              <td style="width:15px"></td>
+              <td class="signature-cell">
+                <strong>
+                  <t t-if="env.context.get('lang') == 'ar_001'">المدقق</t>
+                  <t t-else="">Auditor</t>
+                </strong>
+                <div class="signature-box"></div>
+              </td>
+              <td style="width:15px"></td>
+              <td class="signature-cell">
+                <strong>
+                  <t t-if="env.context.get('lang') == 'ar_001'">المدير</t>
+                  <t t-else="">Manager</t>
+                </strong>
+                <div class="signature-box"></div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </template>
+
+    <record id="settlement_summary_action" model="ir.actions.report">
+      <field name="name">قيد تسوية</field>
+      <field name="model">account.move</field>
+      <field name="report_type">qweb-pdf</field>
+      <field name="report_name">appointment_financial_report.settlement_summary_template</field>
+      <field name="binding_model_id" ref="account.model_account_move"/>
+      <field name="binding_type">report</field>
+      <field name="paperformat_id" ref="appointment_financial_report.financial_voucher_paperformat"/>
+      <field name="print_report_name">(object.name or 'Settlement') + '-' + (object.invoice_date or object.date).strftime('%Y%m%d')</field>
+    </record>
+
+  </data>
+</odoo>
